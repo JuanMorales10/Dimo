@@ -1,9 +1,9 @@
 
 module.exports = (sequelize, DataTypes) => {
     try {
-        var Order = sequelize.define("Order",
+        var Comment = sequelize.define("Comment",
             {
-                order_id: {
+                id_comment: {
                     type: DataTypes.INTEGER,
                     primaryKey: true,
                     autoIncrement: true,
@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
                         key: 'id'
                     }
                 },
-                service_id: {
+                servicio_id: {
                     type: DataTypes.INTEGER,
                     allowNull: false,
                     references: {
@@ -25,13 +25,13 @@ module.exports = (sequelize, DataTypes) => {
                         key: 'id'
                     }
                 },
-                fecha: {
-                    type: DataTypes.DATE,
+                descripcion: {
+                    type: DataTypes.STRING,
                     allowNull: false,
                 }
             },
             {
-                tableName: 'order',
+                tableName: 'comment',
                 timestamps: false,
             });
 
@@ -40,20 +40,19 @@ module.exports = (sequelize, DataTypes) => {
     }
 
 
-    Order.associate = function (models) {
+    Comment.associate = function (models) {
 
-        Order.belongsTo(models.User, {
+        Comment.belongsTo(models.User, {
             foreignKey: 'usuario_dni',
-            as: 'user', // Esto permite acceder al usuario que hizo el pedido como order.user
+            as: 'user', // Esto permite acceder al usuario que hizo el comentario como comment.user
           });
           
-          Order.belongsTo(models.Service, {
-            foreignKey: 'service_id',
-            as: 'service', // Esto permite acceder al servicio relacionado con un pedido como order.service
+          Comment.belongsTo(models.Service, {
+            foreignKey: 'servicio_id',
+            as: 'service', // Esto permite acceder al servicio relacionado con un comentario como comment.service
           });
-          
 
     }
 
-    return Order;
+    return Comment;
 }

@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const avatar = require('../middlewares/processAvatar');
+const authCookie = require('../middlewares/authenticateUserWithCookie')
 const userController = require('../controllers/userController');
 
 //@Get
@@ -10,13 +12,13 @@ router.get('/profile',userController.getProfile);
 router.get('/services', userController.getServices);
 
 //@Post
-router.post('/registerUser', userController.registerUser);
-router.post('/registerHost', userController.registerHost);
-router.post('/login', userController.login);
+router.post('/registerUser', avatar.single("avatar"),userController.registerUser);
+router.post('/registerHost', avatar.single("avatar"),userController.registerHost);
+router.post('/login', authCookie.authenticateUser, userController.login);
 router.post('/logOut', userController.logOut);
 
 //@Put
-router.put('/updateProfile', userController.updateProfile);
+router.put('/updateProfile', avatar.single("avatar"),userController.updateProfile);
 
 //@Delete
 router.delete('/deleteAccount', userController.deleteAccount);

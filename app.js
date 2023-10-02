@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const mainRouter = require('./routes/mainRoutes')
 const userRouter = require('./routes/userRoutes')
 const serviceRouter = require('./routes/serviceRoutes')
+const authCookie = require('./middlewares/authenticateUserWithCookie')
 
 // Configuración del motor de vistas y archivos estáticos
 app.use(express.static("public"));
@@ -17,7 +18,7 @@ app.use(express.json());
 app.use(methodOverride('_method'));
 
 //Configuracion de Session
-app.use(session({secret: 'ElBodegonDigitalHouse2023', resave: false, saveUninitialized: true}));
+app.use(session({secret: 'Whattodo', resave: false, saveUninitialized: true}));
 
 //Configuracion de Cookie Parser
 app.use(cookieParser())

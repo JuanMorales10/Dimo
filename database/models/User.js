@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         telefono:{
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
         },
         ciudad:{
             type: DataTypes.STRING,

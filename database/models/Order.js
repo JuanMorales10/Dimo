@@ -45,11 +45,13 @@ module.exports = (sequelize, DataTypes) => {
         Order.belongsTo(models.User, {
             foreignKey: 'usuario_dni',
             as: 'user', // Esto permite acceder al usuario que hizo el pedido como order.user
+            timestamps: false
           });
           
           Order.belongsTo(models.Service, {
             foreignKey: 'service_id',
             as: 'service', // Esto permite acceder al servicio relacionado con un pedido como order.service
+            timestamps: false
           });
           
 

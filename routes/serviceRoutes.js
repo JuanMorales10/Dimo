@@ -5,5 +5,11 @@ const serviceImage = require('../middlewares/processServiceImage')
 
 // router.get('/', serviceController.showIndex);
 
+//@Get
+router.get('/createService', serviceController.getCreateService)
+
+//@Post
+router.post('/createService', serviceImage.any('image'), serviceController.createService)
+
 
 module.exports = router;

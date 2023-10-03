@@ -45,11 +45,13 @@ module.exports = (sequelize, DataTypes) => {
         Comment.belongsTo(models.User, {
             foreignKey: 'usuario_dni',
             as: 'user', // Esto permite acceder al usuario que hizo el comentario como comment.user
+            timestamps: false
           });
           
           Comment.belongsTo(models.Service, {
             foreignKey: 'servicio_id',
             as: 'service', // Esto permite acceder al servicio relacionado con un comentario como comment.service
+            timestamps: false
           });
 
     }

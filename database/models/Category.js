@@ -29,8 +29,9 @@ module.exports = (sequelize, DataTypes) => {
     Category.associate = function (models) {
 
         Category.hasMany(models.Service, {
-            foreignKey: 'category_id',
+            foreignKey: 'categoria_id',
             as: 'services', // Esto permite acceder a los servicios de una categoría como category.services
+            timestamps: false
           });
 
     }

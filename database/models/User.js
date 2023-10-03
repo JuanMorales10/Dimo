@@ -49,16 +49,19 @@ module.exports = (sequelize, DataTypes) => {
         User.hasMany(models.Service, {
             foreignKey: 'usuario_dni',
             as: 'services', // Esto permite acceder a los servicios de un usuario como user.services
+            timestamps: false
           });
           
           User.hasMany(models.Order, {
             foreignKey: 'usuario_dni',
             as: 'orders', // Esto permite acceder a los pedidos de un usuario como user.orders
+            timestamps: false
           });
           
           User.hasMany(models.Comment, {
-            foreignKey: 'usuario_dni',
             as: 'comments', // Esto permite acceder a los comentarios de un usuario como user.comments
+            foreignKey: 'usuario_dni',
+            timestamps: false
           });
     }
 

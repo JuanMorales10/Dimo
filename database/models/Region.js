@@ -33,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         Region.hasMany(models.Service, {
             foreignKey: 'id_region',
             as: 'services', // Esto permite acceder a los servicios de una región como region.services
+            timestamps: false
           });
 
     }

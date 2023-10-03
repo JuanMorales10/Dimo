@@ -31,13 +31,13 @@ module.exports = (sequelize, DataTypes) => {
 
 
     ServiceImage.associate = function (models) {
-
         ServiceImage.belongsTo(models.Service, {
-            foreignKey: 'service_id',
-            as: 'service', // Esto permite acceder al servicio al que pertenece una imagen como serviceImage.service
-          });
-
-    }
+          as: 'service',
+          foreignKey: 'service_id',
+          timestamps: false,
+        });
+      };
+      
 
     return ServiceImage;
 }

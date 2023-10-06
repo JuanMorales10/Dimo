@@ -1,7 +1,6 @@
 const { User, Service, ServiceImage, Category, Comment, Region } = require('../database/models');
 
 const serviceController = {
-
   getAllServices: async (req, res) => {
     try {
       const services = await Service.findAll();
@@ -10,157 +9,126 @@ const serviceController = {
       return res.status(500).json({ error: 'Error al obtener los servicios' });
     }
   },
-  getServiceByRegion: async (req, res) => {
-    try {
-      let region = req.params.region;
-  
-      // Mapear el nombre de la región a su identificador correspondiente
-      const regionMap = {
-        RNorte: 1,      // Region Norte
-        RPampeana: 2,   // Region Pampeana
-        RDCuyo: 3,      // Region De Cuyo
-        RPatagonia: 4,  // Region Patagonia
-      };
-  
-      region = regionMap[region];
-  
-      if (region === undefined) {
-        return res.status(400).json({ error: 'Región no válida' });
-      }
-  
-      const services = await Service.findAll({
-        where: {
-          id_region: region
-        }
-      });
- 
-      return res.status(200).json(services);
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ error: 'Error al obtener los detalles del servicio' });
-    }
-  }
-  
-  ,
 
   getServiceDetails: async (req, res) => {
     const { id } = req.params;
     try {
-
       const service = await Service.findByPk(id);
-
       if (!service) {
         return res.status(404).json({ error: 'Servicio no encontrado' });
       }
-
-
       const comments = await Comment.findAll({
         where: {
-          servicio_id: id
-        }
-      })
-
-      // return res.render('/', { service, comments });
-      return res.status(200).json(service);
-
-    } catch (error) {
-
-      return res.status(500).json({
-        error: 'Error al obtener los detalles del servicio'
+          servicio_id: id,
+        },
       });
+      return res.status(200).json(service);
+    } catch (error) {
+      return res.status(500).json({ error: 'Error al obtener los detalles del servicio' });
     }
   },
+
   getUserServices: async (req, res) => {
     try {
       const userId = req.session.user.id;
-
       const userServices = await Service.findAll({
         where: {
           usuario_dni: userId,
         },
       });
-
-      res.render('user/services', { services: userServices });
-
+      return res.render('user/services', { services: userServices });
     } catch (error) {
-
-      res.status(500).send('Error interno del servidor');
+      return res.status(500).send('Error interno del servidor');
     }
   },
-  getCreateService: (req, res) => {
 
-  },
-
-  createService: async (req, res) => {
+  getCreateService: async (req, res) => {
     try {
 
-      const serviceData = {
-        usuario_dni: req.body.usuario_dni,
-        categoria_id: req.body.categoria_id,
-        id_region: req.body.id_region,
-        nombre: req.body.nombre,
-        descripcion: req.body.descripcion,
-        capacidad: req.body.capacidad,
-        atp: req.body.atp || null,
-        rating: req.body.rating || null,
-        precio: req.body.precio,
-        duracion: req.body.duracion || null,
-        disponibilidad: req.body.disponibilidad || null,
-      };
+      const categories = await Category.findAll(); 
+      const regions = await Region.findAll({raw:true}); 
+     
 
-      // Obtenemos las imágenes subidas
-      const images = req.files;
+      res.render('createService', { categories, regions }); 
 
-      // Creamos el servicio en la base de datos
-      const newService = await Service.create(serviceData);
-
-      // Asocia las imágenes al servicio recién creado
-      if (images && images.length > 0) {
-        for (const image of images) {
-          await ServiceImage.create({
-            service_id: newService.id,
-            url: image.filename
-          });
-        }
-      }
-
-      return res.redirect('/servicio/' + newService.id);
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ error: 'Error al crear el servicio' });
+
+      return res.status(500).json({ error: 'Error al cargar el formulario' });
     }
   },
+  postCreateService: async (req, res) => {
+    try {
+     
+        const atp = req.body.atp === 'on' ? true : false;
+        const disponibilidad = req.body.disponibilidad === 'on' ? true : false;
 
-  // Editar un servicio existente
+
+        const serviceData = {
+            usuario_dni: req.body.usuario_dni,
+            categoria_id: req.body.categoria_id,
+            id_region: req.body.id_region,
+            nombre: req.body.nombre,
+            descripcion: req.body.descripcion,
+            capacidad: req.body.capacidad,
+            atp: atp,
+            rating: req.body.rating || null,
+            precio: req.body.precio,
+            duracion: req.body.duracion || null,
+            disponibilidad: disponibilidad || null,
+        };
+
+        const images = req.files;
+
+        const newService = await Service.create(serviceData);
+
+        console.log(newService);
+
+        if (images && images.length > 0) {
+            for (const image of images) {
+                const imageResult = await ServiceImage.create({
+                    service_id: newService.id,
+                    url: image.filename,
+                });
+
+                if (!imageResult) {
+                    return res.status(500).json({ error: 'Error al crear la imagen del servicio' });
+                }
+            }
+        }
+
+        return res.status(201).json({ message: 'Servicio creado exitosamente', service: newService });
+    } catch (error) {
+        console.error(error);
+        if (error.name === 'SequelizeValidationError') {
+            return res.status(400).json({ error: 'Datos de entrada no válidos' });
+        } else {
+            return res.status(500).json({ error: 'Error al crear el servicio' });
+        }
+    }
+},
+
+
   putUpdateService: async (req, res) => {
     const { id } = req.params;
-
     try {
       const service = await Service.findByPk(id);
-
       if (!service) {
         return res.status(404).json({ error: 'Servicio no encontrado' });
       }
-
       const updatedFields = {};
       const fieldsToUpdate = ['nombre', 'descripcion', 'precio', 'categoria_id', 'id_region', 'capacidad', 'duracion', 'disponibilidad', 'atp', 'rating'];
-
       fieldsToUpdate.forEach((field) => {
         if (req.body.hasOwnProperty(field)) {
           updatedFields[field] = req.body[field];
         }
       });
-
-
       await service.update(updatedFields);
-
-      return res.redirect('/servicio/' + id)
+      return res.redirect('/servicio/' + id);
     } catch (error) {
       return res.status(500).json({ error: 'Error al actualizar el servicio' });
     }
-  }
-  ,
-
+  },
 
   deleteService: async (req, res) => {
     const { id } = req.params;
@@ -175,28 +143,88 @@ const serviceController = {
       return res.status(500).json({ error: 'Error al eliminar el servicio' });
     }
   },
+
   postComment: async (req, res) => {
     try {
-
-      console.log(req.body)
-
-      const serviceId = req.params.id
-      const userId = req.session.user.id
-
+      const serviceId = req.params.id;
+      const userId = req.session.user.id;
       const comment = await Comment.create({
         descripcion: req.body.comment,
         servicio_id: serviceId,
-        usuario_dni: req.body.userdni
-      })
-
+        usuario_dni: req.body.userdni,
+      });
       return res.status(204).send();
     } catch (error) {
-      console.log(error)
-      return res.status(500).json({ error: 'Error al crear el comentario' })
-
-
+      console.log(error);
+      return res.status(500).json({ error: 'Error al crear el comentario' });
     }
-  }
+  },
+
+  filterServices: async (req, res) => {
+    try {
+      const { categoryId, regionId } = req.params;
+      if (!categoryId || !regionId) {
+        return res.status(400).json({ error: 'Categoría o región no válida' });
+      }
+      const services = await Service.findAll({
+        where: {
+          categoria_id: categoryId,
+          id_region: regionId,
+        },
+      });
+      return res.status(200).json(services);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Error al obtener los servicios por categoría y región' });
+    }
+  },
+
+  searchServicesByName: async (req, res) => {
+    try {
+      const { name } = req.query;
+      if (!name) {
+        return res.status(400).json({ error: 'Nombre de servicio no proporcionado' });
+      }
+      const services = await Service.findAll({
+        where: {
+          nombre: {
+            [Op.like]: `%${name}%`,
+          },
+        },
+      });
+      return res.status(200).json(services);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Error al buscar servicios por nombre' });
+    }
+  },
+
+  getPopularServices: async (req, res) => {
+    try {
+      const services = await Service.findAll({
+        order: [['rating', 'DESC']],
+        limit: 10,
+      });
+      return res.status(200).json(services);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Error al obtener los servicios populares' });
+    }
+  },
+
+  getAvailableServices: async (req, res) => {
+    try {
+      const services = await Service.findAll({
+        where: {
+          disponibilidad: true,
+        },
+      });
+      return res.status(200).json(services);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Error al obtener los servicios disponibles' });
+    }
+  },
 };
 
 module.exports = serviceController;

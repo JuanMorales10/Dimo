@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope,faIdCard,faKey,faImage } from '@fortawesome/free-solid-svg-icons';
+import logo from '../../assets/img/logowhat.png'
 import './RegistrationForm';
 
 function RegistrationForm() {
@@ -26,9 +27,10 @@ function RegistrationForm() {
   };
 
   return (
-    <html>
+    <div className='cont'>
     <div className="registration-container">
-      <h1>Whattodo</h1>
+      {/* <h1>Whattodo</h1> */}
+      <a class="navbar-brand" href="#"><img src={logo} alt="descripción" className='logo' /></a>
       <h3>Crea una Cuenta Nueva</h3>
       <div className="registration-container2">
       <form onSubmit={handleSubmit} className="registrationForm">
@@ -86,13 +88,23 @@ function RegistrationForm() {
         />
         </div>
         <div className='formflex'>
-        <button type="submit">Crear Cuenta</button>
+        <button type="submit" className='butan'>Crear Cuenta</button>
         </div>
       </form>
     </div>
     </div>
-    </html>
+    </div>
+   
   );
 }
 
 export default RegistrationForm;
+
+
+<div class="cont" style="
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100vh;
+    margin-right: 5vw;
+"></div>

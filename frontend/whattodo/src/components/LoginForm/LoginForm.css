@@ -4,7 +4,7 @@ html{
 
 .registration-container {
     max-width: 400px;
-    margin: 23vh auto 2vw 60%; 
+
     padding: 20px;
     background-color: #f4f4f4d4;
     border-radius: 40px;
@@ -83,7 +83,8 @@ html{
   }
 
   h3{
- color: #1188A1;
+    color: #393f41;
+    font-size: 25px;
   }
 
   @media (max-width: 1144px) {

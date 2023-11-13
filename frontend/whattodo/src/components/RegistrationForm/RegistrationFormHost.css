@@ -4,7 +4,7 @@ html{
 
 .registration-container {
     max-width: 400px;
-    margin: 23vh auto 2vw 60%; 
+
     padding: 20px;
     background-color: #f4f4f4d4;
     border-radius: 40px;
@@ -41,6 +41,14 @@ html{
 
   label{
     font-size: 12px;
+  }
+
+  .cont{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100vh;
+    margin-right: 5vw;
   }
   
   .registrationForm button {

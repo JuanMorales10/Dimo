@@ -1,6 +1,4 @@
-html{
-    background-color: #1188A1;
-}
+
 
 .registration-container h1{
     font-size: 40px;
@@ -8,7 +6,6 @@ html{
 
 .registration-container {
     max-width: 400px;
-    margin: 23vh auto 2vw 60%; 
     padding: 20px;
     background-color: #f4f4f4;
     border-radius: 40px;
@@ -130,5 +127,9 @@ html{
   @media (max-width: 468px) {
     .registration-container {
       margin: 23vh 4vw
+    }
+
+    .registrationForm button{
+      font-size: 12px;
     }
   }

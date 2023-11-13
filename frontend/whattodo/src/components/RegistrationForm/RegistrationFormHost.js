@@ -33,7 +33,7 @@ function RegistrationForm() {
   };
 
   return (
-    <html>
+    <div className='container' >
     <div className="registration-container">
       <h1>Whattodo</h1>
       <h3>Crea una Cuenta Nueva de Anfitrion</h3>
@@ -155,7 +155,7 @@ function RegistrationForm() {
       </form>
     </div>
     </div>
-    </html>
+    </div>
   );
 }
 

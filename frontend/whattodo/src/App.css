@@ -28,6 +28,15 @@ body{
   pointer-events: none;
 }
 
+body{
+  /* background-color: #1188A1; */
+  height: 100vh;
+  background-image: url('./assets/img/pexels-roberto-nickson-2559941.jpg');
+  background-size: cover; 
+  background-repeat: no-repeat; 
+}
+
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -57,3 +66,5 @@ body{
     transform: rotate(360deg);
   }
 }
+
+

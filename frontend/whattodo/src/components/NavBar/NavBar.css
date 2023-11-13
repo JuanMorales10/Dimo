@@ -1,0 +1,22 @@
+.logo{
+    width: 50%;
+}
+
+.nav{
+    padding: 0;
+    height: 95px;
+    background-color: #272727;
+}
+.navwhat{
+    padding: 0%;
+}
+.navega{
+    background-color: #fff;
+    margin-right: 3%;
+}
+
+.cuenta{
+    color: #fff !important;
+    background-color: #272727;
+}
+

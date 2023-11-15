@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const methodOverride = require('method-override');
+const cors = require('cors');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const mainRouter = require('./routes/mainRoutes')
@@ -14,6 +15,7 @@ app.set("view engine", "ejs");
 
 // Configuración de middlewares en el orden correcto
 app.use(express.urlencoded({ extended: true }));
+app.use(cors())
 app.use(express.json());
 app.use(methodOverride('_method'));
 
@@ -35,7 +37,7 @@ app.get('/', (req, res) => {
     res.render('home')
 })
 
-const PORT = 3000;
+const PORT = 3008;
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

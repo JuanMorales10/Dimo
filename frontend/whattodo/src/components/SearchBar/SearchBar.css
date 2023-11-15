@@ -1,0 +1,29 @@
+.search-bar-container {
+    display: flex;
+    padding: 1rem;
+    flex-direction: column;
+    align-items: center;
+}
+
+.search-bar-container input[type="text"] {
+    width: 90%;
+    max-width: 462px;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 20px;
+    font-size: 1rem;
+    outline: none;
+    height: 57px;
+}
+
+.search-bar-container input[type="text"]::placeholder {
+    color: #aaa; 
+}
+
+
+.search-icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}

@@ -3,7 +3,7 @@
 }
 
 .nav{
-    padding: 0;
+    padding: 0 !important;
     height: 95px;
     background-color: #272727;
 }
@@ -18,5 +18,16 @@
 .cuenta{
     color: #fff !important;
     background-color: #272727;
+}
+
+.but{
+    background-color: aliceblue;
+    margin-right: 3vw;
+}
+
+.navbaa{
+    display: flex;
+    justify-content: flex-end;
+    width: 75%;
 }
 

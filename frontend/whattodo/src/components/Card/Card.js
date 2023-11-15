@@ -20,7 +20,7 @@ function Card({ title, text, imageUrl, rating }) {
                     <img src={imageUrl || logo} className="card-img-top" alt="Card image" />
                     <div className="card-rating">
                     <FontAwesomeIcon icon={faStar} />
-                        <span>{rating}</span>
+                        <span>{rating}2.0</span>
                     </div>
                     <div className="card-favorite">
                     <button onClick={toggleFavorite} className="favorite-button">
@@ -29,9 +29,11 @@ function Card({ title, text, imageUrl, rating }) {
                 </div>
                 </div>
                 <div className="card-body">
-                    <h5 className="card-title">{title}</h5>
-                    <p className="card-text">{text}</p>
-                    <Link to="#" className="card-link">Details</Link>
+                    <div>
+                    <h5 className="card-title">{title}Messi de los goles</h5>
+                    <p className="card-text">{text}nanan</p>
+                    </div>
+                    <Link to="#" className="card-link">Detalle</Link>
                 </div>
             </div>
         </div>

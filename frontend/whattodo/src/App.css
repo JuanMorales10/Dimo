@@ -29,11 +29,11 @@ body{
 
 
 body{
-  /* background-color: #1188A1; */
-  height: 100vh;
-  background-image: url('./assets/img/pexels-roberto-nickson-2559941.jpg');
+  background-color: #fff;
+  /* height: 100vh; */
+  /* background-image: url('./assets/img/pexels-roberto-nickson-2559941.jpg');
   background-size: cover; 
-  background-repeat: no-repeat; 
+  background-repeat: no-repeat;  */
 }
 
 

@@ -15,7 +15,7 @@ function NavBar() {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0 navbaa">
               <li className="nav-item dropdown">
                 <Link to="/cuenta" className="nav-link dropdown-toggle cuenta" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Cuenta

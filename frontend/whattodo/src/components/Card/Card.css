@@ -27,13 +27,16 @@
 
 .card-img-top {
     width: 100%;
-    height: auto;
+    /* height: auto; */
     display: block;
     object-fit: cover;
+    height: 180px;
 }
 
 .card-body {
     padding: 15px;
+    display: flex;
+    justify-content: space-around;
 }
 
 .card-title {

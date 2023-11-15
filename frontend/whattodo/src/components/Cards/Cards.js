@@ -7,7 +7,6 @@ import './cards.css';
 function Cards() {
     const responsive = {
         superLargeDesktop: {
-          // the naming can be any, depends on you.
           breakpoint: { max: 4000, min: 3000 },
           items: 5
         },
@@ -26,8 +25,15 @@ function Cards() {
       };
   return (
     <div>
+      <h2>Ultimas Experiencias Cargadas</h2>
         <Carousel responsive={responsive} infinite={true} className="owl-carousel owl-theme skill-slider">
      <Card />
+     <Card /><Card /><Card /><Card /><Card /><Card /><Card />
+    </Carousel>
+    <h2>Gastronomia</h2>
+    <Carousel responsive={responsive} infinite={true} className="owl-carousel owl-theme skill-slider">
+     <Card />
+     <Card /><Card /><Card /><Card /><Card /><Card /><Card />
     </Carousel>
     </div>
   )

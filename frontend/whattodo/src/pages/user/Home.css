@@ -1,0 +1,10 @@
+.home-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+
+h2{
+    display: flex;
+    margin-left: 2vw;
+}

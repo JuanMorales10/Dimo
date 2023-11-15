@@ -1,0 +1,163 @@
+.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.dropdown{
+    z-index: 10;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.modal-header h2{
+    margin-left: 10px;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.modal-search-input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.modal-categories, .modal-filters {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-bottom: 20
+}
+
+.categories{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.filters{
+    display: flex;
+    flex-direction: column;
+}
+
+.category-button {
+    padding: 10px;
+    margin: 5px;
+    border: none;
+    background: #f0f0f0;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.category-icon {
+    font-size: 2rem; /* Tamaño del ícono */
+    margin-bottom: 5px;
+}
+
+
+.filter-button {
+    padding: 10px;
+    margin: 5px;
+    border: none;
+    background: #f0f0f0;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.filter-icon {
+    font-size: 2rem; /* Tamaño del ícono */
+    margin-bottom: 5px;
+}
+
+/* Estilos para el botón de búsqueda de experiencia */
+.modal-search-button {
+    padding: 15px 30px;
+    border: none;
+    background-color: #000; /* O cualquier color que prefieras */
+    color: #fff;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 20px;
+    width: 100%;
+    box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
+    transition: background-color 0.3s; /* Suaviza el cambio de color al interactuar */
+}
+
+.modal-search-button:hover {
+    background-color: #555; /* Cambia al color al pasar el ratón por encima */
+}
+
+.titulos{
+    margin-top: 20px;
+}
+
+input{
+    border: 1px solid #bbb3b3;
+    border-radius: 8px;
+    height: 20px;
+   margin: 10px;
+}
+
+input[type="date"]{
+ width: 181px;
+ border: 1px solid #bbb3b3;
+    border-radius: 8px;
+    height: 20px;
+   margin: 10px;
+}
+
+.search-button {
+    padding: 15px 30px;
+    border: none;
+    background-color: #1188A1; 
+    color: #fff;
+    border-radius: 20px; /* Bordes redondeados */
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold; 
+    width: 50%; 
+    margin-top: 20px; 
+    transition: background-color 0.3s ease; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2); 
+}
+
+.search-button:hover, .search-button:focus {
+    background-color: #1188A1; 
+    outline: none; 
+}

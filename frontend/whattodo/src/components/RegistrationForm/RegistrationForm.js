@@ -45,7 +45,7 @@ function RegistrationForm() {
         try {
           const response = await fetch('http://localhost:3008/user/registerUser', {
             method: 'POST',
-            body: formData, // FormData maneja los encabezados de Content-Type automáticamente
+            body: formData, 
           });
     
           const data = await response.json();

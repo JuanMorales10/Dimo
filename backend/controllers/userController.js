@@ -26,15 +26,14 @@ const userController = {
             maxAge: 1000 * 60 * 60 * 24, // Expira en un día
           });
         }
-        res.redirect("/");
+        res.json({ success: true, message: "Login exitoso.", user: user  });
       } else {
         // Contraseña no válida
-        return res.redirect(
-          `${req.baseUrl}/users/login?error=El correo electrónico o la contraseña son incorrectos`
-        );
+       return res.status(401).json({ success: false, message: "El correo electrónico o la contraseña son incorrectos" });
       }
     } catch (error) {
-      res.redirect(`${req.baseUrl}/users/login`);
+      console.log(error)
+      res.status(500).json({ success: false, message: "Error interno del servidor" });
     }
   },
   logOut: (req, res) => {
@@ -107,7 +106,7 @@ const userController = {
 
       req.session.user = user;
 
-      res.send(user)
+      // res.send(user)
 
       // return res.render('./main/index', { user: req.session.user });
 

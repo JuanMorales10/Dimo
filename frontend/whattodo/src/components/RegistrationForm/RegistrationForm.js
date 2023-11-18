@@ -8,16 +8,7 @@ import backgroundImage from '../../assets/img/pexels-roberto-nickson-2559941.jpg
 import LoadingScreen from '../LoadingScreen/LoadingScreen';
 
 function RegistrationForm() {
-
   const [loading, setLoading] = useState(true);
-  const [formData, setFormData] = useState({
-    dni: '',
-    email: '',
-    password: '',
-    avatar: ''
-  });
-
-
 
   useEffect(() => {
 
@@ -29,7 +20,6 @@ function RegistrationForm() {
         
         img.src = backgroundImage;
         img.onload = () => {
-          // La imagen se ha cargado, cambia el fondo y oculta el spinner
           document.body.style.backgroundImage = `url(${backgroundImage})`;
           setLoading(false);
         };
@@ -47,41 +37,46 @@ function RegistrationForm() {
       }, []);
 
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Aquí podrías enviar los datos a un servidor o manejar la lógica de validación
-    console.log(formData);
-  };
-
-  
-  if (loading) {
-    return <LoadingScreen />;
-  }
-
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+    
+        const formData = new FormData(e.target);
+    
+        try {
+          const response = await fetch('http://localhost:3008/user/registerUser', {
+            method: 'POST',
+            body: formData, // FormData maneja los encabezados de Content-Type automáticamente
+          });
+    
+          const data = await response.json();
+    
+          if (response.ok) {
+            console.log(data);
+            alert('Usuario creado correctamente');
+          } else {
+            alert('Error al crear el usuario');
+          }
+        } catch (error) {
+          console.error('Error al enviar el formulario:', error);
+        }
+      };
+    
+      if (loading) {
+        return <LoadingScreen />;
+      }
   return (
     <div className='cont'>
     <div className="registration-container">
-      {/* <h1>Whattodo</h1> */}
       <Link class="navbar-brand" to="/"><img src={logo} alt="descripción" className='logo' /></Link>
       <h3>Crea una Cuenta Nueva</h3>
       <div className="registration-container2">
-      <form onSubmit={handleSubmit} className="registrationForm">
+      <form onSubmit={handleSubmit} className="registrationForm" encType="multipart/form-data">
         <div className='formcolumn'>
         <div className='formflex'>
         <FontAwesomeIcon icon={faEnvelope} />
         <input
           type="email"
           name="email"
-          value={formData.email}
-          onChange={handleChange}
           placeholder="Email"
           required
         />
@@ -91,8 +86,6 @@ function RegistrationForm() {
         <input
           type="text"
           name="dni"
-          value={formData.idNumber}
-          onChange={handleChange}
           placeholder="DNI"
           required
         />
@@ -103,8 +96,7 @@ function RegistrationForm() {
         <input
           type="file"
           name="avatar"
-          value={formData.avatar}
-          onChange={handleChange}
+
         />
         </div>
         </div>
@@ -113,16 +105,12 @@ function RegistrationForm() {
         <input
           type="password"
           name="password"
-          value={formData.password}
-          onChange={handleChange}
           placeholder="Contraseña"
           required
         />
         <input
           type="password"
           name="confirmPassword"
-          value={formData.confirmPassword}
-          onChange={handleChange}
           placeholder="Confirme Contraseña"
           required
         />
@@ -140,11 +128,3 @@ function RegistrationForm() {
 
 export default RegistrationForm;
 
-
-<div class="cont" style="
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    height: 100vh;
-    margin-right: 5vw;
-"></div>

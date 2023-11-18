@@ -52,12 +52,16 @@ const userController = {
   },
 
   registerUser: async (req, res) => {
+    let avatar = 'defaultAvatar.jpg'; 
     try {
-      let avatar = 'defaultAvatar.jpg'; // Valor predeterminado para avatar
 
-      if (req.file && req.file.filename) {
-        // Si se proporciona un archivo, usa su nombre
-        avatar = req.file.filename;
+      if (req.body.password === req.body.password2){
+
+  
+        if (req.file && req.file.filename) {
+          // Si se proporciona un archivo, usa su nombre
+          avatar = req.file.filename;
+        }
       }
 
       const user = await User.create({

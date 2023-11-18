@@ -5,6 +5,7 @@
   
 
 h2{
-    display: flex;
-    margin-left: 2vw;
+  display: flex;
+  margin-left: 3vw;
+  font-size: 1.25rem;
 }

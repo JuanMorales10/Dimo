@@ -5,7 +5,7 @@ import { faHeart, faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './Card.css';
 
-function Card({ title, text, imageUrl, rating }) {
+function Card({id, nombre, descripcion, precio, rating, imageUrl }) {
     const [isFavorited, setIsFavorited] = useState(false);
 
     const toggleFavorite = () => {
@@ -20,7 +20,7 @@ function Card({ title, text, imageUrl, rating }) {
                     <img src={imageUrl || logo} className="card-img-top" alt="Card image" />
                     <div className="card-rating">
                     <FontAwesomeIcon icon={faStar} />
-                        <span>{rating}2.0</span>
+                        <span>{rating}</span>
                     </div>
                     <div className="card-favorite">
                     <button onClick={toggleFavorite} className="favorite-button">
@@ -30,10 +30,9 @@ function Card({ title, text, imageUrl, rating }) {
                 </div>
                 <div className="card-body">
                     <div>
-                    <h5 className="card-title">{title}Messi de los goles</h5>
-                    <p className="card-text">{text}nanan</p>
+                    <h5 className="card-title">{nombre}</h5>
                     </div>
-                    <Link to="#" className="card-link">Detalle</Link>
+                    <Link to={`/service/${id}/detail`} className="card-link">Detalle</Link>
                 </div>
             </div>
         </div>
@@ -41,6 +40,7 @@ function Card({ title, text, imageUrl, rating }) {
 }
 
 export default Card;
+
 
 
 

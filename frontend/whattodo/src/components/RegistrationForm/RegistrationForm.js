@@ -1,16 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope,faIdCard,faKey,faImage } from '@fortawesome/free-solid-svg-icons';
 import logo from '../../assets/img/logowhat.png'
 import './RegistrationForm';
+import { Link } from 'react-router-dom';
+import backgroundImage from '../../assets/img/pexels-roberto-nickson-2559941.jpg'
+import LoadingScreen from '../LoadingScreen/LoadingScreen';
 
 function RegistrationForm() {
+
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     dni: '',
     email: '',
     password: '',
     avatar: ''
   });
+
+
+
+  useEffect(() => {
+
+        const originalBackgroundImage = document.body.style.backgroundImage;
+        const originalBackgroundSize = document.body.style.backgroundSize;
+        const originalBackgroundPosition = document.body.style.backgroundPosition;
+        const originalBackgroundRepeat = document.body.style.backgroundRepeat;
+        const img = new Image();
+        
+        img.src = backgroundImage;
+        img.onload = () => {
+          // La imagen se ha cargado, cambia el fondo y oculta el spinner
+          document.body.style.backgroundImage = `url(${backgroundImage})`;
+          setLoading(false);
+        };
+    
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundRepeat = 'no-repeat';
+    
+        return () => {
+            document.body.style.backgroundImage = originalBackgroundImage;
+            document.body.style.backgroundSize = originalBackgroundSize;
+            document.body.style.backgroundPosition = originalBackgroundPosition;
+            document.body.style.backgroundRepeat = originalBackgroundRepeat;
+        };
+      }, []);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,11 +61,16 @@ function RegistrationForm() {
     console.log(formData);
   };
 
+  
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <div className='cont'>
     <div className="registration-container">
       {/* <h1>Whattodo</h1> */}
-      <a class="navbar-brand" href="#"><img src={logo} alt="descripción" className='logo' /></a>
+      <Link class="navbar-brand" to="/"><img src={logo} alt="descripción" className='logo' /></Link>
       <h3>Crea una Cuenta Nueva</h3>
       <div className="registration-container2">
       <form onSubmit={handleSubmit} className="registrationForm">

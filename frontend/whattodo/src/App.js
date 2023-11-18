@@ -1,37 +1,31 @@
 import './App.css';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import RegistrationFormHost from './components/RegistrationForm/RegistrationFormHost';
 import RegistrationForm from './components/RegistrationForm/RegistrationForm';
-import LoginForm from './components/LoginForm/LoginForm'
-import Carousel from 'react-multi-carousel';
-import {BrowserRouter} from 'react-router-dom'
-import NavBar from './components/NavBar/NavBar';
-import Card from './components/Card/Card';
-import Cards from './components/Cards/Cards';
+import LoginForm from './components/LoginForm/LoginForm';
 import Home from './pages/user/Home';
 import CreateServiceForm from './pages/service/CreateService';
-
-// Importar Leaflet CSS
-import 'leaflet/dist/leaflet.css';
-// Importar Leaflet y configurar las imágenes de los marcadores
-import L from 'leaflet';
-
-delete L.Icon.Default.prototype._getIconUrl;
-
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-});
-
+import RegisterOptions from './components/RegisterOptions/RegisterOptions';
+import { UserProvider } from './components/UserContext/UserContext'; 
 
 function App() {
   return (
-    <BrowserRouter>
-    <div className="App">
-   <CreateServiceForm />
-    </div>
-    </BrowserRouter>
+    <UserProvider> 
+      <Router>
+        <div className="App">
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route path="/register" component={RegisterOptions} />
+            <Route path="/login" component={LoginForm} />
+            <Route path="/create-service" component={CreateServiceForm} />
+            <Route path="/register-normal" component={RegistrationForm} />
+            <Route path="/register-host" component={RegistrationFormHost} />
+          </Switch>
+        </div>
+      </Router>
+    </UserProvider>
   );
 }
 
 export default App;
+

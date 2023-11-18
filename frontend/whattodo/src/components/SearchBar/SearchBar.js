@@ -10,7 +10,7 @@ const SearchBar = () => {
 
   return (
     <div className="search-bar-container">
-      <input type="text" placeholder="Search any location or experience" onClick={openModal} />
+      <input type="text" placeholder="Busca una Experiencia" className='searchprin' onClick={openModal} />
       {isModalOpen && <Modal closeModal={closeModal} />}
     </div>
   )

@@ -26,15 +26,14 @@ const userController = {
             maxAge: 1000 * 60 * 60 * 24, // Expira en un día
           });
         }
-        res.redirect("/");
+        res.json({ success: true, message: "Login exitoso.", user: user  });
       } else {
         // Contraseña no válida
-        return res.redirect(
-          `${req.baseUrl}/users/login?error=El correo electrónico o la contraseña son incorrectos`
-        );
+       return res.status(401).json({ success: false, message: "El correo electrónico o la contraseña son incorrectos" });
       }
     } catch (error) {
-      res.redirect(`${req.baseUrl}/users/login`);
+      console.log(error)
+      res.status(500).json({ success: false, message: "Error interno del servidor" });
     }
   },
   logOut: (req, res) => {
@@ -52,12 +51,16 @@ const userController = {
   },
 
   registerUser: async (req, res) => {
+    let avatar = 'defaultAvatar.jpg'; 
     try {
-      let avatar = 'defaultAvatar.jpg'; // Valor predeterminado para avatar
 
-      if (req.file && req.file.filename) {
-        // Si se proporciona un archivo, usa su nombre
-        avatar = req.file.filename;
+      if (req.body.password === req.body.password2){
+
+  
+        if (req.file && req.file.filename) {
+          // Si se proporciona un archivo, usa su nombre
+          avatar = req.file.filename;
+        }
       }
 
       const user = await User.create({
@@ -103,7 +106,7 @@ const userController = {
 
       req.session.user = user;
 
-      res.send(user)
+      // res.send(user)
 
       // return res.render('./main/index', { user: req.session.user });
 

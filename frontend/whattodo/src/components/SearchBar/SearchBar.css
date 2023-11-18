@@ -3,18 +3,23 @@
     padding: 1rem;
     flex-direction: column;
     align-items: center;
+    width: 60%;
 }
 
-.search-bar-container input[type="text"] {
-    width: 90%;
+.searchprin{
+    width: 100%;
     max-width: 462px;
     padding: 10px;
     border: 2px solid #ddd;
     border-radius: 20px;
     font-size: 1rem;
     outline: none;
-    height: 57px;
+    position: relative;
+    top: 84px;
+    height: 70px;
 }
+
+
 
 .search-bar-container input[type="text"]::placeholder {
     color: #aaa; 

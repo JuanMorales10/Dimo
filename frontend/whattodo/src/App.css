@@ -1,4 +1,6 @@
-
+*{
+	box-sizing: border-box;
+}
 @font-face {
 	font-family: Centra;
 	src: url('./assets/font/CentraNo2-Bold.ttf');
@@ -17,6 +19,7 @@
 
 body{
   font-family: 'Centra', sans-serif !important;
+  background-color: #E5E8EA;
 }
 
 .App {

@@ -1,48 +1,103 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect, useContext} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faEnvelope, faIdCard, faEye, faKey, faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faIdCard, faEye, faKey} from '@fortawesome/free-solid-svg-icons';
 import './LoginForm.css';
+import backgroundImage from '../../assets/img/pexels-roberto-nickson-2559941.jpg'
+import { Link } from 'react-router-dom';
+import logo from '../../assets/img/logowhat.png'
+import LoadingScreen from '../LoadingScreen/LoadingScreen';
+import { useHistory } from 'react-router-dom';
+import UserContext from '../UserContext/UserContext';
 
 function LoginForm() {
+    const history = useHistory();
+    const { login } = useContext(UserContext);
     const [formData, setFormData] = useState({
-        firstName: '',
         email: '',
         dni: '',
-        Password: '',
+        password: '',
     });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
-    };
+    const [loading, setLoading] = useState(true);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Aquí podrías enviar los datos a un servidor o manejar la lógica de validación
-        console.log(formData);
+    useEffect(() => {
+
+        const originalBackgroundImage = document.body.style.backgroundImage;
+        const originalBackgroundSize = document.body.style.backgroundSize;
+        const originalBackgroundPosition = document.body.style.backgroundPosition;
+        const originalBackgroundRepeat = document.body.style.backgroundRepeat;
+        const img = new Image();
+        
+        img.src = backgroundImage;
+        img.onload = () => {
+          // La imagen se ha cargado, cambia el fondo y oculta el spinner
+          document.body.style.backgroundImage = `url(${backgroundImage})`;
+          setLoading(false);
+        };
+    
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundRepeat = 'no-repeat';
+    
+        return () => {
+            document.body.style.backgroundImage = originalBackgroundImage;
+            document.body.style.backgroundSize = originalBackgroundSize;
+            document.body.style.backgroundPosition = originalBackgroundPosition;
+            document.body.style.backgroundRepeat = originalBackgroundRepeat;
+        };
+      }, []);
+
+
+      const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            [name]: value
+        }));
     };
+    
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+    
+        try {
+            const response = await fetch('http://localhost:3008/user/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            console.log(response)
+
+            const data = await response.json();
+
+            console.log(data.user)
+            login(data.user); 
+
+            history.push('/');  
+        } catch (error) {
+            console.error('Error al enviar el formulario:', error);
+        }
+    };
+    
+
+    if (loading) {
+        return <LoadingScreen />;
+      }
 
     return (
-        <html>
+        <div className='cont'>
             <div className="registration-container">
-                <h1>Whattodo</h1>
+            <Link class="navbar-brand" to="/"><img src={logo} alt="descripción" className='logo' /></Link>
                 <h3>LogIn</h3>
                 <div className="registration-container2">
                     <form onSubmit={handleSubmit} className="registrationForm">
-                        <div className='formflex'>
-                            <FontAwesomeIcon icon={faUser} />
-                            <input
-                                type="text"
-                                name="firstName"
-                                value={formData.firstName}
-                                onChange={handleChange}
-                                placeholder="Nombre"
-                                required
-                            />
-                        </div>
                         <div className='formcolumn'>
                             <div className='formflex'>
                                 <FontAwesomeIcon icon={faEnvelope} />
@@ -60,7 +115,7 @@ function LoginForm() {
                                 <input
                                     type="text"
                                     name="dni"
-                                    value={formData.idNumber}
+                                    value={formData.dni}
                                     onChange={handleChange}
                                     placeholder="DNI"
                                     required
@@ -89,7 +144,7 @@ function LoginForm() {
                     </form>
                 </div>
             </div>
-        </html>
+    </div>
     );
 }
 

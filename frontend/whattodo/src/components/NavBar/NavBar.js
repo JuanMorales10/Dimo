@@ -1,38 +1,55 @@
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faEnvelope, faIdCard, faEye, faKey, faLocationDot } from '@fortawesome/free-solid-svg-icons';
-import logo from '../../assets/img/logowhat.png'
-import { Link } from 'react-router-dom'; // Importa Link desde react-router-dom
+import React, { useState , useContext} from 'react';
+import { Link } from 'react-router-dom';
+import logo from '../../assets/img/logowhat.png';
 import './NavBar.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+import UserContext from '../UserContext/UserContext';
 
-function NavBar() {
+const NavBar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, logout } = useContext(UserContext);
+
   return (
     <header>
-      <nav className="navbar navbar-expand-lg bg-body-tertiary">
-        <div className="container-fluid nav">
-          <Link to="/" className="navbar-brand"><img src={logo} alt="descripción" className='logo' /></Link>
-          <button className="navbar-toggler but" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0 navbaa">
-              <li className="nav-item dropdown">
-                <Link to="/cuenta" className="nav-link dropdown-toggle cuenta" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Cuenta
-                </Link>
-                <ul className="dropdown-menu">
-                  <li><Link to="/action" className="dropdown-item">Action</Link></li>
-                  <li><Link to="/crea-experiencia" className="dropdown-item">Crea una Experiencia</Link></li>
-                  <li><hr className="dropdown-divider" /></li>
-                  <li><Link to="/something-else" className="dropdown-item">Something else here</Link></li>
-                </ul>
-              </li>
-            </ul>
-          </div>
+      <nav className="nav-var">
+        <div className="logo">
+          <Link to="/">
+            <img src={logo} alt="Logo Whattodo" id="logo" />
+          </Link>
         </div>
+        <div className="lista">
+          <ul className="lista-nav">
+            <li className="li-nav"><Link to="/nosotros">Nosotros</Link></li>
+            {!user && (
+              <>
+                <li className='li-nav'><Link to='/register' className="navbar-action register">Register</Link></li>
+                <li className='li-nav'><Link to='/login' className="navbar-action login">Log In</Link></li>
+              </>
+            )}
+          </ul>
+        </div>
+        {user && (
+          <div className="container-user">
+            <div className="top">
+              <img src={user.avatar} alt="" width="35px" height="35px" />
+              <p><Link to="/profile">{user.username}</Link></p>
+            </div>
+            <div className="bottom">
+              <button onClick={logout} className="logout">Log Out</button>
+            </div>
+          </div>
+        )}
+        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="burger-menu">
+          <FontAwesomeIcon icon={faBars} />
+        </button>
       </nav>
     </header>
   );
-}
+};
 
 export default NavBar;
+
+
+
+

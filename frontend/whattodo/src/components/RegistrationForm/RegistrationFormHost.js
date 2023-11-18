@@ -1,59 +1,92 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser,faEnvelope,faIdCard,faPhone,faKey,faLocationDot,faImage } from '@fortawesome/free-solid-svg-icons';
 import './RegistrationFormHost.css';
+import backgroundImage from '../../assets/img/pexels-roberto-nickson-2559941.jpg'
+import logo from '../../assets/img/logowhat.png'
+import LoadingScreen from '../LoadingScreen/LoadingScreen';
+import { Link } from 'react-router-dom';
 
 function RegistrationForm() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    dni: '',
-    telefono: '',
-    nacionalidad: 'Argentino',
-    password: '',
-    confirmPassword: '',
-    avatar: '',
-    ciudad:'',
-    direccion:''
-  });
+  const [loading, setLoading] = useState(true);
+ 
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
+  useEffect(() => {
 
-  const handleSubmit = (e) => {
+    const originalBackgroundImage = document.body.style.backgroundImage;
+    const originalBackgroundSize = document.body.style.backgroundSize;
+    const originalBackgroundPosition = document.body.style.backgroundPosition;
+    const originalBackgroundRepeat = document.body.style.backgroundRepeat;
+    const img = new Image();
+    
+    img.src = backgroundImage;
+    img.onload = () => {
+      // La imagen se ha cargado, cambia el fondo y oculta el spinner
+      document.body.style.backgroundImage = `url(${backgroundImage})`;
+      setLoading(false);
+    };
+
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundRepeat = 'no-repeat';
+
+    return () => {
+        document.body.style.backgroundImage = originalBackgroundImage;
+        document.body.style.backgroundSize = originalBackgroundSize;
+        document.body.style.backgroundPosition = originalBackgroundPosition;
+        document.body.style.backgroundRepeat = originalBackgroundRepeat;
+    };
+  }, []);
+
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aquí podrías enviar los datos a un servidor o manejar la lógica de validación
-    console.log(formData);
+
+    const formData = new FormData(e.target);
+
+    console.log(formData)
+
+    try {
+      const response = await fetch('http://localhost:3008/user/registerHost', {
+        method: 'POST',
+        body: formData, 
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log(data);
+        alert('Usuario creado correctamente');
+      } else {
+        alert('Error al crear el usuario');
+      }
+    } catch (error) {
+      console.error('Error al enviar el formulario:', error);
+    }
   };
+  
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
   return (
-    <div className='container' >
+    <div className='cont' >
     <div className="registration-container">
-      <h1>Whattodo</h1>
+    <Link class="navbar-brand" to="/"><img src={logo} alt="descripción" className='logo' /></Link>
       <h3>Crea una Cuenta Nueva de Anfitrion</h3>
       <div className="registration-container2">
-      <form onSubmit={handleSubmit} className="registrationForm">
+      <form onSubmit={handleSubmit} className="registrationForm" encType='multipart/form-data'>
         <div className='formflex'>
         <FontAwesomeIcon icon={faUser} />
         <input
           type="text"
-          name="firstName"
-          value={formData.firstName}
-          onChange={handleChange}
+          name="nombre"
           placeholder="Nombre"
           required
         />
         <input
           type="text"
-          name="lastName"
-          value={formData.lastName}
-          onChange={handleChange}
+          name="apellido"
           placeholder="Apellido"
           required
         />
@@ -64,8 +97,6 @@ function RegistrationForm() {
         <input
           type="email"
           name="email"
-          value={formData.email}
-          onChange={handleChange}
           placeholder="Email"
           required
         />
@@ -75,8 +106,6 @@ function RegistrationForm() {
         <input
           type="text"
           name="dni"
-          value={formData.dni}
-          onChange={handleChange}
           placeholder="DNI"
           required
         />
@@ -87,8 +116,6 @@ function RegistrationForm() {
         <input
           type="file"
           name="avatar"
-          value={formData.avatar}
-          onChange={handleChange}
         />
         </div>
         </div>
@@ -97,16 +124,12 @@ function RegistrationForm() {
         <input
           type="text"
           name="telefono"
-          value={formData.telefono}
-          onChange={handleChange}
           placeholder="Numero de Telefono"
           required
         />
         <input
           type="text"
           name="nacionalidad"
-          value={formData.nacionalidad}
-          onChange={handleChange}
           placeholder="Nacionalidad"
           required
         />
@@ -116,16 +139,12 @@ function RegistrationForm() {
         <input
           type="text"
           name="ciudad"
-          value={formData.ciudad}
-          onChange={handleChange}
           placeholder="Ciudad"
           required
         />
         <input
           type="text"
           name="direccion"
-          value={formData.direccion}
-          onChange={handleChange}
           placeholder="Direccion"
           required
         />
@@ -135,16 +154,12 @@ function RegistrationForm() {
         <input
           type="password"
           name="password"
-          value={formData.password}
-          onChange={handleChange}
           placeholder="Contraseña"
           required
         />
         <input
           type="password"
           name="confirmPassword"
-          value={formData.confirmPassword}
-          onChange={handleChange}
           placeholder="Confirme Contraseña"
           required
         />

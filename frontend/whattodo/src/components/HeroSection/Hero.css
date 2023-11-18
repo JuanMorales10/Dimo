@@ -1,0 +1,36 @@
+.hero {
+    position: relative;
+    width: 80%;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    border-radius: 20px;
+    height: 250px;
+  }
+  
+  .hero-title {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    position: relative;
+    top: 68px;
+  }
+  
+
+  .hero-cont{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin-top: 110px;
+  }
+
+  @media (max-width: 855px) {
+
+    .hero-title{
+        font-size: 2rem;
+    }
+    
+  }

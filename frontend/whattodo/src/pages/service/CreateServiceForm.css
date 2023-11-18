@@ -104,3 +104,12 @@
 .formflexcreat input{
     height: 2rem;
 }
+
+.image-preview {
+  width: 100px; /* Ancho de la vista previa */
+  height: 100px; /* Altura de la vista previa */
+  margin: 10px; /* Espacio alrededor de la imagen */
+  border-radius: 10px; /* Bordes redondeados */
+  object-fit: cover; /* Asegura que la imagen cubra todo el espacio asignado */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave para dar profundidad */
+}

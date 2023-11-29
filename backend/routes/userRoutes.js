@@ -10,6 +10,7 @@ router.get("/registerUser",userController.getRegisterUser);
 router.get("/registerHost",userController.getRegisterHost);
 router.get('/profile',userController.getProfile);
 router.get('/services', userController.getServices);
+router.get('/detail/:dni', userController.getUserDetail);
 
 //@Post
 router.post('/registerUser', avatar.single("avatar"),userController.registerUser);

@@ -8,7 +8,7 @@ router.get('/createService', serviceController.getCreateService);
 router.get('/:id/detail', serviceController.getServiceDetails);
 router.get('/filter', serviceController.filterServices); 
 router.get('/allServices', serviceController.getAllServices);
-router.get('/userServices', serviceController.getUserServices);
+router.get('/userServices/:id', serviceController.getUserServices);
 router.get('/popularServices', serviceController.getPopularServices);
 router.get('/availableServices', serviceController.getAvailableServices);
 router.get('/searchServicesByName', serviceController.searchServicesByName);

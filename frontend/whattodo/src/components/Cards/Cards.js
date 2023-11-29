@@ -19,7 +19,7 @@ function Cards() {
           throw new Error(`HTTP error! status: ${servicesResponse.status}`);
         }
         const serviceResult = await servicesResponse.json();
-        console.log(serviceResult)
+        
         setData(serviceResult);
       } catch (error) {
         console.error("Error al realizar la solicitud:", error);
@@ -61,20 +61,7 @@ function Cards() {
     <div className='card-list'>
       <h2>Ultimas Experiencias Cargadas</h2>
       <Carousel responsive={responsive} infinite={true} className="owl-carousel owl-theme skill-slider">
-      {data.map((service)=>{
-        console.log(service)
-        return <Card key={service.id} {...service} />
-      })}
-      </Carousel>
-      <Carousel responsive={responsive} infinite={true} className="owl-carousel owl-theme skill-slider">
-      {data.map((service)=>{
-        console.log(service)
-        return <Card key={service.id} {...service} />
-      })}
-      </Carousel>
-      <Carousel responsive={responsive} infinite={true} className="owl-carousel owl-theme skill-slider">
-      {data.map((service)=>{
-        console.log(service)
+      {data.map((service)=>{console.log(service)
         return <Card key={service.id} {...service} />
       })}
       </Carousel>

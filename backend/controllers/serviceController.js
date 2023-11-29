@@ -22,7 +22,18 @@ const serviceController = {
           servicio_id: id,
         },
       });
-      return res.status(200).json(service);
+
+      const images = await ServiceImage.findAll({
+        where: {
+          service_id: id
+        }
+      })
+
+      return res.status(200).json({
+        service,
+        comments,
+        images
+      });
     } catch (error) {
       return res.status(500).json({ error: 'Error al obtener los detalles del servicio' });
     }
@@ -30,17 +41,26 @@ const serviceController = {
 
   getUserServices: async (req, res) => {
     try {
-      const userId = req.session.user.id;
+      const userId = req.params.id 
       const userServices = await Service.findAll({
         where: {
-          usuario_dni: userId,
+          usuario_dni: userId, 
         },
       });
-      return res.render('user/services', { services: userServices });
+      
+      return res.json({
+        success: true,
+        services: userServices,
+      });
     } catch (error) {
-      return res.status(500).send('Error interno del servidor');
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor',
+      });
     }
   },
+  
 
   getCreateService: async (req, res) => {
     try {

@@ -7,6 +7,8 @@ import Home from './pages/user/Home';
 import CreateServiceForm from './pages/service/CreateService';
 import RegisterOptions from './components/RegisterOptions/RegisterOptions';
 import { UserProvider } from './components/UserContext/UserContext'; 
+import ServiceDetail from './components/ServiceDetail/ServiceDetail';
+import UserProfile from './components/UserProfile/UserProfile';
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
             <Route path="/create-service" component={CreateServiceForm} />
             <Route path="/register-normal" component={RegistrationForm} />
             <Route path="/register-host" component={RegistrationFormHost} />
+            <Route path='/service/:id/detail' component={ServiceDetail} />
+            <Route path='/user/profile' component={UserProfile} />
           </Switch>
         </div>
       </Router>

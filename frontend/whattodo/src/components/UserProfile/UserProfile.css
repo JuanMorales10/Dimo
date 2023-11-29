@@ -1,0 +1,88 @@
+.user-profile {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    color: #333;
+    margin-top: 110px;
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .profile-picture {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 20px;
+  }
+  
+  .user-details {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 8em;
+  }
+  
+  .user-details h1 {
+    margin: 0;
+    font-size: 2em;
+  }
+  
+  .user-location {
+    color: #666;
+  }
+  
+  .user-stats {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+  }
+  
+  .reviews, .sold-items {
+    font-size: 0.9em;
+    color: #999;
+  }
+
+  .buttons-profile{
+    display: flex;
+    padding: 10px;
+  }
+
+  .buttons-profile button{
+    margin: 10px;
+  }
+  
+  .edit-profile-btn {
+    background-color: #008cba;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 2em;
+  }
+  
+  .user-bio {
+    margin-bottom: 20px;
+  }
+  
+  .listed-items {
+    margin-bottom: 20px;
+  }
+  
+  .items-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+  }
+  
+  .error-message, .loading {
+    color: red;
+    text-align: center;
+  }
+  

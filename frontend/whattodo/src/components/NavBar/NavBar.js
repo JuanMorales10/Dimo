@@ -4,11 +4,13 @@ import logo from '../../assets/img/logowhat.png';
 import './NavBar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
-import UserContext from '../UserContext/UserContext';
+import {UserContext} from '../UserContext/UserContext';
 
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, logout } = useContext(UserContext);
+
+  console.log(user)
 
   return (
     <header>
@@ -32,8 +34,8 @@ const NavBar = () => {
         {user && (
           <div className="container-user">
             <div className="top">
-              <img src={user.avatar} alt="" width="35px" height="35px" />
-              <p><Link to="/profile">{user.username}</Link></p>
+            <img src={`http://localhost:3008/img/avatar/${user.avatar}`}  width="35px" height="35px" />
+              <p><Link to="/user/profile">{user.nombre}</Link></p>
             </div>
             <div className="bottom">
               <button onClick={logout} className="logout">Log Out</button>

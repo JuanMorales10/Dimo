@@ -9,27 +9,34 @@ const userController = {
           email: req.body.email,
         },
       });
-  
+
       if (!user) {
         return res.redirect(
           `${req.baseUrl}/users/login?error=El correo electrónico o la contraseña son incorrectos`
         );
       }
-  
+
       const validPw = await bcrypt.compare(req.body.password, user.dataValues.password);
-  
+
       if (validPw) {
-        // Contraseña válida
+
+        req.session.user = {
+          id: user.id,
+          email: user.email,
+        };
+
+        
+
         if (req.body["keep-session"] === "on") {
           // Establecer la cookie de sesión si es necesario
           res.cookie("email", user.dataValues.email, {
             maxAge: 1000 * 60 * 60 * 24, // Expira en un día
           });
         }
-        res.json({ success: true, message: "Login exitoso.", user: user  });
+        res.json({ success: true, message: "Login exitoso.", user: user });
       } else {
         // Contraseña no válida
-       return res.status(401).json({ success: false, message: "El correo electrónico o la contraseña son incorrectos" });
+        return res.status(401).json({ success: false, message: "El correo electrónico o la contraseña son incorrectos" });
       }
     } catch (error) {
       console.log(error)
@@ -37,26 +44,28 @@ const userController = {
     }
   },
   logOut: (req, res) => {
-    // Elimina la propiedad 'user' de la sesión
-    delete req.session.user
-
-    if (req.cookies.email) {
-      // Elimina la cookie 'email'
-      res.clearCookie('email');
-
-      res.redirect('/'); // Redirige a la página principal u otra ubicación
-    } else {
-      res.redirect('/'); // Redirige a la página principal si no hay cookie
-    }
+    req.session.destroy(err => {
+      if (err) {
+        console.error('Error al intentar destruir la sesión:', err);
+        return res.status(500).json({ success: false, message: 'Error interno del servidor al cerrar sesión' });
+      }
+  
+      if (req.cookies.email) {
+        res.clearCookie('email');
+      }
+ 
+      res.json({ success: true, message: 'Sesión cerrada correctamente' });
+    });
   },
+  
 
   registerUser: async (req, res) => {
-    let avatar = 'defaultAvatar.jpg'; 
+    let avatar = 'defaultAvatar.jpg';
     try {
 
-      if (req.body.password === req.body.password2){
+      if (req.body.password === req.body.password2) {
 
-  
+
         if (req.file && req.file.filename) {
           // Si se proporciona un archivo, usa su nombre
           avatar = req.file.filename;
@@ -70,22 +79,20 @@ const userController = {
         type: "Personal",
         avatar: avatar // Asigna el valor predeterminado o el nombre de archivo
       });
-      console.log(user)
+
       req.session.user = user;
-      // res.send(user)
-      // return res.render('./main/index', { user: req.session.user });
+      res.json({ success: true, message: "Usuario registrado" });
     } catch (error) {
       console.log(error);
-      // return res.redirect("/users/register?error=" + error);
+      return res.redirect("/user/registerUser?error=" + error);
     }
   },
   registerHost: async (req, res) => {
 
     try {
-      let avatar = 'defaultAvatar.jpg'; // Valor predeterminado para avatar
+      let avatar = 'defaultAvatar.jpg'; 
 
       if (req.file && req.file.filename) {
-        // Si se proporciona un archivo, usa su nombre
         avatar = req.file.filename;
       }
 
@@ -99,21 +106,17 @@ const userController = {
         ciudad: req.body.ciudad || null,
         direccion: req.body.direccion || null,
         type: "Host",
-        avatar: avatar // Asigna el valor predeterminado o el nombre de archivo
+        avatar: avatar 
       });
 
       console.log(user)
 
       req.session.user = user;
-
-      // res.send(user)
-
-      // return res.render('./main/index', { user: req.session.user });
-
+      res.json({ success: true, message: "Usuario registrado" });
     } catch (error) {
 
       console.log(error);
-      return res.redirect("/users/register?error=" + error);
+      return res.redirect("/user/registerUser?error=" + error);
 
     }
   }
@@ -157,7 +160,7 @@ const userController = {
   deleteAccount: async (req, res) => {
     try {
       await User.destroy({
-        where:{
+        where: {
           email: req.body.email
         }
       })
@@ -179,8 +182,76 @@ const userController = {
 
     // res.render("./users/register");
   },
-  getProfile: (req, res) => {
-    // res.render('./users/profile', {  user: req.session.user })
+  getUserDetail: async (req, res) => {
+    try {
+
+      const userDni = req.params.dni || req.query.dni;
+
+      if (!userDni) {
+        return res.status(400).json({ success: false, message: "Se requiere un DNI para la búsqueda." });
+      }
+
+      const user = await User.findOne({
+        where: {
+          id: userDni
+        }
+      });
+
+      if (user) {
+
+        const userDetails = {
+          id: user.id,
+          email: user.email,
+          nombre: user.nombre,
+          apellido: user.apellido,
+          telefono: user.telefono,
+          ciudad: user.ciudad,
+          direccion: user.direccion,
+          type: user.type,
+          avatar: user.avatar
+        };
+
+        res.json({ success: true, userDetails });
+      } else {
+        res.status(404).json({ success: false, message: "No se encontró un usuario con ese DNI." });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: "Error interno del servidor al obtener los detalles del usuario." });
+    }
+  },
+  getProfile: async (req, res) => {
+    try {
+
+      const userId = req.session.user && req.session.user.id;
+
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "Usuario no autenticado." });
+      }
+
+      const user = await User.findByPk(userId);
+
+      if (user) {
+        const userProfile = {
+          id: user.id,
+          email: user.email,
+          nombre: user.nombre,
+          apellido: user.apellido,
+          telefono: user.telefono,
+          ciudad: user.ciudad,
+          direccion: user.direccion,
+          type: user.type,
+          avatar: user.avatar
+        };
+
+        res.json({ success: true, profile: userProfile });
+      } else {
+        res.status(404).json({ success: false, message: "Perfil de usuario no encontrado." });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: "Error interno del servidor al obtener el perfil." });
+    }
   },
   getServices: (req, res) => {
 

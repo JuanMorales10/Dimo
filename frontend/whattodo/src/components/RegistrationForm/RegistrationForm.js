@@ -116,7 +116,7 @@ function RegistrationForm() {
         />
         </div>
         <div className='formflex'>
-        <button type="submit" className='butan'>Crear Cuenta</button>
+        <button type="submit" className='butan' >Crear Cuenta</button>
         </div>
       </form>
     </div>

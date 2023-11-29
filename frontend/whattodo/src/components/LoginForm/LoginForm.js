@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import logo from '../../assets/img/logowhat.png'
 import LoadingScreen from '../LoadingScreen/LoadingScreen';
 import { useHistory } from 'react-router-dom';
-import UserContext from '../UserContext/UserContext';
+import {UserContext} from '../UserContext/UserContext';
 
 function LoginForm() {
     const history = useHistory();
@@ -73,7 +73,6 @@ function LoginForm() {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            console.log(response)
 
             const data = await response.json();
 

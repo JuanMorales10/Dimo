@@ -9,18 +9,24 @@ const userRouter = require('./routes/userRoutes')
 const serviceRouter = require('./routes/serviceRoutes')
 const authCookie = require('./middlewares/authenticateUserWithCookie')
 
-// Configuración del motor de vistas y archivos estáticos
-app.use(express.static("public"));
-app.set("view engine", "ejs");
+const corsOptions = {
+    origin: 'http://localhost:3000', 
+    credentials: true, 
+  };
 
 // Configuración de middlewares en el orden correcto
-app.use(express.urlencoded({ extended: true }));
-app.use(cors())
+app.use(express.urlencoded({ extended: true }));  
+app.use(cors(corsOptions))
 app.use(express.json());
 app.use(methodOverride('_method'));
 
 //Configuracion de Session
-app.use(session({secret: 'Whattodo', resave: false, saveUninitialized: true}));
+app.use(session({
+    secret: 'Whattodo',
+    resave: false,
+    saveUninitialized: true,
+  }));
+  
 
 //Configuracion de Cookie Parser
 app.use(cookieParser())
@@ -36,6 +42,10 @@ app.use('/service', serviceRouter)
 app.get('/', (req, res) => {
     res.render('home')
 })
+
+// Configuración del motor de vistas y archivos estáticos
+app.use(express.static("public"));
+app.set("view engine", "ejs");
 
 const PORT = 3008;
 

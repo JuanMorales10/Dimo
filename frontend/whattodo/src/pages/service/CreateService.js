@@ -11,8 +11,10 @@ import NavBar from '../../components/NavBar/NavBar';
 import Footer from '../../components/Footer/Footer';
 
 function CreateServiceForm() {
+    const userFromStorage = JSON.parse(localStorage.getItem('user'));
+
     const [formData, setFormData] = useState({
-        usuario_dni: 24628000,
+        usuario_dni: userFromStorage ? userFromStorage.id : '',
         nombre: '',
         descripcion: '',
         categoria_id : '',
@@ -69,10 +71,10 @@ function CreateServiceForm() {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             console.log(response.data);
-            // ... manejar la respuesta
+          
         } catch (error) {
             console.error('Error al enviar el formulario:', error);
-            // ... manejar los errores
+        
         }
     };
 
@@ -81,6 +83,7 @@ function CreateServiceForm() {
         <NavBar />
         <form onSubmit={handleSubmit} className="create-service-form">
             <h2>Experience</h2>
+            <input type='hidden' value={formData.usuario_dni} name='usuario_dni'/>
 
             {/* Paso 1: Categoría */}
             <div className="form-step">

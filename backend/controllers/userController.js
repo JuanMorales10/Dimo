@@ -1,46 +1,43 @@
 const { User } = require('../database/models');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const userController = {
   login: async (req, res) => {
+
+  
     try {
       const user = await User.findOne({
         where: {
           email: req.body.email,
         },
       });
-
+  
       if (!user) {
-        return res.redirect(
-          `${req.baseUrl}/users/login?error=El correo electrónico o la contraseña son incorrectos`
-        );
+        return res.status(401).json({ message: "El correo electrónico o la contraseña son incorrectos" });
       }
-
+  
       const validPw = await bcrypt.compare(req.body.password, user.dataValues.password);
-
+  
       if (validPw) {
+        // Crear un token JWT
+        const token = jwt.sign(
+          { userId: user.id, email: user.email },
+          process.env.JWT_SECRET, // Usa una variable de entorno para tu secreto
+          { expiresIn: '24h' } // Configura la expiración del token
+        );
 
-        req.session.user = {
-          id: user.id,
-          email: user.email,
-        };
-
-        
-
-        if (req.body["keep-session"] === "on") {
-          // Establecer la cookie de sesión si es necesario
-          res.cookie("email", user.dataValues.email, {
-            maxAge: 1000 * 60 * 60 * 24, // Expira en un día
-          });
-        }
-        res.json({ success: true, message: "Login exitoso.", user: user });
+        console.log(token)
+  
+        // Enviar el token al cliente
+        res.json({ success: true, message: "Login exitoso.", token: token });
       } else {
         // Contraseña no válida
-        return res.status(401).json({ success: false, message: "El correo electrónico o la contraseña son incorrectos" });
+        return res.status(401).json({ message: "El correo electrónico o la contraseña son incorrectos" });
       }
     } catch (error) {
-      console.log(error)
-      res.status(500).json({ success: false, message: "Error interno del servidor" });
+      console.log(error);
+      res.status(500).json({ message: "Error interno del servidor" });
     }
   },
   logOut: (req, res) => {
@@ -123,40 +120,39 @@ const userController = {
   ,
   updateProfile: async (req, res) => {
     try {
+        const id = req.body.id;
 
-      const updatedProfile = {
-        ...req.body,
-      };
-
-
-      if (req.file) {
-        updatedProfile.avatar = req.file.filename;
-      }
-
-      if (updatedProfile.avatar === '') {
-        let imagen = await User.findOne({
-          where: {
-            id: updatedProfile.dni
-          }
-        });
-
-        updatedProfile.avatar = imagen.avatar;
-      }
-
-      let updatedUser = await User.update(updatedProfile, {
-        where: {
-          id: updatedProfile.dni
+        const user = await User.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
         }
-      })
-      console.log(updatedUser)
 
-      // res.redirect('/users/profile')
+        if (req.body.currentPassword === user.password) {
+        }
+        const updatedProfile = { ...req.body };
 
+        console.log('updated' + updatedProfile);
+
+        if (req.file) {
+            updatedProfile.avatar = req.file.filename;
+        }
+
+        if (!updatedProfile.avatar) {
+            updatedProfile.avatar = user.avatar;
+        }
+
+        let updatedUser = await User.update(updatedProfile, {
+            where: { id: id }
+        });
+        console.log(updatedUser);
+
+        res.json({ message: "Perfil actualizado correctamente" });
     } catch (error) {
-      console.log(error)
+        console.log(error);
+        res.status(500).json({ message: "Error al actualizar el perfil" });
     }
+},
 
-  },
   deleteAccount: async (req, res) => {
     try {
       await User.destroy({
@@ -220,39 +216,42 @@ const userController = {
       res.status(500).json({ success: false, message: "Error interno del servidor al obtener los detalles del usuario." });
     }
   },
-  getProfile: async (req, res) => {
+   getProfile : async (req, res) => {
     try {
+        // Verificar el token JWT
+        const token = req.headers.authorization.split(' ')[1]; // Obtener el token del header
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET); // Verificar el token
 
-      const userId = req.session.user && req.session.user.id;
+        const userId = decodedToken.userId; // Extraer el userId del token decodificado
 
-      if (!userId) {
-        return res.status(401).json({ success: false, message: "Usuario no autenticado." });
-      }
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "Usuario no autenticado." });
+        }
 
-      const user = await User.findByPk(userId);
+        const user = await User.findByPk(userId);
 
-      if (user) {
-        const userProfile = {
-          id: user.id,
-          email: user.email,
-          nombre: user.nombre,
-          apellido: user.apellido,
-          telefono: user.telefono,
-          ciudad: user.ciudad,
-          direccion: user.direccion,
-          type: user.type,
-          avatar: user.avatar
-        };
+        if (user) {
+            const userProfile = {
+                id: user.id,
+                email: user.email,
+                nombre: user.nombre,
+                apellido: user.apellido,
+                telefono: user.telefono,
+                ciudad: user.ciudad,
+                direccion: user.direccion,
+                type: user.type,
+                avatar: user.avatar
+            };
 
-        res.json({ success: true, profile: userProfile });
-      } else {
-        res.status(404).json({ success: false, message: "Perfil de usuario no encontrado." });
-      }
+            res.json({ success: true, profile: userProfile });
+        } else {
+            res.status(404).json({ success: false, message: "Perfil de usuario no encontrado." });
+        }
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, message: "Error interno del servidor al obtener el perfil." });
+        console.error(error);
+        res.status(500).json({ success: false, message: "Error interno del servidor al obtener el perfil." });
     }
-  },
+},
   getServices: (req, res) => {
 
     // res.render("./users/register");

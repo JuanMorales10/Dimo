@@ -9,6 +9,10 @@ import RegisterOptions from './components/RegisterOptions/RegisterOptions';
 import { UserProvider } from './components/UserContext/UserContext'; 
 import ServiceDetail from './components/ServiceDetail/ServiceDetail';
 import UserProfile from './components/UserProfile/UserProfile';
+import EditUserProfile from './pages/user/EditUserProfile/EditUserProfile';
+import NotFoundPage from './pages/user/NotFound/NotFoundPage';
+
+
 
 function App() {
   return (
@@ -17,13 +21,15 @@ function App() {
         <div className="App">
           <Switch>
             <Route exact path="/" component={Home} />
-            <Route path="/register" component={RegisterOptions} />
-            <Route path="/login" component={LoginForm} />
-            <Route path="/create-service" component={CreateServiceForm} />
-            <Route path="/register-normal" component={RegistrationForm} />
-            <Route path="/register-host" component={RegistrationFormHost} />
-            <Route path='/service/:id/detail' component={ServiceDetail} />
-            <Route path='/user/profile' component={UserProfile} />
+            <Route exact path="/register" component={RegisterOptions} />
+            <Route exact path="/login" component={LoginForm} />
+            <Route exact path="/create-service" component={CreateServiceForm} />
+            <Route exact path="/register-normal" component={RegistrationForm} />
+            <Route exact path="/register-host" component={RegistrationFormHost} />
+            <Route exact path='/service/:id/detail' component={ServiceDetail} />
+            <Route exact path='/user/profile' component={UserProfile} />
+            <Route exact path='/user/editUser' component={EditUserProfile} />
+            <Route component={NotFoundPage} />
           </Switch>
         </div>
       </Router>

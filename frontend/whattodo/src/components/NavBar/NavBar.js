@@ -1,16 +1,41 @@
-import React, { useState , useContext} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../assets/img/logowhat.png';
 import './NavBar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
-import {UserContext} from '../UserContext/UserContext';
+import { UserContext } from '../UserContext/UserContext';
+import { useHistory } from 'react-router-dom';
 
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, logout } = useContext(UserContext);
+  const [user, setUser] = useState(null); // Estado para almacenar la info del usuario
+  const { token, logout, fetchUserProfile } = useContext(UserContext);
+  const history = useHistory();
 
-  console.log(user)
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      if (token) {
+        try {
+          const user = await fetchUserProfile();
+          if (user) {
+            setUser(user.profile);
+          }
+        } catch (error) {
+          console.error('Error al cargar perfil de usuario:', error);
+        }
+      } else {
+        setUser(null);
+      }
+    };
+    loadUserProfile();
+  }, [token, fetchUserProfile]);
+
+  const handleLogout = () => {
+    logout().then(() => {
+        history.push('/'); 
+    });
+};
 
   return (
     <header>
@@ -23,7 +48,7 @@ const NavBar = () => {
         <div className="lista">
           <ul className="lista-nav">
             <li className="li-nav"><Link to="/nosotros">Nosotros</Link></li>
-            {!user && (
+            {!token && (
               <>
                 <li className='li-nav'><Link to='/register' className="navbar-action register">Register</Link></li>
                 <li className='li-nav'><Link to='/login' className="navbar-action login">Log In</Link></li>
@@ -34,11 +59,11 @@ const NavBar = () => {
         {user && (
           <div className="container-user">
             <div className="top">
-            <img src={`http://localhost:3008/img/avatar/${user.avatar}`}  width="35px" height="35px" />
+              <img src={`http://localhost:3008/img/avatar/${user.avatar}`}  width="35px" height="35px" />
               <p><Link to="/user/profile">{user.nombre}</Link></p>
             </div>
             <div className="bottom">
-              <button onClick={logout} className="logout">Log Out</button>
+              <button onClick={handleLogout} className="logout">Log Out</button>
             </div>
           </div>
         )}
@@ -51,7 +76,4 @@ const NavBar = () => {
 };
 
 export default NavBar;
-
-
-
 

@@ -11,6 +11,7 @@ import ServiceDetail from './components/ServiceDetail/ServiceDetail';
 import UserProfile from './components/UserProfile/UserProfile';
 import NotFoundPage from './pages/user/NotFound/NotFoundPage';
 import EditUserProfile from './pages/user/EditUserProfile/EditUserProfile';
+import AboutUs from './components/AboutUs/AboutUs';
 
 
 
@@ -20,7 +21,8 @@ function App() {
       <Router>
         <div className="App">
           <Switch>
-            <Route exact path="/" component={Home} />
+            <AboutUs />
+            {/* <Route exact path="/" component={Home} />
             <Route exact path="/register" component={RegisterOptions} />
             <Route exact path="/login" component={LoginForm} />
             <Route exact path="/create-service" component={CreateServiceForm} />
@@ -29,7 +31,7 @@ function App() {
             <Route exact path='/service/:id/detail' component={ServiceDetail} />
             <Route exact path='/user/profile' component={UserProfile} />
             <Route exact path='/user/editUser' component={EditUserProfile} />
-            <Route component={NotFoundPage} />
+            <Route component={NotFoundPage} /> */}
           </Switch>
         </div>
       </Router>

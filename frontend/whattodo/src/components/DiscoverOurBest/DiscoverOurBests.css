@@ -1,0 +1,21 @@
+.discover-our-bests {
+    padding: 50px 0;
+    background-color: #f5f5f5; 
+    text-align: center;
+}
+
+.discover-our-bests .container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 15px;
+}
+
+.discover-our-bests h2 {
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.discover-our-bests p {
+    margin-bottom: 30px;
+    color: #666;
+}

@@ -1,0 +1,40 @@
+.just-in-section {
+    background-size: cover;
+    background-position: center;
+    text-align: center;
+    padding: 50px 0;
+  }
+  
+  .just-in-section h2 {
+    color: #fff;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+  }
+  
+  .just-in-section p {
+    color: #fff;
+    font-size: 1.5em;
+  }
+  
+
+.container h2{
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}  
+
+.card-container-sec{
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 12vh;
+}
+
+.justIn{
+position: relative;
+top: 60px;
+}
+
+.recien-llegados-seccion{
+    height: 600px;
+}

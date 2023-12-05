@@ -3,7 +3,14 @@ const { User, Service, ServiceImage, Category, Comment, Region } = require('../d
 const serviceController = {
   getAllServices: async (req, res) => {
     try {
-      const services = await Service.findAll();
+     
+      const services = await Service.findAll({
+        include: [{
+          model: ServiceImage,
+          as: 'images', 
+          attributes: ['url'] 
+        }]
+      });
       return res.status(200).json(services);
     } catch (error) {
       return res.status(500).json({ error: 'Error al obtener los servicios' });
@@ -227,6 +234,11 @@ const serviceController = {
       const services = await Service.findAll({
         order: [['rating', 'DESC']],
         limit: 10,
+        include: [{
+          model: ServiceImage,
+          as: 'images', 
+          attributes: ['url'] 
+        }]
       });
       return res.status(200).json(services);
     } catch (error) {

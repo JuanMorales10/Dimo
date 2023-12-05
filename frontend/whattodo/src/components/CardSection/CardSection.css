@@ -1,0 +1,53 @@
+/* Card.css */
+.card {
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 10px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .card-image {
+    height: 200px; 
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .card-content {
+    padding: 15px;
+  }
+  
+  .card-title {
+    font-size: 0.9em;
+    margin-bottom: 10px;
+  }
+  
+  .card-description {
+    font-size: 1em;
+    color: #666;
+    margin-bottom: 15px;
+  }
+  
+  .card-button {
+    background-color: #4CAF50; 
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 0 0 20px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .card-button:hover {
+    background-color: #45a049; /* Un tono más oscuro para el efecto hover */
+  }
+  
+  @media (max-width: 600px) {
+    .card {
+      width: 100%; /* Las tarjetas ocupan todo el ancho en móviles */
+    }
+  }
+  

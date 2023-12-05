@@ -96,7 +96,10 @@ const serviceController = {
             precio: req.body.precio,
             duracion: req.body.duracion || null,
             disponibilidad: disponibilidad || null,
+            direccion: req.body.direccion
         };
+
+      
 
         const images = req.files;
 

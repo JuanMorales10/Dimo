@@ -18,6 +18,7 @@ const NavBar = () => {
       if (token) {
         try {
           const user = await fetchUserProfile();
+          console.log(user)
           if (user) {
             setUser(user.profile);
           }
@@ -54,8 +55,6 @@ const NavBar = () => {
                 <li className='li-nav'><Link to='/login' className="navbar-action login">Log In</Link></li>
               </>
             )}
-          </ul>
-        </div>
         {user && (
           <div className="container-user">
             <div className="top">
@@ -67,6 +66,8 @@ const NavBar = () => {
             </div>
           </div>
         )}
+          </ul>
+        </div>
         <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="burger-menu">
           <FontAwesomeIcon icon={faBars} />
         </button>

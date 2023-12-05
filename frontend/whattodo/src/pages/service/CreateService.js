@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { UserContext } from '../../components/UserContext/UserContext';
 import axios from 'axios';
 import LocationPicker from '../../components/LocationPicker/LocationPicker';
 import gast from '../../assets/img/gastonomia.jpg';
@@ -11,24 +12,33 @@ import NavBar from '../../components/NavBar/NavBar';
 import Footer from '../../components/Footer/Footer';
 
 function CreateServiceForm() {
-    const userFromStorage = JSON.parse(localStorage.getItem('user'));
-
+    const { token, fetchUserProfile } = useContext(UserContext);
+    const [userId, setUserId] = useState(null);
     const [formData, setFormData] = useState({
-        usuario_dni: userFromStorage ? userFromStorage.id : '',
         nombre: '',
         descripcion: '',
-        categoria_id : '',
+        categoria_id: '',
         capacidad: '',
         id_region: 1,
         atp: '',
         rating: 4,
         precio: '',
         duracion: null,
-        disponibilidad: null
+        disponibilidad: null,
+        direccion: ''
     });
     const [selectedFiles, setSelectedFiles] = useState([]);
-    const [selectedLocation, setSelectedLocation] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState('');
+
+    useEffect(() => {
+        const loadUserProfile = async () => {
+            const profileData = await fetchUserProfile();
+            if (profileData && profileData.profile) {
+                setUserId(profileData.profile.id);
+            }
+        };
+        loadUserProfile();
+    }, [fetchUserProfile]);
 
     const handleImageChange = (event) => {
         setSelectedFiles([...event.target.files]);
@@ -39,6 +49,10 @@ function CreateServiceForm() {
         setFormData({ ...formData, [name]: value });
     };
 
+    const handleLocationSelect = (locationName, lat, lng) => {
+        setFormData({ ...formData, direccion: locationName, latitud: lat, longitud: lng });
+    };
+
     const handleCategorySelect = (category) => {
         setFormData({ ...formData, categoria_id: category });
     };
@@ -47,120 +61,127 @@ function CreateServiceForm() {
         event.preventDefault();
 
         const submitData = new FormData();
+        submitData.append('usuario_dni', userId);
         Object.keys(formData).forEach(key => {
             submitData.append(key, formData[key]);
         });
-
-        submitData.append('categoria', selectedCategory); 
 
         selectedFiles.forEach(file => {
             submitData.append('image', file);
         });
 
-        console.log(selectedLocation)
-
-        if (selectedLocation) {
-            submitData.append('latitude', selectedLocation.lat);
-            submitData.append('longitude', selectedLocation.lng);
-        }
-
-
-
         try {
             const response = await axios.post('http://localhost:3008/service/createService', submitData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                }
             });
             console.log(response.data);
-          
+            // Manejar respuesta...
         } catch (error) {
             console.error('Error al enviar el formulario:', error);
-        
+            // Manejo de errores...
         }
     };
 
     return (
         <>
-        <NavBar />
-        <form onSubmit={handleSubmit} className="create-service-form">
-            <h2>Experience</h2>
-            <input type='hidden' value={formData.usuario_dni} name='usuario_dni'/>
+            <NavBar />
+            <form onSubmit={handleSubmit} className="create-service-form">
+            <div className='outside-cont'>
+                <h2>Crear Experiencia</h2>
+                <input type='hidden' value={formData.usuario_dni} name='usuario_dni' />
 
-            {/* Paso 1: Categoría */}
-            <div className="form-step">
-                <h3>Paso 1</h3>
-                <h5>
-                    Elije la Categoria de tu Experiencia
-                </h5>
-                <div className="categories-container">
-                    <div>
-                    <button type='button' className="category-button" onClick={() => handleCategorySelect('2')} name='categoria_id'>
-                        <img src={gast} alt="Gastronomy" />
-                    </button>
-                    Gastronomia
+                {/* Paso 1: Categoría */}
+                <div className='inside-1'>    
+                <div className="form-step">
+                    <h3>Paso 1</h3>
+                    <h5>
+                        Elije la Categoria de tu Experiencia
+                    </h5>
+                    <div className="categories-container">
+                        <div>
+                            <button type='button' className="category-button" onClick={() => handleCategorySelect('2')} name='categoria_id'>
+                                <img src={gast} alt="Gastronomy" />
+                            </button>
+                            Gastronomia
+                        </div>
+                        <div>
+                            <button type='button' className="category-button" onClick={() => handleCategorySelect('1')} name='categoria_id'>
+                                <img src={vit} alt="Wineries" />
+                            </button>
+                            Vitivinicola
+                        </div>
+                        <div>
+                            <button type='button' className="category-button" onClick={() => handleCategorySelect('4')} name='categoria_id'>
+                                <img src={aven} alt="Adventure" />
+                            </button>
+                            Aventura
+                        </div>
+                        <div>
+                            <button type='button' className="category-button" onClick={() => handleCategorySelect('3')} name='categoria_id'>
+                                <img src={trans} alt="Transport" />
+                            </button>
+                            Transporte
+                        </div>
+                        <div>
+                            <button type='button' className="category-button" onClick={() => handleCategorySelect('5')} name='categoria_id'>
+                                <img src={noche} alt="Nightlife" />
+                            </button>
+                            Noche
+                        </div>
                     </div>
-                   <div>
-                   <button  type='button'  className="category-button" onClick={() => handleCategorySelect('1')} name='categoria_id'>
-                        <img src={vit} alt="Wineries" />
-                    </button>
-                        Vitivinicola
-                   </div>
-                    <div>
-                    <button   type='button' className="category-button" onClick={() => handleCategorySelect('4')} name='categoria_id'>
-                        <img src={aven} alt="Adventure" />
-                    </button>
-                        Aventura
+                </div>
+                <div className="form-step">
+                    <h3>Paso 2</h3>
+                    <input type="text" placeholder="Nombra tu experiencia" name='nombre' onChange={handleInputChange} />
+                    <label>Selecciona tu ubicacion</label>
+                    <LocationPicker
+                        apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
+                        onLocationSelect={handleLocationSelect} 
+                    />
+                    {formData.direccion && (
+                    <div style={{ padding: '10px', fontSize: '1rem' }}>
+                        <strong>Dirección Seleccionada:</strong> {formData.direccion}
                     </div>
-                    <div>
-                    <button   type='button'  className="category-button" onClick={() => handleCategorySelect('3')} name='categoria_id'>
-                        <img src={trans} alt="Transport" />
-                    </button>
-                        Transporte
+                )}
+                    <textarea placeholder="Describe what are your guests gonna do during your experience" name='descripcion' onChange={handleInputChange}></textarea>
+                </div>
+                </div>
+                <div className='inside-2'>
+                <div className="form-step">
+                    <h3>Paso 3</h3>
+                    <h5>Detalla tu Experiencia</h5>
+                    <div className='formflexcreat'>
+                        <label className='lab'>Precio:</label>
+                        <input type="number" name='precio' onChange={handleInputChange}></input>
                     </div>
-                    <div>
-                    <button  type='button'  className="category-button" onClick={() => handleCategorySelect('5')} name='categoria_id'>
-                        <img src={noche} alt="Nightlife" />
-                    </button>
-                        Noche
+                    <div className='formflexcreat'>
+                        <label className='lab'>Maximo de Personas:</label>
+                        <input type="number" style={{ width: '20%' }} name='capacidad' onChange={handleInputChange}></input>
+                    </div>
+                    <div className='formflexcreat'>
+                        <label className='lab'>Apto para todo Publico:</label>
+                        <input type='checkbox' style={{ width: '20%' }} name='atp' onChange={handleInputChange}></input>
                     </div>
                 </div>
-            </div>
-            <div className="form-step">
-                <h3>Paso 2</h3>
-                <input type="text" placeholder="Nombra tu experiencia" name='nombre' onChange={handleInputChange}/>
-                <label>Selecciona tu ubicacion</label>
-                <LocationPicker apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY} />
-                <textarea placeholder="Describe what are your guests gonna do during your experience" name='descripcion' onChange={handleInputChange}></textarea>
-            </div>
-            <div className="form-step">
-                <h3>Paso 3</h3>
-                <h5>Detalla tu Experiencia</h5>
-                <div className='formflexcreat'>
-                    <label className='lab'>Precio:</label>
-                    <input type="number" name='precio' onChange={handleInputChange}></input>
+                <div className="form-step">
+                    <h3>Paso 4</h3>
+                    <h5>Sube imágenes sobre tu experiencia</h5>
+                    <input type="file" onChange={handleImageChange} multiple name='images' />
+                    <div className="image-preview-container">
+                        {selectedFiles.map((file, index) => (
+                            <img key={index} src={URL.createObjectURL(file)} alt={`preview ${index}`} className="image-preview" />
+                        ))}
+                    </div>
                 </div>
-                <div className='formflexcreat'>
-                    <label className='lab'>Maximo de Personas:</label>
-                    <input type="number" style={{width:'20%'}} name='capacidad' onChange={handleInputChange}></input>
-                </div>
-                <div className='formflexcreat'>
-                    <label className='lab'>Apto para todo Publico:</label>
-                    <input type='checkbox'  style={{width:'20%'}} name='atp' onChange={handleInputChange}></input>
-                </div>
-            </div>
-            <div className="form-step">
-                <h3>Paso 4</h3>
-                <h5>Sube imágenes sobre tu experiencia</h5>
-                <input type="file" onChange={handleImageChange} multiple name='images' />
-                <div className="image-preview-container">
-                    {selectedFiles.map((file, index) => (
-                        <img key={index} src={URL.createObjectURL(file)} alt={`preview ${index}`} className="image-preview" />
-                    ))}
-                </div>
-            </div>
 
-            <button type="submit" className="submit-button">Crear Experiencia</button>
-        </form>
-        <Footer />
+                <button type="submit" className="submit-button">Crear Experiencia</button>
+                </div>
+            </div>
+            </form>
+            <Footer />
         </>
     );
 }

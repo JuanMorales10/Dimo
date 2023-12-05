@@ -39,6 +39,9 @@ module.exports = (sequelize, DataTypes) => {
         duracion: {
             type: DataTypes.STRING,
         },
+        direccion: {
+            type: DataTypes.STRING,
+        },
         disponibilidad: {
             type: DataTypes.BOOLEAN,
         },

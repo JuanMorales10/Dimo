@@ -7,21 +7,51 @@
   
   .profile-form {
     width: 100%;
-    max-width: 500px;
+    max-width: 659px;
     background: #f3f3f3;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-around;
   }
   
   .form-header {
     text-align: center;
     margin-bottom: 20px;
   }
+
+  .form-header h2{
+    margin-top: 2em;
+  }
+
+  .custom-file-upload {
+    background-color: #2d819d;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .custom-file-upload:hover {
+    background-color: #0c7193;
+  }
+  
+  .button-logo {
+    height: 20px; /* Ajusta esto según el tamaño deseado */
+    margin-right: 10px;
+  }
+  
+  
   
   .profile-picture {
-    width: 100px;
-    height: 100px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     object-fit: cover;
     margin-bottom: 10px;

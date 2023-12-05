@@ -9,8 +9,8 @@ import RegisterOptions from './components/RegisterOptions/RegisterOptions';
 import { UserProvider } from './components/UserContext/UserContext'; 
 import ServiceDetail from './components/ServiceDetail/ServiceDetail';
 import UserProfile from './components/UserProfile/UserProfile';
-import EditUserProfile from './pages/user/EditUserProfile/EditUserProfile';
 import NotFoundPage from './pages/user/NotFound/NotFoundPage';
+import EditUserProfile from './pages/user/EditUserProfile/EditUserProfile';
 
 
 

@@ -5,20 +5,20 @@ const jwt = require('jsonwebtoken');
 const userController = {
   login: async (req, res) => {
 
-  
+
     try {
       const user = await User.findOne({
         where: {
           email: req.body.email,
         },
       });
-  
+
       if (!user) {
         return res.status(401).json({ message: "El correo electrónico o la contraseña son incorrectos" });
       }
-  
+
       const validPw = await bcrypt.compare(req.body.password, user.dataValues.password);
-  
+
       if (validPw) {
         // Crear un token JWT
         const token = jwt.sign(
@@ -28,7 +28,7 @@ const userController = {
         );
 
         console.log(token)
-  
+
         // Enviar el token al cliente
         res.json({ success: true, message: "Login exitoso.", token: token });
       } else {
@@ -46,15 +46,15 @@ const userController = {
         console.error('Error al intentar destruir la sesión:', err);
         return res.status(500).json({ success: false, message: 'Error interno del servidor al cerrar sesión' });
       }
-  
+
       if (req.cookies.email) {
         res.clearCookie('email');
       }
- 
+
       res.json({ success: true, message: 'Sesión cerrada correctamente' });
     });
   },
-  
+
 
   registerUser: async (req, res) => {
     let avatar = 'defaultAvatar.jpg';
@@ -87,7 +87,7 @@ const userController = {
   registerHost: async (req, res) => {
 
     try {
-      let avatar = 'defaultAvatar.jpg'; 
+      let avatar = 'defaultAvatar.jpg';
 
       if (req.file && req.file.filename) {
         avatar = req.file.filename;
@@ -103,7 +103,7 @@ const userController = {
         ciudad: req.body.ciudad || null,
         direccion: req.body.direccion || null,
         type: "Host",
-        avatar: avatar 
+        avatar: avatar
       });
 
       console.log(user)
@@ -120,39 +120,35 @@ const userController = {
   ,
   updateProfile: async (req, res) => {
     try {
-        const id = req.body.id;
+      const id = req.body.id;
+      const user = await User.findByPk(id);
 
-        const user = await User.findByPk(id);
-        if (!user) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
-        }
+      if (!user) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
 
-        if (req.body.currentPassword === user.password) {
-        }
-        const updatedProfile = { ...req.body };
+    
+      const isPasswordMatch = await bcrypt.compare(req.body.currentPassword, user.password);
+      if (!isPasswordMatch) {
+        return res.status(401).json({ message: "Contraseña incorrecta" });
+      }
 
-        console.log('updated' + updatedProfile);
+     
+      const updatedProfile = { ...req.body };
+      if (req.file) {
+        updatedProfile.avatar = req.file.filename;
+      } else if (!updatedProfile.avatar) {
+        updatedProfile.avatar = user.avatar;
+      }
 
-        if (req.file) {
-            updatedProfile.avatar = req.file.filename;
-        }
-
-        if (!updatedProfile.avatar) {
-            updatedProfile.avatar = user.avatar;
-        }
-
-        let updatedUser = await User.update(updatedProfile, {
-            where: { id: id }
-        });
-        console.log(updatedUser);
-
-        res.json({ message: "Perfil actualizado correctamente" });
+   
+      await User.update(updatedProfile, { where: { id: id } });
+      res.json({ message: "Perfil actualizado correctamente" });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Error al actualizar el perfil" });
+      console.log(error);
+      res.status(500).json({ message: "Error al actualizar el perfil" });
     }
-},
-
+  },
   deleteAccount: async (req, res) => {
     try {
       await User.destroy({
@@ -180,22 +176,17 @@ const userController = {
   },
   getUserDetail: async (req, res) => {
     try {
+      // Asumiendo que el middleware ya ha verificado el token y adjuntado userId a req
+      const userId = req.user.userId;
 
-      const userDni = req.params.dni || req.query.dni;
-
-      if (!userDni) {
-        return res.status(400).json({ success: false, message: "Se requiere un DNI para la búsqueda." });
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "Usuario no autenticado." });
       }
 
-      const user = await User.findOne({
-        where: {
-          id: userDni
-        }
-      });
+      const user = await User.findByPk(userId);
 
       if (user) {
-
-        const userDetails = {
+        const userProfile = {
           id: user.id,
           email: user.email,
           nombre: user.nombre,
@@ -207,51 +198,52 @@ const userController = {
           avatar: user.avatar
         };
 
-        res.json({ success: true, userDetails });
+        res.json({ success: true, profile: userProfile });
       } else {
-        res.status(404).json({ success: false, message: "No se encontró un usuario con ese DNI." });
+        res.status(404).json({ success: false, message: "Perfil de usuario no encontrado." });
       }
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: "Error interno del servidor al obtener los detalles del usuario." });
+      res.status(500).json({ success: false, message: "Error interno del servidor al obtener el perfil." });
+    }
+  }
+  ,
+  getProfile: async (req, res) => {
+    try {
+      // Verificar el token JWT
+      const token = req.headers.authorization.split(' ')[1]; // Obtener el token del header
+      const decodedToken = jwt.verify(token, process.env.JWT_SECRET); // Verificar el token
+
+      const userId = decodedToken.userId; // Extraer el userId del token decodificado
+
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "Usuario no autenticado." });
+      }
+
+      const user = await User.findByPk(userId);
+
+      if (user) {
+        const userProfile = {
+          id: user.id,
+          email: user.email,
+          nombre: user.nombre,
+          apellido: user.apellido,
+          telefono: user.telefono,
+          ciudad: user.ciudad,
+          direccion: user.direccion,
+          type: user.type,
+          avatar: user.avatar
+        };
+
+        res.json({ success: true, profile: userProfile });
+      } else {
+        res.status(404).json({ success: false, message: "Perfil de usuario no encontrado." });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: "Error interno del servidor al obtener el perfil." });
     }
   },
-   getProfile : async (req, res) => {
-    try {
-        // Verificar el token JWT
-        const token = req.headers.authorization.split(' ')[1]; // Obtener el token del header
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET); // Verificar el token
-
-        const userId = decodedToken.userId; // Extraer el userId del token decodificado
-
-        if (!userId) {
-            return res.status(401).json({ success: false, message: "Usuario no autenticado." });
-        }
-
-        const user = await User.findByPk(userId);
-
-        if (user) {
-            const userProfile = {
-                id: user.id,
-                email: user.email,
-                nombre: user.nombre,
-                apellido: user.apellido,
-                telefono: user.telefono,
-                ciudad: user.ciudad,
-                direccion: user.direccion,
-                type: user.type,
-                avatar: user.avatar
-            };
-
-            res.json({ success: true, profile: userProfile });
-        } else {
-            res.status(404).json({ success: false, message: "Perfil de usuario no encontrado." });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: "Error interno del servidor al obtener el perfil." });
-    }
-},
   getServices: (req, res) => {
 
     // res.render("./users/register");

@@ -21,8 +21,7 @@ function App() {
       <Router>
         <div className="App">
           <Switch>
-            <AboutUs />
-            {/* <Route exact path="/" component={Home} />
+            <Route exact path="/" component={Home} />
             <Route exact path="/register" component={RegisterOptions} />
             <Route exact path="/login" component={LoginForm} />
             <Route exact path="/create-service" component={CreateServiceForm} />
@@ -31,7 +30,8 @@ function App() {
             <Route exact path='/service/:id/detail' component={ServiceDetail} />
             <Route exact path='/user/profile' component={UserProfile} />
             <Route exact path='/user/editUser' component={EditUserProfile} />
-            <Route component={NotFoundPage} /> */}
+            <Route exact path='/nosotros' component={AboutUs} />
+            <Route component={NotFoundPage} />
           </Switch>
         </div>
       </Router>

@@ -17,15 +17,48 @@
     font-size: 3rem;
     margin-bottom: 20px;
     position: relative;
-    top: 68px;
+    top: -66px;
+    width: 450px;
+    left: 70%;
   }
   
 
-  .hero-cont{
+  .hero-cont {
+    position: relative;
     display: flex;
-    width: 100%;
     justify-content: center;
-    margin-top: 110px;
+    align-items: center; /* Centrar verticalmente */
+    width: 100%;
+    height: 100vh; /* O la altura que desees para tu sección */
+    overflow: hidden;
+  }
+  
+  .background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+  
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    width: 50vw;
+    height: auto;
+  }
+  
+  @media (max-width: 1250px) { 
+    .hero-title {
+      left: 60%;
+    }
+  }
+  @media (max-width: 1000px) { 
+    .hero-title {
+      left: 50%;
+    }
   }
 
   @media (max-width: 855px) {
@@ -33,5 +66,21 @@
     .hero-title{
         font-size: 2rem;
     }
+
+    .hero-title {
+      left: 40%;
+    }
     
+  }
+
+  @media (max-width: 760px) { 
+    .hero-title {
+      left: 20%;
+    }
+  }
+
+  @media (max-width: 630px) { 
+    .hero-title {
+      left: 0%;
+    }
   }

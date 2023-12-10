@@ -42,11 +42,11 @@ const DiscoverOurBests = () => {
   return (
     <section className="discover-our-bests">
       <div className="container-best">
-        <div>
+        <div className='te-left'>
         <h2>Descubre lo Mejor de Nosotros</h2>
-        <p>Explora las experiencias más populares seleccionadas por nuestra comunidad</p>
+        <p>En nuestro sitio web, creemos en el poder de las experiencias únicas para inspirar y enriquecer vidas. Es por eso que hemos seleccionado cuidadosamente una variedad de los tours por viñedos más emocionantes, recetas de pasta deliciosas y emocionantes aventuras de senderismo en la montaña. Ya seas amante del vino, entusiasta de la comida o aventurero al aire libre, tenemos algo para ti.</p>
         </div>
-        <Carousel 
+        <Carousel className='carrusel'
           responsive={responsive}
           infinite={true}
           autoPlay={true}

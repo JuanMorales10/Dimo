@@ -57,12 +57,12 @@ const NavBar = () => {
             )}
         {user && (
           <div className="container-user">
+            <div className="bottom">
+              <button onClick={handleLogout} className="logout">Log Out</button>
+            </div>
             <div className="top">
               <img src={`http://localhost:3008/img/avatar/${user.avatar}`}  width="35px" height="35px" />
               <p><Link to="/user/profile">{user.nombre}</Link></p>
-            </div>
-            <div className="bottom">
-              <button onClick={handleLogout} className="logout">Log Out</button>
             </div>
           </div>
         )}

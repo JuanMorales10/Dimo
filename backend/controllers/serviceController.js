@@ -1,4 +1,5 @@
 const { User, Service, ServiceImage, Category, Comment, Region } = require('../database/models');
+const { Op } = require('sequelize');
 
 const serviceController = {
   getAllServices: async (req, res) => {
@@ -192,20 +193,75 @@ const serviceController = {
 
   filterServices: async (req, res) => {
     try {
-      const { categoryId, regionId } = req.params;
-      if (!categoryId || !regionId) {
-        return res.status(400).json({ error: 'Categoría o región no válida' });
+      // Recoger todos los posibles filtros del query string
+      const {
+        categoria_id, regionId, precioMin, precioMax, disponibilidad, rating, capacidad, atp, nombre
+      } = req.body;
+
+      // Construir el objeto de criterios de filtro
+      let filterCriteria = {};
+
+      if (categoria_id) {
+        filterCriteria.categoria_id = categoria_id;
       }
+
+      if (regionId) {
+        filterCriteria.id_region = regionId;
+      }
+
+      if (precioMin && precioMax) {
+        filterCriteria.precio = { [Op.between]: [precioMin, precioMax] };
+      } else if (precioMin) {
+        filterCriteria.precio = { [Op.gte]: precioMin };
+      } else if (precioMax) {
+        filterCriteria.precio = { [Op.lte]: precioMax };
+      }
+
+      if (disponibilidad) {
+        filterCriteria.disponibilidad = disponibilidad === 'true';
+      }
+
+      if (rating) {
+        filterCriteria.rating = { [Op.gte]: rating };
+      }
+
+      if (capacidad) {
+        filterCriteria.capacidad = { [Op.gte]: capacidad };
+      }
+
+      if (atp !== undefined) {
+        filterCriteria.atp = atp === 'true';
+      }
+
+      if (nombre) {
+        filterCriteria.nombre = { [Op.iLike]: `%${nombre}%` };
+      }
+
       const services = await Service.findAll({
-        where: {
-          categoria_id: categoryId,
-          id_region: regionId,
-        },
+        where: filterCriteria,
+        include: [
+          {
+            model: ServiceImage,
+            as: 'images',
+            attributes: ['url']
+          },
+          {
+            model: Category,
+            as: 'category'
+          },
+          {
+            model: Region,
+            as: 'region'
+          }
+          // Añadir más asociaciones si es necesario
+        ]
       });
+
+      // Devolver los servicios filtrados como respuesta
       return res.status(200).json(services);
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ error: 'Error al obtener los servicios por categoría y región' });
+      return res.status(500).json({ error: 'Error al filtrar los servicios' });
     }
   },
 

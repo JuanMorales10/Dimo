@@ -89,7 +89,7 @@ function CreateServiceForm() {
         <>
             <NavBar />
             <form onSubmit={handleSubmit} className="create-service-form">
-            <div className='outside-cont'>
+                <div className='form-cont'>
                 <h2>Crear Experiencia</h2>
                 <input type='hidden' value={formData.usuario_dni} name='usuario_dni' />
 
@@ -179,7 +179,8 @@ function CreateServiceForm() {
 
                 <button type="submit" className="submit-button">Crear Experiencia</button>
                 </div>
-            </div>
+            
+                </div>
             </form>
             <Footer />
         </>

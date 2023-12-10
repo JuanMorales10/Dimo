@@ -50,13 +50,9 @@ function Modal({ closeModal }) {
       return; 
     }
     try {
-      // Aquí deberás reemplazar la URL con la ruta de tu servidor donde manejas los filtros
+     
       const response = await fetch('http://localhost:3008/service/filter', {
-        method: 'GET', // o 'POST' dependiendo de la configuración de tu servidor
-        headers: {
-          'Content-Type': 'application/json',
-          // Agrega aquí cualquier cabecera necesaria como tokens de autorización
-        },
+        method: 'POST', 
         body: JSON.stringify(formData),
       });
       const data = await response.json();

@@ -10,7 +10,7 @@ const Hero = () => {
   const [text, setText] = useState("");
   const [delta, setDelta] = useState(300 - Math.random() * 100);
   const [index, setIndex] = useState(1);
-  const period = 2000;
+  const period = 1500;
   const toRotate = ["Proxima aventura", "Proximo Destino"];
 
 

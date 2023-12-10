@@ -3,6 +3,8 @@
   margin: 110px auto 0 auto;
   padding: 1rem;
   background-color: #fff;
+  display: flex;
+    justify-content: center;
 }
 
 .form-step h3 {
@@ -126,4 +128,9 @@
   border-radius: 10px; /* Bordes redondeados */
   object-fit: cover; /* Asegura que la imagen cubra todo el espacio asignado */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave para dar profundidad */
+}
+
+
+.form-cont{
+  width: 800px;
 }

@@ -193,12 +193,10 @@ const serviceController = {
 
   filterServices: async (req, res) => {
     try {
-      // Recoger todos los posibles filtros del query string
       const {
         categoria_id, regionId, precioMin, precioMax, disponibilidad, rating, capacidad, atp, nombre
-      } = req.body;
+      } = req.query;
 
-      // Construir el objeto de criterios de filtro
       let filterCriteria = {};
 
       if (categoria_id) {
@@ -210,23 +208,23 @@ const serviceController = {
       }
 
       if (precioMin && precioMax) {
-        filterCriteria.precio = { [Op.between]: [precioMin, precioMax] };
+        filterCriteria.precio = { [Op.between]: [parseFloat(precioMin), parseFloat(precioMax)] };
       } else if (precioMin) {
-        filterCriteria.precio = { [Op.gte]: precioMin };
+        filterCriteria.precio = { [Op.gte]: parseFloat(precioMin) };
       } else if (precioMax) {
-        filterCriteria.precio = { [Op.lte]: precioMax };
+        filterCriteria.precio = { [Op.lte]: parseFloat(precioMax) };
       }
 
-      if (disponibilidad) {
+      if (disponibilidad !== undefined) {
         filterCriteria.disponibilidad = disponibilidad === 'true';
       }
 
       if (rating) {
-        filterCriteria.rating = { [Op.gte]: rating };
+        filterCriteria.rating = { [Op.gte]: parseInt(rating, 10) };
       }
 
       if (capacidad) {
-        filterCriteria.capacidad = { [Op.gte]: capacidad };
+        filterCriteria.capacidad = { [Op.eq]: parseInt(capacidad, 10) };
       }
 
       if (atp !== undefined) {
@@ -234,7 +232,7 @@ const serviceController = {
       }
 
       if (nombre) {
-        filterCriteria.nombre = { [Op.iLike]: `%${nombre}%` };
+        filterCriteria.nombre = { [Op.like]: `%${nombre}%` };
       }
 
       const services = await Service.findAll({
@@ -249,15 +247,10 @@ const serviceController = {
             model: Category,
             as: 'category'
           },
-          {
-            model: Region,
-            as: 'region'
-          }
-          // Añadir más asociaciones si es necesario
+          // Incluye aquí otras asociaciones según sea necesario
         ]
       });
 
-      // Devolver los servicios filtrados como respuesta
       return res.status(200).json(services);
     } catch (error) {
       console.error(error);

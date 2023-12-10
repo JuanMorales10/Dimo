@@ -17,9 +17,11 @@
     color: rgb(0, 0, 0);
     text-align: center;
     position: absolute;
-    left: 65%;
-    max-width: 499px;
+    left: 75%;
+    max-width: 290px;
     margin-top: 50px;
+    font-size: 2.7rem;
+    width: 503px;
 }
   
 
@@ -90,5 +92,11 @@
   @media (max-width: 630px) { 
     .hero-title {
       left: 0%;
+    }
+  }
+
+  @media (max-width: 450px) { 
+    .hero-title {
+      left: -10%;
     }
   }

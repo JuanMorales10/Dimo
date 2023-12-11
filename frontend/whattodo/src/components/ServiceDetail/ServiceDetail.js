@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect, useContext} from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 import { UserContext } from '../UserContext/UserContext';
 import './ServiceDetail.css';
 import NavBar from '../NavBar/NavBar';
@@ -13,38 +13,40 @@ function ServiceDetail() {
     const [service, setService] = useState(null);
     const [error, setError] = useState('');
     const [serviceOwner, setServiceOwner] = useState(null); 
+  
 
-
+    
+    
     const fetchService = async () => {
-        try {
-            const serviceResponse = await fetch(`http://localhost:3008/service/${id}/detail`, {
-                headers: { 'Authorization': `Bearer ${token}` },
-            });
-
-            if (serviceResponse.status !== 200) {
-                throw new Error('Network response for service was not ok');
-            }
-            const serviceData = await serviceResponse.json();
-
-            console.log(serviceData)
-            setService(serviceData);
-
-            const ownerResponse = await fetch(`http://localhost:3008/user/detail/${serviceData.service.usuario_dni}`, {
-              headers: { 'Authorization': `Bearer ${token}` },
-          });
-          const ownerData = await ownerResponse.json();
-
-          console.log(ownerData.profile)
-
-          setServiceOwner(ownerData.profile); 
-            
-        } catch (error) {
-            setError('Failed to load service details');
-            console.error('There has been a problem with your fetch operation:', error);
+      try {
+        const serviceResponse = await fetch(`http://localhost:3008/service/${id}/detail`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        
+        if (serviceResponse.status !== 200) {
+          throw new Error('Network response for service was not ok');
         }
+        const serviceData = await serviceResponse.json();
+        
+        console.log(serviceData)
+        setService(serviceData);
+        
+        const ownerResponse = await fetch(`http://localhost:3008/user/detail/${serviceData.service.usuario_dni}`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        const ownerData = await ownerResponse.json();
+        
+        console.log(ownerData.profile)
+        
+        setServiceOwner(ownerData.profile); 
+        
+      } catch (error) {
+        setError('Failed to load service details');
+        console.error('There has been a problem with your fetch operation:', error);
+      }
     };
-
-   
+    
+    
 
     useEffect(() => {
         fetchService();
@@ -133,6 +135,12 @@ function ServiceDescription({ description }) {
 
 function ServiceMeta({ service, user }) {
 
+  const history = useHistory();
+
+  const handleReserveClick = () => {
+    history.push(`/reserva/${service.id}`); 
+};
+
   const createGoogleMapsLink = (address) => {
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 };
@@ -167,7 +175,7 @@ function ServiceMeta({ service, user }) {
                     )}
 
     </div>
-      <button className="reserve-button" >Reservar</button>
+    <button className="reserve-button" onClick={handleReserveClick}>Reservar</button>
     </>
   );
 }

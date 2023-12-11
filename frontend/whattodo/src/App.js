@@ -12,6 +12,8 @@ import UserProfile from './components/UserProfile/UserProfile';
 import NotFoundPage from './pages/user/NotFound/NotFoundPage';
 import EditUserProfile from './pages/user/EditUserProfile/EditUserProfile';
 import AboutUs from './components/AboutUs/AboutUs';
+import ReservaPage from './pages/service/ReservaPage/ReservaPage';
+
 
 
 
@@ -31,6 +33,7 @@ function App() {
             <Route exact path='/user/profile' component={UserProfile} />
             <Route exact path='/user/editUser' component={EditUserProfile} />
             <Route exact path='/nosotros' component={AboutUs} />
+            <Route exact path="/reserva/:serviceId" component={ReservaPage} />
             <Route component={NotFoundPage} />
           </Switch>
         </div>

@@ -9,7 +9,9 @@ const jwt = require('jsonwebtoken');
 const mainRouter = require('./routes/mainRoutes')
 const userRouter = require('./routes/userRoutes')
 const serviceRouter = require('./routes/serviceRoutes')
-const authCookie = require('./middlewares/authenticateUserWithCookie')
+const authCookie = require('./middlewares/authenticateUserWithCookie');
+const reservaRoutes = require('./routes/reservasRoutes');
+
 
 const corsOptions = {
     origin: 'http://localhost:3000', 
@@ -40,6 +42,7 @@ app.use(authCookie.authenticateUserWithCookie);
 app.use('/', mainRouter);
 app.use('/user', userRouter)
 app.use('/service', serviceRouter)
+app.use('/reserva' ,reservaRoutes)
 
 app.get('/', (req, res) => {
     res.render('home')

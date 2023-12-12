@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import './ReservaForm.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import './ReservaForm.css';
 
-function ReservaForm({serviceId, onSubmit}) {
-    
-  // Fecha inicial podría ser la fecha actual
+function ReservaForm({ serviceId, onSubmit }) {
+  // Estado inicial
   const [reserva, setReserva] = useState({
     servicio_id: serviceId,
-    fecha: new Date(), // Fecha actual como inicial
+    fecha: new Date(),
     hora: '',
   });
   const [availableSlots, setAvailableSlots] = useState({ dates: [], times: [] });
@@ -16,7 +15,7 @@ function ReservaForm({serviceId, onSubmit}) {
   // Carga inicial de slots disponibles
   useEffect(() => {
     fetchAvailableSlots(reserva.fecha);
-  }, [serviceId]); // Dependencia: serviceId
+  }, [serviceId, reserva.fecha]);
 
   // Función para cargar los slots disponibles
   const fetchAvailableSlots = async (selectedDate) => {
@@ -30,17 +29,15 @@ function ReservaForm({serviceId, onSubmit}) {
         const date = new Date(slot);
         return `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
       });
-  
+
       setAvailableSlots({ dates: [formattedDate], times });
     } catch (error) {
       console.error('Error fetching available slots:', error);
     }
   };
 
-  console.log(availableSlots)
-
   const handleDateChange = (date) => {
-    setReserva({ ...reserva, fecha: date, hora: '' }); // Reset hora al cambiar la fecha
+    setReserva({ ...reserva, fecha: date, hora: '' });
     fetchAvailableSlots(date);
   };
 
@@ -50,8 +47,6 @@ function ReservaForm({serviceId, onSubmit}) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    console.log(reserva)
     onSubmit(reserva);
   };
 
@@ -64,12 +59,12 @@ function ReservaForm({serviceId, onSubmit}) {
           selected={reserva.fecha}
           onChange={handleDateChange}
           name="fecha"
-          filterDate={(date) => availableSlots.dates.includes(date.toISOString().split('T')[0])}
+          filterDate={() => true}
         />
         <label htmlFor="timePicker">Select Time</label>
         <select name="hora" id="timePicker" value={reserva.hora} onChange={handleChange}>
-          {availableSlots.times.map((time) => (
-            <option key={time} value={time}>{time}</option>
+          {availableSlots.times.map((time, index) => (
+            <option key={index} value={time}>{time}</option>
           ))}
         </select>
         <button type="submit" className="book-now-btn">Book Now</button>
@@ -79,5 +74,4 @@ function ReservaForm({serviceId, onSubmit}) {
 }
 
 export default ReservaForm;
-
 

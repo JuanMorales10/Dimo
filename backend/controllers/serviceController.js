@@ -363,7 +363,6 @@ module.exports = serviceController;
 
 const calculateAvailableSlots = async (serviceId, selectedDate) => {
   try {
-    // Obtener detalles del servicio
     const service = await Service.findOne({
       where: { id: serviceId },
       attributes: ['operating_days', 'operating_hours_start', 'operating_hours_end', 'duracion']
@@ -372,48 +371,52 @@ const calculateAvailableSlots = async (serviceId, selectedDate) => {
       throw new Error('Service not found');
     }
 
-    const operatingDays = service.operating_days.split(',').map(day => day.trim());
-    const dayOfWeekNumber = new Date(selectedDate).getDay();
-    const dayNames = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado","Domingo"];
+
+    const operatingDays = service.operating_days.replace(/['"\[\]]+/g, '').split(',');
+    const dayOfWeekNumber = new Date(selectedDate + 'T00:00:00Z').getUTCDay(); // Usar fecha en UTC
+    const dayNames = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
     const dayOfWeekString = dayNames[dayOfWeekNumber];
+
 
     if (!operatingDays.includes(dayOfWeekString)) {
       return []; // No hay slots disponibles si el servicio no opera en ese día
     }
 
-    // Establecer horarios de operación para la fecha seleccionada
+    // Manejo de horarios de operación y duración
     const operationStart = new Date(`${selectedDate}T${service.operating_hours_start}`);
     const operationEnd = new Date(`${selectedDate}T${service.operating_hours_end}`);
+    const durationParts = service.duracion.split(':');
+    const durationHours = parseInt(durationParts[0]);
+    const durationMinutes = parseInt(durationParts[1]);
 
-    // Convertir la duración a horas
-    const durationHours = parseInt(service.duracion.split(':')[0]);
-
-    // Calcular slots disponibles
     let slots = [];
     let lastEnd = operationStart;
 
     while (lastEnd < operationEnd) {
-      const slotEnd = addHours(lastEnd, durationHours);
+      const slotEnd = addTime(lastEnd, durationHours, durationMinutes);
+      if (slotEnd > operationEnd) break;
+
       const reservationOverlapCount = await Order.count({
         where: {
           service_id: serviceId,
-          start_datetime: {
-            [Op.lt]: slotEnd
-          },
-          end_datetime: {
-            [Op.gt]: lastEnd
-          }
+          [Op.or]: [
+            {
+              start_datetime: { [Op.lt]: slotEnd },
+              end_datetime: { [Op.gt]: lastEnd }
+            }
+          ]
         }
       });
 
-      if (reservationOverlapCount === 0 && slotEnd <= operationEnd) {
-        slots.push(new Date(lastEnd)); // Agrega el horario de inicio del slot disponible
+      if (reservationOverlapCount === 0) {
+        slots.push(new Date(lastEnd));
       }
 
-      lastEnd = addHours(lastEnd, durationHours);
+      lastEnd = slotEnd;
     }
 
-    // Devolver los slots en formato ISO String
+    console.log(slots)
+
     return slots.map(slot => slot.toISOString());
   } catch (error) {
     console.error('Error calculating available slots:', error);
@@ -421,9 +424,11 @@ const calculateAvailableSlots = async (serviceId, selectedDate) => {
   }
 };
 
-function addHours(date, hours) {
-  return new Date(date.getTime() + hours * 60 * 60 * 1000);
+function addTime(date, hours, minutes) {
+  return new Date(date.getTime() + hours * 60 * 60 * 1000 + minutes * 60 * 1000);
 }
+
+
 
 // const calculateAvailableSlots = async (serviceId, selectedDate) => {
 //   try {

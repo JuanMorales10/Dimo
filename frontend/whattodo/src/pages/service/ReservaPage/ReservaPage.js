@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { UserContext } from '../../../components/UserContext/UserContext';
 import ReservaForm from '../../../components/ReservaForm/ReservaForm';
 import moment from 'moment';
+import NavBar from '../../../components/NavBar/NavBar';
 
 function ReservaPage() {
   const { serviceId } = useParams();
@@ -34,32 +35,28 @@ function ReservaPage() {
       const userProfile = await fetchUserProfile();
       const usuarioDni = userProfile ? userProfile.profile.id : null;
 
-      console.log(reserva)
-      
       // Convertir la duración de formato HH:mm:ss a minutos
       const durationParts = service.service.duracion.split(':');
       const durationInMinutes = parseInt(durationParts[0]) * 60 + parseInt(durationParts[1]);
-  
-      console.log(`Duración en minutos: ${durationInMinutes}`)
-  
-      // Asegúrate de que reserva.fecha y reserva.hora estén en el formato correcto
+
       const startDateTime = moment.utc(reserva.fecha).set({
         hour: moment(reserva.hora, "HH:mm").hour(),
         minute: moment(reserva.hora, "HH:mm").minute()
       });
   
-      // Ahora se añade la duración en minutos
       const endDateTime = moment.utc(startDateTime).add(durationInMinutes, 'minutes');
-  
+
       const reservaData = {
-        usuario_dni: usuarioDni,
+        usuario_dni: reserva.usuario_dni,
         service_id: serviceId,
         start_datetime: startDateTime.toISOString(),
         end_datetime: endDateTime.toISOString(),
-        duracion: durationInMinutes
+        duracion: durationInMinutes,
+        cantidadPersonas: reserva.cantidadPersonas,
+        nombreReserva: reserva.nombreReserva,
+        nombreUsuario: reserva.nombreUsuario
       };
   
-      console.log(reservaData)
   
       const response = await fetch(`http://localhost:3008/reserva/reservas`, {
         method: 'POST',
@@ -92,9 +89,10 @@ function ReservaPage() {
   }
 
   return (
-    <div className='reserva-container'>
-      <ReservaForm serviceId={service.service.id} onSubmit={handleSubmit} />
-    </div>
+ <>
+ <NavBar />
+      <ReservaForm service={service} onSubmit={handleSubmit} />
+ </>   
   );
 }
 

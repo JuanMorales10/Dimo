@@ -12,8 +12,7 @@ import NavBar from '../../components/NavBar/NavBar';
 import Footer from '../../components/Footer/Footer';
 
 function CreateServiceForm() {
-    const { token, fetchUserProfile } = useContext(UserContext);
-    const [userId, setUserId] = useState(null);
+    const { token, user } = useContext(UserContext);
     const [formData, setFormData] = useState({
         nombre: '',
         descripcion: '',
@@ -28,20 +27,11 @@ function CreateServiceForm() {
         direccion: '',
         operating_hours_start: '',
         operating_hours_end: '',
-        operating_days: []
+        operating_days: [],
     });
     const [selectedFiles, setSelectedFiles] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState('');
 
-    useEffect(() => {
-        const loadUserProfile = async () => {
-            const profileData = await fetchUserProfile();
-            if (profileData && profileData.profile) {
-                setUserId(profileData.profile.id);
-            }
-        };
-        loadUserProfile();
-    }, [fetchUserProfile]);
+
 
     const handleImageChange = (event) => {
         setSelectedFiles([...event.target.files]);
@@ -75,7 +65,7 @@ function CreateServiceForm() {
         event.preventDefault();
 
         const submitData = new FormData();
-        submitData.append('usuario_dni', userId);
+        submitData.append('usuario_dni', user.profile.id);
         Object.keys(formData).forEach(key => {
             submitData.append(key, formData[key]);
         });
@@ -83,6 +73,8 @@ function CreateServiceForm() {
         selectedFiles.forEach(file => {
             submitData.append('image', file);
         });
+
+       
 
         try {
             const response = await axios.post('http://localhost:3008/service/createService', submitData, {
@@ -105,7 +97,6 @@ function CreateServiceForm() {
             <form onSubmit={handleSubmit} className="create-service-form">
                 <div className='form-cont'>
                     <h2>Crear Experiencia</h2>
-                    <input type='hidden' value={formData.usuario_dni} name='usuario_dni' />
 
                     {/* Paso 1: Categoría */}
                     <div className='inside-1'>

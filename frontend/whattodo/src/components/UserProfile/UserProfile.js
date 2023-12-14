@@ -6,28 +6,24 @@ import { Link } from 'react-router-dom';
 import { UserContext } from '../UserContext/UserContext'; // Asegúrate de tener la ruta correcta
 
 const UserProfile = () => {
-  const { fetchUserProfile, token } = useContext(UserContext);
-  const [user, setUser] = useState(null);
+  const { token ,user } = useContext(UserContext);
   const [services, setServices] = useState([]);
   const [error, setError] = useState('');
+  const usuario = user.profile
 
   useEffect(() => {
-    const loadUserProfile = async () => {
+    const loadServices = async () => {
       try {
-        const profileData = await fetchUserProfile();
-        if (profileData) {
-          setUser(profileData.profile);
-          // Ahora carga los servicios
-          const response = await fetch(`http://localhost:3008/service/userServices/${profileData.profile.id}`, {
+        if (user && user.profile) {
+          const response = await fetch(`http://localhost:3008/service/userServices/${user.profile.id}`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
-         
+
           if (!response.ok) {
             throw new Error('No se pudieron obtener los servicios');
           }
-          const servicesData = await response.json();
 
-        
+          const servicesData = await response.json();
           setServices(servicesData.services);
         }
       } catch (error) {
@@ -35,11 +31,11 @@ const UserProfile = () => {
       }
     };
 
-    loadUserProfile();
-  }, [fetchUserProfile, token]);
+    loadServices();
+  }, [user?.profile?.id, token]);
 
-  if (!user) {
-    return <div>Loading...</div>;
+  if (!user || !user.profile) {
+    return <div>Loading...</div>; 
   }
 
   if (error) {
@@ -51,10 +47,10 @@ const UserProfile = () => {
       <NavBar />
       <div className="user-profile">
         <div className="user-info">
-          <img className="profile-picture" src={`http://localhost:3008/img/avatar/${user.avatar}`} alt={`${user.nombre} ${user.apellido}`} />
+          <img className="profile-picture" src={`http://localhost:3008/img/avatar/${usuario.avatar}`} alt={`${usuario.nombre} ${usuario.apellido}`} />
           <div className="user-details">
-            <h1>{`${user.nombre} ${user.apellido}`}</h1>
-            <p className="user-location">{user.ciudad}</p>
+            <h1>{`${usuario.nombre} ${usuario.apellido}`}</h1>
+            <p className="user-location">{usuario.ciudad}</p>
             <div className='buttons-profile'>
               <Link to='/user/editUser'>
                 <button className="edit-profile-btn">Edit Profile</button>

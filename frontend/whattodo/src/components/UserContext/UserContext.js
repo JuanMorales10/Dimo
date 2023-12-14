@@ -4,13 +4,14 @@ import React, { createContext, useState, useEffect } from 'react';
 export const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
-
+  const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem('token') || null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
       setToken(storedToken);
+      fetchUserProfile();
     }
   }, []);
 
@@ -31,35 +32,37 @@ export const UserProvider = ({ children }) => {
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
     }
+    fetchUserProfile();
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     setToken(null);
+    setUser(null); 
     return Promise.resolve();
   };
 
   const fetchUserProfile = async () => {
-    try {
-      const response = await fetch('http://localhost:3008/user/profile', {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
+    if (token) {
+      try {
+        const response = await fetch('http://localhost:3008/user/profile', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
 
-      if (!response.ok) {
-        throw new Error('Fetching user profile failed');
+        if (!response.ok) {
+          throw new Error('Fetching user profile failed');
+        }
+        const profileData = await response.json();
+        setUser(profileData); // Actualiza el estado del usuario
+      } catch (error) {
+        console.error('Error al obtener el perfil del usuario:', error);
+        setUser(null); // En caso de error, resetea el estado del usuario
       }
-      const profileData = await response.json();
-
-      return profileData; 
-    } catch (error) {
-      console.error('Error al obtener el perfil del usuario:', error);
-      return null; // Retorna null en caso de error
     }
   };
-  
 
   return (
-    <UserContext.Provider value={{ token, login, logout, fetchUserProfile }}>
+    <UserContext.Provider value={{ token, user , login, logout, fetchUserProfile }}>
       {children}
     </UserContext.Provider>
   );

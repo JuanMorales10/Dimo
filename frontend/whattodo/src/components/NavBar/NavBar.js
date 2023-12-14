@@ -1,42 +1,22 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import logo from '../../assets/img/logowhat.png';
 import './NavBar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { UserContext } from '../UserContext/UserContext';
-import { useHistory } from 'react-router-dom';
 
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState(null); // Estado para almacenar la info del usuario
-  const { token, logout, fetchUserProfile } = useContext(UserContext);
+  const { token, user, logout } = useContext(UserContext);
   const history = useHistory();
-
-  useEffect(() => {
-    const loadUserProfile = async () => {
-      if (token) {
-        try {
-          const user = await fetchUserProfile();
-          console.log(user)
-          if (user) {
-            setUser(user.profile);
-          }
-        } catch (error) {
-          console.error('Error al cargar perfil de usuario:', error);
-        }
-      } else {
-        setUser(null);
-      }
-    };
-    loadUserProfile();
-  }, [token, fetchUserProfile]);
 
   const handleLogout = () => {
     logout().then(() => {
-        history.push('/'); 
+      history.push('/');
     });
-};
+  };
+
 
   return (
     <header>
@@ -55,17 +35,17 @@ const NavBar = () => {
                 <li className='li-nav'><Link to='/login' className="navbar-action login">Log In</Link></li>
               </>
             )}
-        {user && (
-          <div className="container-user">
-            <div className="bottom">
-              <button onClick={handleLogout} className="logout">Log Out</button>
-            </div>
-            <div className="top">
-              <img src={`http://localhost:3008/img/avatar/${user.avatar}`}  width="35px" height="35px" />
-              <p><Link to="/user/profile">{user.nombre}</Link></p>
-            </div>
-          </div>
-        )}
+            {user && (
+              <div className="container-user">
+                <div className="bottom">
+                  <button onClick={handleLogout} className="logout">Log Out</button>
+                </div>
+                <div className="top">
+                  <img src={`http://localhost:3008/img/avatar/${user.profile.avatar}`} width="35px" height="35px" alt="Avatar" />
+                  <p><Link to="/user/profile">{user.profile.nombre}</Link></p>
+                </div>
+              </div>
+            )}
           </ul>
         </div>
         <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="burger-menu">
@@ -77,4 +57,5 @@ const NavBar = () => {
 };
 
 export default NavBar;
+
 

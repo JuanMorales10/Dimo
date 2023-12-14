@@ -6,41 +6,43 @@ const { Op } = require('sequelize');
 const ReservaController = {
   createReserva: async (req, res) => {
     try {
-        const { usuario_dni, service_id, start_datetime, duracion } = req.body;
+      const { usuario_dni, service_id, start_datetime, duracion, cantidadPersonas, nombreReserva, nombreUsuario } = req.body;
 
-        // Validación de los datos de entrada
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+
+      // Validación de los datos de entrada
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      // Calcular end_datetime basado en la duración en minutos
+      const end_datetime = new Date(new Date(start_datetime).getTime() + duracion * 60000);
+
+      // Verificar solapamientos de la reserva
+      const overlappingOrder = await Order.findOne({
+        where: {
+          service_id,
+          [Op.or]: [
+            { start_datetime: { [Op.lt]: end_datetime }, end_datetime: { [Op.gt]: new Date(start_datetime) } },
+            { start_datetime: { [Op.gte]: new Date(start_datetime) }, end_datetime: { [Op.lte]: end_datetime } }
+          ]
         }
+      });
 
-        // Calcular end_datetime basado en la duración en minutos
-        const end_datetime = new Date(new Date(start_datetime).getTime() + duracion * 60000);
+      if (overlappingOrder) {
+        return res.status(400).json({ message: "El horario ya está reservado." });
+      }
 
-        // Verificar solapamientos de la reserva
-        const overlappingOrder = await Order.findOne({
-            where: {
-                service_id,
-                [Op.or]: [
-                    { start_datetime: { [Op.lt]: end_datetime }, end_datetime: { [Op.gt]: new Date(start_datetime) } },
-                    { start_datetime: { [Op.gte]: new Date(start_datetime) }, end_datetime: { [Op.lte]: end_datetime } }
-                ]
-            }
-        });
-
-        if (overlappingOrder) {
-            return res.status(400).json({ message: "El horario ya está reservado." });
-        }
-
-        // Crear la reserva
-        const newOrder = await Order.create({ usuario_dni, service_id, start_datetime, end_datetime, status: 'pending' });
-
-        return res.status(201).json(newOrder);
+      const newOrder = { usuario_dni, service_id, start_datetime, end_datetime, status: 'pending', cantidadPersonas: req.body.cantidadPersonas, nombreReserva: nombreReserva, nombreUsuario: nombreUsuario }
+      console.log(newOrder)
+      // Crear la reserva
+      const reserva = await Order.create(newOrder);
+      return res.status(201).json(reserva);
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Error al crear la reserva", error });
+      console.error(error);
+      return res.status(500).json({ message: "Error al crear la reserva", error });
     }
-},
+  },
 
 
   getReservas: async (req, res) => {

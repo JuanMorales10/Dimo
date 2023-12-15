@@ -1,4 +1,4 @@
-.service-detail-container {
+/* .service-detail-container {
   width: 100%;
   margin: 0 auto;
   padding: 20px;
@@ -93,7 +93,7 @@ b {
   background-color: #008cba;
   color: white; 
   padding: 15px 25px; 
-  border: none; /* Sin borde */
+  border: none; 
   border-radius: 5px;
   cursor: pointer; 
   font-size: 16px; 
@@ -101,7 +101,7 @@ b {
 }
 
 .reserve-button:hover {
-  background-color: #005f73; /* Color más oscuro al pasar el mouse */
+  background-color: #005f73; 
 }
 
 .prop-detail img {
@@ -171,4 +171,5 @@ b {
   .left-images {
     margin-top: 2em;
   }
-}
+} */
+

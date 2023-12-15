@@ -8,6 +8,7 @@ import CreateServiceForm from './pages/service/CreateService';
 import RegisterOptions from './components/RegisterOptions/RegisterOptions';
 import { UserProvider } from './components/UserContext/UserContext'; 
 import ServiceDetail from './components/ServiceDetail/ServiceDetail';
+import ServiceDetailTest from './components/ServiceDetail/ServiceDetailTest';
 import UserProfile from './components/UserProfile/UserProfile';
 import NotFoundPage from './pages/user/NotFound/NotFoundPage';
 import EditUserProfile from './pages/user/EditUserProfile/EditUserProfile';
@@ -29,7 +30,8 @@ function App() {
             <Route exact path="/create-service" component={CreateServiceForm} />
             <Route exact path="/register-normal" component={RegistrationForm} />
             <Route exact path="/register-host" component={RegistrationFormHost} />
-            <Route exact path='/service/:id/detail' component={ServiceDetail} />
+            {/* <Route exact path='/service/:id/detail' component={ServiceDetail} /> */}
+            <Route exact path='/service/:id/detail' component={ServiceDetailTest} />
             <Route exact path='/user/profile' component={UserProfile} />
             <Route exact path='/user/editUser' component={EditUserProfile} />
             <Route exact path='/nosotros' component={AboutUs} />

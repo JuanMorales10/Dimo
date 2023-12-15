@@ -1,54 +1,247 @@
-import React, { useState, useEffect, useContext} from 'react';
+// import React, { useState, useEffect, useContext} from 'react';
+// import { useParams, useHistory } from 'react-router-dom';
+// import { UserContext } from '../UserContext/UserContext';
+// import './ServiceDetail.css';
+// import NavBar from '../NavBar/NavBar';
+// import Footer from '../Footer/Footer';
+// import Carousel from 'react-multi-carousel';
+// import Cards from '../Cards/Cards';
+
+// function ServiceDetail() {
+//     const { id } = useParams();
+//     const { token } = useContext(UserContext);
+//     const [service, setService] = useState(null);
+//     const [error, setError] = useState('');
+//     const [serviceOwner, setServiceOwner] = useState(null); 
+  
+
+    
+    
+//     const fetchService = async () => {
+//       try {
+//         const serviceResponse = await fetch(`http://localhost:3008/service/${id}/detail`, {
+//           headers: { 'Authorization': `Bearer ${token}` },
+//         });
+        
+//         if (serviceResponse.status !== 200) {
+//           throw new Error('Network response for service was not ok');
+//         }
+//         const serviceData = await serviceResponse.json();
+        
+//         console.log(serviceData)
+//         setService(serviceData);
+
+//         const idUser = serviceData.service.usuario_dni
+        
+//         const ownerResponse = await fetch(`http://localhost:3008/user/detailService/${idUser}`, {
+//           headers: { 'Authorization': `Bearer ${token}` },
+//         });
+//         const ownerData = await ownerResponse.json();
+        
+//         console.log(ownerData.profile)
+        
+//         setServiceOwner(ownerData.profile); 
+        
+//       } catch (error) {
+//         setError('Failed to load service details');
+//         console.error('There has been a problem with your fetch operation:', error);
+//       }
+//     };
+    
+    
+
+//     useEffect(() => {
+//         fetchService();
+//     }, [id, token]);
+
+//     if (error) {
+//         return <div>Error: {error}</div>;
+//     }
+
+//     if (!service || !serviceOwner) {
+//       return <div>Loading...</div>;
+//   }
+
+//     console.log(serviceOwner)
+
+//     return (
+//         <>
+//             <NavBar />
+//             <div className="service-detail-container">
+//                 <div className='left-images'>
+//                     <ServiceImages images={service.images} />
+//                 </div>
+//                 <div className='right-service'>
+//                     <ServiceMeta service={service.service} user={serviceOwner} />
+//                 </div>
+//             </div>
+//             <ServiceComments comments={service.comments} />
+//             <Cards />
+//             <Footer />
+//         </>
+//     );
+// }
+
+// function ServiceHeader({ title }) {
+//     return (
+//         <div className="service-header">
+//             <h1>{title}</h1>
+//         </div>
+//     );
+// }
+
+// function ServiceImages({ images }) {
+
+//   const responsive = {
+//       superLargeDesktop: {
+//         breakpoint: { max: 4000, min: 3000 },
+//         items: 4 
+//       },
+//       desktop: {
+//         breakpoint: { max: 3000, min: 1024 },
+//         items: 3 
+//       },
+//       tablet: {
+//         breakpoint: { max: 1024, min: 764 },
+//         items: 2 
+//       },
+//       mobile: {
+//         breakpoint: { max: 464, min: 0 },
+//         items: 1 
+//       }
+//     };
+//   const backendUrl = "http://localhost:3008";
+  
+//   return (
+//     <div className="service-images">
+//       <Carousel responsive={responsive} infinite={true} className="owl-carousel owl-theme skill-slider">
+//       {images.map(image => (
+//         <img
+//           key={image.image_id}
+//           src={`${backendUrl}/img/service/${image.url}`}
+//           alt="Service"
+//           className="service-image"
+//         />
+//       ))}
+//       </Carousel>
+//     </div>
+//   );
+// }
+// function ServiceDescription({ description }) {
+//     return (
+//         <div className="service-description">
+//             <p>{description}</p>
+//         </div>
+//     );
+// }
+
+// function ServiceMeta({ service, user }) {
+
+//   const history = useHistory();
+
+//   const handleReserveClick = () => {
+//     history.push(`/reserva/${service.id}`); 
+// };
+
+//   const createGoogleMapsLink = (address) => {
+//     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+// };
+
+//   const backendUrl = "http://localhost:3008";
+
+//   if (!user ) {
+//     return <div>Loading...</div>;
+// }
+
+//   return (
+//     <>
+//     <div className="service-meta">
+//       <div className='service-header'>
+//       <ServiceHeader title={service.nombre} />
+//       </div>
+//       <div className='service-description'>
+//       <ServiceDescription description={service.descripcion}/>
+//       </div>
+//       <p>Precio: <b>${service.precio}</b></p>
+//       <p>Capacidad: {service.capacidad} personas maximo </p>
+//       <div className='prop-detail'>
+//           <img src={`${backendUrl}/img/avatar/${user.avatar}`} />
+//           <p>
+//            {user.nombre +' '+ user.apellido}
+//           </p>
+//       </div>
+//       {service && (
+//                         <a href={createGoogleMapsLink(service.direccion)} target="_blank" rel="noopener noreferrer" className="google-maps-link">
+//                             Ver Ubicación en Google Maps
+//                         </a>
+//                     )}
+
+//     </div>
+//     <button className="reserve-button" onClick={handleReserveClick}>Reservar</button>
+//     </>
+//   );
+// }
+
+// function ServiceComments({ comments }) {
+//   if (comments.length === 0) {
+//     return <div>No hay comentarios aún.</div>;
+//   }
+//   return (
+//     <div className="service-comments">
+//       {comments.map(comment => (
+//         <div key={comment.id} className="comment">
+//           <p>{comment.text}</p>
+//         </div>
+//       ))}
+//     </div>
+//   );
+//       }
+
+// export default ServiceDetail;
+
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { UserContext } from '../UserContext/UserContext';
 import './ServiceDetail.css';
 import NavBar from '../NavBar/NavBar';
 import Footer from '../Footer/Footer';
 import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
 import Cards from '../Cards/Cards';
 
 function ServiceDetail() {
     const { id } = useParams();
+    const history = useHistory();
     const { token } = useContext(UserContext);
     const [service, setService] = useState(null);
     const [error, setError] = useState('');
-    const [serviceOwner, setServiceOwner] = useState(null); 
-  
+    const [serviceOwner, setServiceOwner] = useState(null);
+    const backendUrl = "http://localhost:3008";
 
-    
-    
     const fetchService = async () => {
-      try {
-        const serviceResponse = await fetch(`http://localhost:3008/service/${id}/detail`, {
-          headers: { 'Authorization': `Bearer ${token}` },
-        });
-        
-        if (serviceResponse.status !== 200) {
-          throw new Error('Network response for service was not ok');
-        }
-        const serviceData = await serviceResponse.json();
-        
-        console.log(serviceData)
-        setService(serviceData);
+        try {
+            const serviceResponse = await fetch(`${backendUrl}/service/${id}/detail`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
 
-        const idUser = serviceData.service.usuario_dni
-        
-        const ownerResponse = await fetch(`http://localhost:3008/user/detailService/${idUser}`, {
-          headers: { 'Authorization': `Bearer ${token}` },
-        });
-        const ownerData = await ownerResponse.json();
-        
-        console.log(ownerData.profile)
-        
-        setServiceOwner(ownerData.profile); 
-        
-      } catch (error) {
-        setError('Failed to load service details');
-        console.error('There has been a problem with your fetch operation:', error);
-      }
+            if (serviceResponse.status !== 200) {
+                throw new Error('Network response for service was not ok');
+            }
+            const serviceData = await serviceResponse.json();
+            setService(serviceData);
+
+            const idUser = serviceData.service.usuario_dni;
+            const ownerResponse = await fetch(`${backendUrl}/user/detailService/${idUser}`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            const ownerData = await ownerResponse.json();
+            setServiceOwner(ownerData.profile);
+
+        } catch (error) {
+            setError('Failed to load service details');
+            console.error('There has been a problem with your fetch operation:', error);
+        }
     };
-    
-    
 
     useEffect(() => {
         fetchService();
@@ -59,24 +252,56 @@ function ServiceDetail() {
     }
 
     if (!service || !serviceOwner) {
-      return <div>Loading...</div>;
-  }
+        return <div>Cargando...</div>;
+    }
 
-    console.log(serviceOwner)
+    const handleReserveClick = () => {
+        history.push(`/reserva/${service.id}`);
+    };
+
+    const createGoogleMapsLink = (address) => {
+        return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+    };
+
+    const responsive = {
+        superLargeDesktop: {
+            breakpoint: { max: 4000, min: 3000 },
+            items: 4
+        },
+        desktop: {
+            breakpoint: { max: 3000, min: 1024 },
+            items: 3
+        },
+        tablet: {
+            breakpoint: { max: 1024, min: 764 },
+            items: 2
+        },
+        mobile: {
+            breakpoint: { max: 464, min: 0 },
+            items: 1
+        }
+    };
 
     return (
         <>
             <NavBar />
             <div className="service-detail-container">
-                <div className='left-images'>
-                    <ServiceImages images={service.images} />
+                <Carousel responsive={responsive} infinite={true} autoPlay={true} className="service-carousel">
+                    {service.images.map(image => (
+                        <div key={image.image_id} className="carousel-image-container">
+                            <img src={`${backendUrl}/img/service/${image.url}`} alt="Service" />
+                        </div>
+                    ))}
+                </Carousel>
+                <div className="service-detail-overlay">
+                    <ServiceHeader title={service.service.nombre} />
                 </div>
-                <div className='right-service'>
-                    <ServiceMeta service={service.service} user={serviceOwner} />
+                <div className="service-detail-content">
+                    <ServiceMeta service={service.service} user={serviceOwner} handleReserveClick={handleReserveClick} createGoogleMapsLink={createGoogleMapsLink} />
+                    <ServiceComments comments={service.comments} />
+                    <Cards />
                 </div>
             </div>
-            <ServiceComments comments={service.comments} />
-            <Cards />
             <Footer />
         </>
     );
@@ -90,43 +315,27 @@ function ServiceHeader({ title }) {
     );
 }
 
-function ServiceImages({ images }) {
-
-  const responsive = {
-      superLargeDesktop: {
-        breakpoint: { max: 4000, min: 3000 },
-        items: 4 
-      },
-      desktop: {
-        breakpoint: { max: 3000, min: 1024 },
-        items: 3 
-      },
-      tablet: {
-        breakpoint: { max: 1024, min: 764 },
-        items: 2 
-      },
-      mobile: {
-        breakpoint: { max: 464, min: 0 },
-        items: 1 
-      }
-    };
-  const backendUrl = "http://localhost:3008";
-  
-  return (
-    <div className="service-images">
-      <Carousel responsive={responsive} infinite={true} className="owl-carousel owl-theme skill-slider">
-      {images.map(image => (
-        <img
-          key={image.image_id}
-          src={`${backendUrl}/img/service/${image.url}`}
-          alt="Service"
-          className="service-image"
-        />
-      ))}
-      </Carousel>
-    </div>
-  );
+function ServiceMeta({ service, user, handleReserveClick, createGoogleMapsLink }) {
+    return (
+        <>
+            <div className="service-meta">
+                <ServiceHeader title={service.nombre} />
+                <ServiceDescription description={service.descripcion} />
+                <p>Precio: <b>${service.precio}</b></p>
+                <p>Capacidad: {service.capacidad} personas máximo</p>
+                <div className='prop-detail'>
+                    <img src={`img/avatar/${user.avatar}`} alt="Avatar del propietario" />
+                    <p>{user.nombre + ' ' + user.apellido}</p>
+                </div>
+                <a href={createGoogleMapsLink(service.direccion)} target="_blank" rel="noopener noreferrer" className="google-maps-link">
+                    Ver Ubicación en Google Maps
+                </a>
+            </div>
+            <button className="reserve-button" onClick={handleReserveClick}>Reservar</button>
+        </>
+    );
 }
+
 function ServiceDescription({ description }) {
     return (
         <div className="service-description">
@@ -135,66 +344,19 @@ function ServiceDescription({ description }) {
     );
 }
 
-function ServiceMeta({ service, user }) {
-
-  const history = useHistory();
-
-  const handleReserveClick = () => {
-    history.push(`/reserva/${service.id}`); 
-};
-
-  const createGoogleMapsLink = (address) => {
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-};
-
-  const backendUrl = "http://localhost:3008";
-
-  if (!user ) {
-    return <div>Loading...</div>;
-}
-
-  return (
-    <>
-    <div className="service-meta">
-      <div className='service-header'>
-      <ServiceHeader title={service.nombre} />
-      </div>
-      <div className='service-description'>
-      <ServiceDescription description={service.descripcion}/>
-      </div>
-      <p>Precio: <b>${service.precio}</b></p>
-      <p>Capacidad: {service.capacidad} personas maximo </p>
-      <div className='prop-detail'>
-          <img src={`${backendUrl}/img/avatar/${user.avatar}`} />
-          <p>
-           {user.nombre +' '+ user.apellido}
-          </p>
-      </div>
-      {service && (
-                        <a href={createGoogleMapsLink(service.direccion)} target="_blank" rel="noopener noreferrer" className="google-maps-link">
-                            Ver Ubicación en Google Maps
-                        </a>
-                    )}
-
-    </div>
-    <button className="reserve-button" onClick={handleReserveClick}>Reservar</button>
-    </>
-  );
-}
-
 function ServiceComments({ comments }) {
-  if (comments.length === 0) {
-    return <div>No hay comentarios aún.</div>;
-  }
-  return (
-    <div className="service-comments">
-      {comments.map(comment => (
-        <div key={comment.id} className="comment">
-          <p>{comment.text}</p>
+    if (comments.length === 0) {
+        return <div>No hay comentarios aún.</div>;
+    }
+    return (
+        <div className="service-comments">
+            {comments.map(comment => (
+                <div key={comment.id} className="comment">
+                    <p>{comment.text}</p>
+                </div>
+            ))}
         </div>
-      ))}
-    </div>
-  );
-      }
+    );
+}
 
 export default ServiceDetail;

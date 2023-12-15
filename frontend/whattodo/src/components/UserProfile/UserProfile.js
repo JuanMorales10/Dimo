@@ -10,7 +10,7 @@ const UserProfile = () => {
   const [services, setServices] = useState([]);
   const [error, setError] = useState('');
   const usuario = user.profile
-
+  
   useEffect(() => {
     const loadServices = async () => {
       try {
@@ -18,11 +18,11 @@ const UserProfile = () => {
           const response = await fetch(`http://localhost:3008/service/userServices/${user.profile.id}`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
-
+          
           if (!response.ok) {
             throw new Error('No se pudieron obtener los servicios');
           }
-
+          
           const servicesData = await response.json();
           setServices(servicesData.services);
         }
@@ -30,14 +30,15 @@ const UserProfile = () => {
         setError(error.message);
       }
     };
-
+    
     loadServices();
   }, [user?.profile?.id, token]);
-
+  
   if (!user || !user.profile) {
     return <div>Loading...</div>; 
   }
-
+  
+  console.log(user)
   if (error) {
     return <div>Error: {error}</div>;
   }
@@ -49,7 +50,7 @@ const UserProfile = () => {
         <div className="user-info">
           <img className="profile-picture" src={`http://localhost:3008/img/avatar/${usuario.avatar}`} alt={`${usuario.nombre} ${usuario.apellido}`} />
           <div className="user-details">
-            <h1>{`${usuario.nombre} ${usuario.apellido}`}</h1>
+          <h1>{`${usuario.nombre} ${usuario.apellido ? usuario.apellido : ''}`}</h1>
             <p className="user-location">{usuario.ciudad}</p>
             <div className='buttons-profile'>
               <Link to='/user/editUser'>

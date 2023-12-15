@@ -158,16 +158,6 @@ function Modal({ closeModal }) {
             />
           </div>
           <div>
-            <label htmlFor="disponibilidad">Disponibilidad:</label>
-            <input
-              type="checkbox"
-              id="disponibilidad"
-              name="disponibilidad"
-              checked={formData.disponibilidad}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div>
             <label htmlFor="atp">ATP:</label>
             <input
               type="checkbox"

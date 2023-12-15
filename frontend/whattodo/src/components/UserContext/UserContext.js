@@ -1,10 +1,8 @@
 import React, { createContext, useState, useEffect } from 'react';
-
-
 export const UserContext = createContext(null);
-
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem('token') || null);
 
   useEffect(() => {
@@ -53,7 +51,8 @@ export const UserProvider = ({ children }) => {
           throw new Error('Fetching user profile failed');
         }
         const profileData = await response.json();
-        setUser(profileData); // Actualiza el estado del usuario
+        setUser(profileData);
+        setUserRole(profileData.type)
       } catch (error) {
         console.error('Error al obtener el perfil del usuario:', error);
         setUser(null); // En caso de error, resetea el estado del usuario
@@ -61,8 +60,10 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  console.log(user)
+
   return (
-    <UserContext.Provider value={{ token, user , login, logout, fetchUserProfile }}>
+    <UserContext.Provider value={{ token, user , login, logout, fetchUserProfile , userRole}}>
       {children}
     </UserContext.Provider>
   );

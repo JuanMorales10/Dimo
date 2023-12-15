@@ -7,7 +7,7 @@ import NavBar from '../../../components/NavBar/NavBar';
 
 function ReservaPage() {
   const { serviceId } = useParams();
-  const { token, fetchUserProfile , user} = useContext(UserContext);
+  const { token, user} = useContext(UserContext);
   const [error, setError] = useState('');
   const [service, setService] = useState(null);
 

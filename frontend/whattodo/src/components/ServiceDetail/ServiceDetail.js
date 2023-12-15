@@ -30,8 +30,10 @@ function ServiceDetail() {
         
         console.log(serviceData)
         setService(serviceData);
+
+        const idUser = serviceData.service.usuario_dni
         
-        const ownerResponse = await fetch(`http://localhost:3008/user/detail/${serviceData.service.usuario_dni}`, {
+        const ownerResponse = await fetch(`http://localhost:3008/user/detailService/${idUser}`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         const ownerData = await ownerResponse.json();

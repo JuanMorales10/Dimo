@@ -434,37 +434,6 @@ const calculateAvailableSlots = async (serviceId, selectedDate) => {
     console.log('Available', availableSlots);
 
     return availableSlots;
-
-
-    // console.log('start', operationStart)
-    // console.log('End',operationEnd)
-
-    // console.log(reservations)
-
-    // reservations.forEach(reservation => {
-    //   console.log("Start (Local Argentina):", moment(reservation.start_datetime).tz('America/Argentina/Buenos_Aires').format());
-    //   console.log("Start (UTC):", moment(reservation.start_datetime).utc().format());
-    // });
-
-    // // Convertir las reservaciones a la zona horaria local de Argentina
-    // const bookedSlots = reservations.map(reservation => ({
-    //   start: moment(reservation.start_datetime).tz('America/Argentina/Buenos_Aires').toDate(),
-    //   end: moment(reservation.end_datetime).tz('America/Argentina/Buenos_Aires').toDate()
-    // }));
-
-    // const availableSlots = allSlots.filter(slot => 
-    //   !bookedSlots.some(bookedSlot => {
-    //     const slotMoment = moment(slot);
-    //     const startBooked = moment(bookedSlot.start);
-    //     const endBooked = moment(bookedSlot.end);
-    //     return slotMoment.isSameOrAfter(startBooked) && slotMoment.isBefore(endBooked);
-    //   })
-    // );
-
-    // console.log('Booked:', bookedSlots);
-    // console.log('Available', availableSlots);
-
-    // return availableSlots;
   } catch (error) {
     console.error('Error calculating available slots:', error);
     throw error;

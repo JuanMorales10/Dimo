@@ -1,0 +1,61 @@
+
+.reserva-form-container {
+    max-width: 500px;
+    margin: 120px auto;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .reserva-form-container h2 {
+    color: #333;
+    margin-bottom: 1rem;
+    margin-top: 0 !important;
+  }
+  
+  .reserva-form-container label {
+    display: block;
+    margin: 0.5rem 0;
+    font-weight: bold;
+  }
+  
+  .reserva-form-container select,
+  .reserva-form-container input {
+    width: 60%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    height: 40px;
+  }
+  
+  .book-now-btn {
+    padding: 0.5rem 1rem;
+    width: 100%;
+    border: none;
+    background-color: #845ec2;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .book-now-btn:hover {
+    background-color: #6f42c1;
+  }
+
+  .reserva{
+    margin-top: 110px;
+  }
+
+  .react_datepicker {
+    font-family: "Helvetica Neue", helvetica, arial, sans-serif;
+    font-size: 0.8rem;
+    background-color: #8c2121 !important;
+    color: #000;
+    border: 1px solid #aeaeae;
+    border-radius: 0.3rem;
+    display: inline-block;
+    position: relative;
+  }
+  

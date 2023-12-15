@@ -37,6 +37,9 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         duracion: {
+            type: DataTypes.INTEGER,
+        },
+        direccion: {
             type: DataTypes.STRING,
         },
         disponibilidad: {
@@ -57,7 +60,26 @@ module.exports = (sequelize, DataTypes) => {
                 model: 'category',
                 key: 'id'
             }
-        }
+        },
+        operating_hours_start: {
+            type: DataTypes.TIME,
+            allowNull: false,
+          },
+          operating_hours_end: {
+            type: DataTypes.TIME,
+            allowNull: false,
+          },
+          operating_days: {
+            type: DataTypes.STRING, // Esto podría ser una cadena JSON que contenga un array de días, por ejemplo: '["Monday", "Tuesday", ...]'
+            get() {
+              const rawValue = this.getDataValue('operating_days');
+              return rawValue ? JSON.parse(rawValue) : [];
+            },
+            set(value) {
+              this.setDataValue('operating_days', JSON.stringify(value));
+            },
+            allowNull: false,
+          },
         
     }
     const config = {

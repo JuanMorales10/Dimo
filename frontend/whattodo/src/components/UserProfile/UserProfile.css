@@ -3,7 +3,7 @@
     margin: 0 auto;
     padding: 20px;
     color: #333;
-    margin-top: 110px;
+    margin-top: 175px;
   }
   
   .user-info {
@@ -50,7 +50,6 @@
 
   .buttons-profile{
     display: flex;
-    padding: 10px;
   }
 
   .buttons-profile button{

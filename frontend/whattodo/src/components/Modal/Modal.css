@@ -20,10 +20,7 @@
     background: white;
     padding: 20px;
     border-radius: 15px;
-    width: 90%;
-    max-width: 500px;
-    margin-left: 20px;
-    margin-top: 10px;
+    width: 100%;
     color: #000;
 }
 
@@ -68,7 +65,6 @@
 
 .filters{
     display: flex;
-    flex-direction: column;
 }
 
 .category-button {
@@ -177,7 +173,27 @@ input[type="date"]{
 }
 
 .modal-overlay{
-    position: relative;
+    position: absolute;
     z-index: 10;
-    top: 174px;
+    top: 117px;
+    width: 100%;
+}
+
+.precio-cont{
+    display:flex;
+    width:70%
+}
+
+.info-cont{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.info-cont label{
+    margin-left:20px
+}
+
+.modal-search{
+    margin:0;
 }

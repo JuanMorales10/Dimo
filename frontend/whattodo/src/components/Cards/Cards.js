@@ -61,7 +61,7 @@ function Cards() {
     <div className='card-list'>
       <h2>Ultimas Experiencias Cargadas</h2>
       <Carousel responsive={responsive} infinite={true} className="owl-carousel owl-theme skill-slider">
-      {data.map((service)=>{console.log(service)
+      {data.map((service)=>{
         return <Card key={service.id} {...service} />
       })}
       </Carousel>

@@ -14,7 +14,6 @@ function LoginForm() {
     const { login } = useContext(UserContext);
     const [formData, setFormData] = useState({
         email: '',
-        dni: '',
         password: '',
     });
 
@@ -59,29 +58,11 @@ function LoginForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
         try {
-            const response = await fetch('http://localhost:3008/user/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-    
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-
-            const data = await response.json();
-
-            console.log(data.user)
-            login(data.user); 
-
+            await login(formData.email, formData.password);
             history.push('/');  
         } catch (error) {
-            console.error('Error al enviar el formulario:', error);
+            console.error('Error al iniciar sesión:', error);
         }
     };
     
@@ -109,7 +90,7 @@ function LoginForm() {
                                     required
                                 />
                             </div>
-                            <div className='formflex'>
+                            {/* <div className='formflex'>
                                 <FontAwesomeIcon icon={faIdCard} />
                                 <input
                                     type="text"
@@ -119,7 +100,7 @@ function LoginForm() {
                                     placeholder="DNI"
                                     required
                                 />
-                            </div>
+                            </div> */}
 
                         </div>
                         <div className='formflex'>
@@ -132,7 +113,7 @@ function LoginForm() {
                                 placeholder="Contraseña"
                                 required
                             />
-                            <div class="see-password2">
+                            <div className="see-password2">
                                 <input type="checkbox" name="" id="see-password"  style={{ marginBottom: '12px' }}/>
                                 <FontAwesomeIcon icon={faEye}  className='seepass'/>
                             </div>

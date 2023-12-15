@@ -11,10 +11,10 @@ import Footer from '../../components/Footer/Footer';
 const Home = () => {
   return (
     <div className="home-container">
-     <NavBar />
-     <Hero />
-      <CardList />
-      <Footer /> 
+      <NavBar />
+      <Hero />
+      <section><CardList /></section>
+      <Footer />
     </div>
   );
 };

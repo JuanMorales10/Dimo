@@ -7,7 +7,7 @@ import NavBar from '../../../components/NavBar/NavBar';
 
 function ReservaPage() {
   const { serviceId } = useParams();
-  const { token, fetchUserProfile } = useContext(UserContext);
+  const { token, fetchUserProfile , user} = useContext(UserContext);
   const [error, setError] = useState('');
   const [service, setService] = useState(null);
 
@@ -31,33 +31,60 @@ function ReservaPage() {
   }, [serviceId, token]);
 
   const handleSubmit = async (reserva) => {
+    console.log(reserva);
     try {
-      const userProfile = await fetchUserProfile();
-      const usuarioDni = userProfile ? userProfile.profile.id : null;
-
+  
       // Convertir la duración de formato HH:mm:ss a minutos
       const durationParts = service.service.duracion.split(':');
       const durationInMinutes = parseInt(durationParts[0]) * 60 + parseInt(durationParts[1]);
-
-      const startDateTime = moment.utc(reserva.fecha).set({
-        hour: moment(reserva.hora, "HH:mm").hour(),
-        minute: moment(reserva.hora, "HH:mm").minute()
-      });
   
-      const endDateTime = moment.utc(startDateTime).add(durationInMinutes, 'minutes');
+    
+      const fechaMoment = moment(reserva.fecha, 'YYYY-MM-DD');
 
+    // Ajustar la hora según reserva.hora
+    const horaParts = reserva.hora.split(':');
+    if (horaParts.length !== 2 || isNaN(horaParts[0]) || isNaN(horaParts[1])) {
+      throw new Error("El formato de la hora proporcionada no es válido.");
+    }
+
+    // Ahora puedes usar set para ajustar la hora y luego convertir a Date
+    const fechaLocal = fechaMoment.set({
+      hour: parseInt(horaParts[0]),
+      minute: parseInt(horaParts[1]),
+      second: 0
+    }).toDate();
+
+    console.log(fechaLocal)
+
+
+    // Formatear manualmente la fecha y hora para mantener la zona horaria local
+    const formatDate = (date) => {
+      const pad = (num) => num.toString().padStart(2, '0');
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+    };
+
+    const startDateTimeLocal = formatDate(fechaLocal);
+    console.log('startDateTimeLocal:', startDateTimeLocal)
+    const endDateTimeLocal = formatDate(new Date(fechaLocal.getTime() + durationInMinutes * 60000));
+    
+        console.log(reserva.fecha)
+
+      // Preparar los datos para la reserva
       const reservaData = {
-        usuario_dni: reserva.usuario_dni,
+        usuario_dni: user.profile.id,
         service_id: serviceId,
-        start_datetime: startDateTime.toISOString(),
-        end_datetime: endDateTime.toISOString(),
+        start_datetime: startDateTimeLocal,
+        end_datetime: endDateTimeLocal,
         duracion: durationInMinutes,
         cantidadPersonas: reserva.cantidadPersonas,
         nombreReserva: reserva.nombreReserva,
         nombreUsuario: reserva.nombreUsuario
       };
+
+      console.log(reservaData)
   
   
+      // Enviar la solicitud de reserva al backend
       const response = await fetch(`http://localhost:3008/reserva/reservas`, {
         method: 'POST',
         headers: {
@@ -77,6 +104,8 @@ function ReservaPage() {
       setError(error.message);
     }
   };
+  
+
   
   
 

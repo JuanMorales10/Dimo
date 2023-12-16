@@ -51,6 +51,14 @@
     z-index: -1;
   }
 
+  .background-video.hidden {
+    display: none; /* Oculta el video mientras se carga */
+  }
+  
+  .background-video.visible {
+    display: block; /* Muestra el video cuando esté listo */
+  }
+
   .txt-rotate > .wrap {
     border-right: 0.08em solid #666;
   }

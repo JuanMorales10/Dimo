@@ -3,7 +3,7 @@ import './Hero.css'; // Asegúrate de crear un archivo Hero.css para tus estilos
 import backgroundvideo from '../../assets/video.mp4'; // Reemplaza con tu imagen de fondo
 import SearchBar from '../SearchBar/SearchBar';
 
-const Hero = () => {
+const Hero = ({ onVideoLoaded }) => {
 
   const [loopNum, setLoopNum] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -13,7 +13,12 @@ const Hero = () => {
   const period = 1500;
   const toRotate = ["Proxima aventura", "Proximo Destino"];
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
+  const handleVideoLoad = () => {
+    setVideoLoaded(true);
+  };
+
   const handleModalOpen = () => {
     setIsModalOpen(true);
   };
@@ -21,6 +26,7 @@ const Hero = () => {
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
+
 
   useEffect(() => {
     let ticker = setInterval(() => {
@@ -59,12 +65,20 @@ const Hero = () => {
     }
   };
 
+
   return (
     <>
       <div className="hero-cont">
-        <video autoPlay loop muted className="background-video">
-          <source src={backgroundvideo} type="video/mp4" />
-        </video>
+      <video 
+        autoPlay 
+        loop 
+        muted 
+        className={`background-video ${videoLoaded ? 'visible' : 'hidden'}`} 
+        onLoadedData={handleVideoLoad}
+        preload="auto"
+      >
+        <source src={backgroundvideo} type="video/mp4" />
+      </video>
         <div className={`hero-content ${isModalOpen ? 'modal-open' : ''}`}>
           <div className='container-title'>
             <h1 className='hero-title'>
@@ -75,7 +89,7 @@ const Hero = () => {
             </h1>
           </div>
           <>
-          <SearchBar onModalOpen={handleModalOpen} onModalClose={handleModalClose}  />
+            <SearchBar onModalOpen={handleModalOpen} onModalClose={handleModalClose} />
           </>
         </div>
       </div>

@@ -218,72 +218,90 @@ const serviceController = {
     }
   },
 
-  filterServices: async (req, res) => {
-    try {
-      const {
-        categoria_id, regionId, precioMin, precioMax, disponibilidad, rating, capacidad, atp, nombre
-      } = req.query;
+  
+ filterServices : async (req, res) => {
+  try {
+    const {
+      categoria_id, precioMin, precioMax, disponibilidad, rating, capacidad, atp, nombre
+    } = req.body;
 
-      let filterCriteria = {};
+    let filterCriteria = {};
 
-      if (categoria_id) {
-        filterCriteria.categoria_id = categoria_id;
-      }
-
-      if (regionId) {
-        filterCriteria.id_region = regionId;
-      }
-
-      if (precioMin && precioMax) {
-        filterCriteria.precio = { [Op.between]: [parseFloat(precioMin), parseFloat(precioMax)] };
-      } else if (precioMin) {
-        filterCriteria.precio = { [Op.gte]: parseFloat(precioMin) };
-      } else if (precioMax) {
-        filterCriteria.precio = { [Op.lte]: parseFloat(precioMax) };
-      }
-
-      if (disponibilidad !== undefined) {
-        filterCriteria.disponibilidad = disponibilidad === 'true';
-      }
-
-      if (rating) {
-        filterCriteria.rating = { [Op.gte]: parseInt(rating, 10) };
-      }
-
-      if (capacidad) {
-        filterCriteria.capacidad = { [Op.eq]: parseInt(capacidad, 10) };
-      }
-
-      if (atp !== undefined) {
-        filterCriteria.atp = atp === 'true';
-      }
-
-      if (nombre) {
-        filterCriteria.nombre = { [Op.like]: `%${nombre}%` };
-      }
-
-      const services = await Service.findAll({
-        where: filterCriteria,
-        include: [
-          {
-            model: ServiceImage,
-            as: 'images',
-            attributes: ['url']
-          },
-          {
-            model: Category,
-            as: 'category'
-          },
-          // Incluye aquí otras asociaciones según sea necesario
-        ]
-      });
-
-      return res.status(200).json(services);
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ error: 'Error al filtrar los servicios' });
+    if (categoria_id) {
+      filterCriteria.categoria_id = categoria_id;
     }
-  },
+
+    if (precioMin || precioMax) {
+      filterCriteria.precio = {};
+      if (precioMin) filterCriteria.precio[Op.gte] = parseFloat(precioMin);
+      if (precioMax) filterCriteria.precio[Op.lte] = parseFloat(precioMax);
+    }
+
+    if (disponibilidad !== undefined) {
+      filterCriteria.disponibilidad = disponibilidad;
+    }
+
+    if (rating) {
+      const ratingValue = parseInt(rating, 10);
+      if (ratingValue >= 1 && ratingValue <= 5) {
+        filterCriteria.rating = { [Op.eq]: ratingValue };
+      } else {
+        return res.status(400).json({ error: 'El valor del rating es inválido' });
+      }
+    }
+
+    if (capacidad) {
+      const capacidadValue = parseInt(capacidad, 10);
+      if (!isNaN(capacidadValue)) {
+        filterCriteria.capacidad = { [Op.gte]: capacidadValue };
+      } else {
+        return res.status(400).json({ error: 'El valor de capacidad es inválido' });
+      }
+    }
+
+    if (atp !== undefined) {
+      if(atp === ''){
+
+      }
+      filterCriteria.atp = atp;
+    }
+
+    if (nombre) {
+      filterCriteria.nombre = { [Op.like]: `%${nombre}%` };
+    }
+
+    console.log(filterCriteria)
+
+    const services = await Service.findAll({
+      where: filterCriteria,
+      logging: console.log,
+      include: [
+        {
+          model: ServiceImage,
+          as: 'images',
+          attributes: ['url']
+        },
+        {
+          model: Category,
+          as: 'category'
+        },
+        {
+          model: User,
+          as: 'user',
+          attributes: ['nombre', 'apellido'] // Asegúrate de que estos campos existan en tu modelo User
+        },
+        // Agrega aquí otras asociaciones según sea necesario
+      ],
+    });
+
+    console.log(services)
+
+    return res.status(200).json(services);
+  } catch (error) {
+    console.error('Error al filtrar los servicios:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+},
 
   searchServicesByName: async (req, res) => {
     try {

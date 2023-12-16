@@ -1,213 +1,13 @@
-// import React, { useState, useEffect, useContext} from 'react';
-// import { useParams, useHistory } from 'react-router-dom';
-// import { UserContext } from '../UserContext/UserContext';
-// import './ServiceDetail.css';
-// import NavBar from '../NavBar/NavBar';
-// import Footer from '../Footer/Footer';
-// import Carousel from 'react-multi-carousel';
-// import Cards from '../Cards/Cards';
-
-// function ServiceDetail() {
-//     const { id } = useParams();
-//     const { token } = useContext(UserContext);
-//     const [service, setService] = useState(null);
-//     const [error, setError] = useState('');
-//     const [serviceOwner, setServiceOwner] = useState(null); 
-  
-
-    
-    
-//     const fetchService = async () => {
-//       try {
-//         const serviceResponse = await fetch(`http://localhost:3008/service/${id}/detail`, {
-//           headers: { 'Authorization': `Bearer ${token}` },
-//         });
-        
-//         if (serviceResponse.status !== 200) {
-//           throw new Error('Network response for service was not ok');
-//         }
-//         const serviceData = await serviceResponse.json();
-        
-//         console.log(serviceData)
-//         setService(serviceData);
-
-//         const idUser = serviceData.service.usuario_dni
-        
-//         const ownerResponse = await fetch(`http://localhost:3008/user/detailService/${idUser}`, {
-//           headers: { 'Authorization': `Bearer ${token}` },
-//         });
-//         const ownerData = await ownerResponse.json();
-        
-//         console.log(ownerData.profile)
-        
-//         setServiceOwner(ownerData.profile); 
-        
-//       } catch (error) {
-//         setError('Failed to load service details');
-//         console.error('There has been a problem with your fetch operation:', error);
-//       }
-//     };
-    
-    
-
-//     useEffect(() => {
-//         fetchService();
-//     }, [id, token]);
-
-//     if (error) {
-//         return <div>Error: {error}</div>;
-//     }
-
-//     if (!service || !serviceOwner) {
-//       return <div>Loading...</div>;
-//   }
-
-//     console.log(serviceOwner)
-
-//     return (
-//         <>
-//             <NavBar />
-//             <div className="service-detail-container">
-//                 <div className='left-images'>
-//                     <ServiceImages images={service.images} />
-//                 </div>
-//                 <div className='right-service'>
-//                     <ServiceMeta service={service.service} user={serviceOwner} />
-//                 </div>
-//             </div>
-//             <ServiceComments comments={service.comments} />
-//             <Cards />
-//             <Footer />
-//         </>
-//     );
-// }
-
-// function ServiceHeader({ title }) {
-//     return (
-//         <div className="service-header">
-//             <h1>{title}</h1>
-//         </div>
-//     );
-// }
-
-// function ServiceImages({ images }) {
-
-//   const responsive = {
-//       superLargeDesktop: {
-//         breakpoint: { max: 4000, min: 3000 },
-//         items: 4 
-//       },
-//       desktop: {
-//         breakpoint: { max: 3000, min: 1024 },
-//         items: 3 
-//       },
-//       tablet: {
-//         breakpoint: { max: 1024, min: 764 },
-//         items: 2 
-//       },
-//       mobile: {
-//         breakpoint: { max: 464, min: 0 },
-//         items: 1 
-//       }
-//     };
-//   const backendUrl = "http://localhost:3008";
-  
-//   return (
-//     <div className="service-images">
-//       <Carousel responsive={responsive} infinite={true} className="owl-carousel owl-theme skill-slider">
-//       {images.map(image => (
-//         <img
-//           key={image.image_id}
-//           src={`${backendUrl}/img/service/${image.url}`}
-//           alt="Service"
-//           className="service-image"
-//         />
-//       ))}
-//       </Carousel>
-//     </div>
-//   );
-// }
-// function ServiceDescription({ description }) {
-//     return (
-//         <div className="service-description">
-//             <p>{description}</p>
-//         </div>
-//     );
-// }
-
-// function ServiceMeta({ service, user }) {
-
-//   const history = useHistory();
-
-//   const handleReserveClick = () => {
-//     history.push(`/reserva/${service.id}`); 
-// };
-
-//   const createGoogleMapsLink = (address) => {
-//     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-// };
-
-//   const backendUrl = "http://localhost:3008";
-
-//   if (!user ) {
-//     return <div>Loading...</div>;
-// }
-
-//   return (
-//     <>
-//     <div className="service-meta">
-//       <div className='service-header'>
-//       <ServiceHeader title={service.nombre} />
-//       </div>
-//       <div className='service-description'>
-//       <ServiceDescription description={service.descripcion}/>
-//       </div>
-//       <p>Precio: <b>${service.precio}</b></p>
-//       <p>Capacidad: {service.capacidad} personas maximo </p>
-//       <div className='prop-detail'>
-//           <img src={`${backendUrl}/img/avatar/${user.avatar}`} />
-//           <p>
-//            {user.nombre +' '+ user.apellido}
-//           </p>
-//       </div>
-//       {service && (
-//                         <a href={createGoogleMapsLink(service.direccion)} target="_blank" rel="noopener noreferrer" className="google-maps-link">
-//                             Ver Ubicación en Google Maps
-//                         </a>
-//                     )}
-
-//     </div>
-//     <button className="reserve-button" onClick={handleReserveClick}>Reservar</button>
-//     </>
-//   );
-// }
-
-// function ServiceComments({ comments }) {
-//   if (comments.length === 0) {
-//     return <div>No hay comentarios aún.</div>;
-//   }
-//   return (
-//     <div className="service-comments">
-//       {comments.map(comment => (
-//         <div key={comment.id} className="comment">
-//           <p>{comment.text}</p>
-//         </div>
-//       ))}
-//     </div>
-//   );
-//       }
-
-// export default ServiceDetail;
-
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { UserContext } from '../UserContext/UserContext';
-import './ServiceDetail.css';
 import NavBar from '../NavBar/NavBar';
 import Footer from '../Footer/Footer';
 import Carousel from 'react-multi-carousel';
+import TabContainer from '../TabContainer/TabContainer';
 import 'react-multi-carousel/lib/styles.css';
 import Cards from '../Cards/Cards';
+import './ServiceDetailTest.css'
 
 function ServiceDetail() {
     const { id } = useParams();
@@ -255,8 +55,9 @@ function ServiceDetail() {
         return <div>Cargando...</div>;
     }
 
+
     const handleReserveClick = () => {
-        history.push(`/reserva/${service.id}`);
+        history.push(`/reserva/${service.service.id}`);
     };
 
     const createGoogleMapsLink = (address) => {
@@ -266,15 +67,15 @@ function ServiceDetail() {
     const responsive = {
         superLargeDesktop: {
             breakpoint: { max: 4000, min: 3000 },
-            items: 4
+            items: 1
         },
         desktop: {
             breakpoint: { max: 3000, min: 1024 },
-            items: 3
+            items: 1
         },
         tablet: {
             breakpoint: { max: 1024, min: 764 },
-            items: 2
+            items: 1
         },
         mobile: {
             breakpoint: { max: 464, min: 0 },
@@ -294,11 +95,15 @@ function ServiceDetail() {
                     ))}
                 </Carousel>
                 <div className="service-detail-overlay">
-                    <ServiceHeader title={service.service.nombre} />
+                    <ServiceHeader title={service.service.nombre} rating={service.service.rating} />
                 </div>
+                <TabContainer
+                    details={<ServiceMeta service={service.service} user={serviceOwner} handleReserveClick={handleReserveClick} createGoogleMapsLink={createGoogleMapsLink} />}
+                    comments={<ServiceComments comments={service.comments} />}
+                //   amenities={/* ... contenido para amenities ... */}
+                //   policies={/* ... contenido para policies ... */}
+                />
                 <div className="service-detail-content">
-                    <ServiceMeta service={service.service} user={serviceOwner} handleReserveClick={handleReserveClick} createGoogleMapsLink={createGoogleMapsLink} />
-                    <ServiceComments comments={service.comments} />
                     <Cards />
                 </div>
             </div>
@@ -307,24 +112,43 @@ function ServiceDetail() {
     );
 }
 
-function ServiceHeader({ title }) {
+function ServiceHeader({ title, rating }) {
     return (
         <div className="service-header">
             <h1>{title}</h1>
+            <RatingStars rating={rating} />
+        </div>
+    );
+}
+
+function RatingStars({ rating }) {
+    // Crea un arreglo con 5 elementos [0, 0, 0, 0, 0]
+    const totalStars = 5;
+    let stars = Array(totalStars).fill(0);
+
+    return (
+        <div className="rating">
+            {stars.map((_, index) => {
+                return (
+                    <span key={index} className={index < rating ? "star filled" : "star"}>
+                        &#9733;
+                    </span>
+                );
+            })}
         </div>
     );
 }
 
 function ServiceMeta({ service, user, handleReserveClick, createGoogleMapsLink }) {
+    const backendUrl = "http://localhost:3008";
     return (
         <>
             <div className="service-meta">
-                <ServiceHeader title={service.nombre} />
                 <ServiceDescription description={service.descripcion} />
                 <p>Precio: <b>${service.precio}</b></p>
                 <p>Capacidad: {service.capacidad} personas máximo</p>
                 <div className='prop-detail'>
-                    <img src={`img/avatar/${user.avatar}`} alt="Avatar del propietario" />
+                    <img src={`${backendUrl}/img/avatar/${user.avatar}`} className='img-service-owner' />
                     <p>{user.nombre + ' ' + user.apellido}</p>
                 </div>
                 <a href={createGoogleMapsLink(service.direccion)} target="_blank" rel="noopener noreferrer" className="google-maps-link">

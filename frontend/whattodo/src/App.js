@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import RegistrationFormHost from './components/RegistrationForm/RegistrationFormHost';
 import RegistrationForm from './components/RegistrationForm/RegistrationForm';
 import LoginForm from './components/LoginForm/LoginForm';
@@ -15,29 +15,26 @@ import AboutUs from './components/AboutUs/AboutUs';
 import ReservaPage from './pages/service/ReservaPage/ReservaPage';
 import ServiceListView from './pages/service/ServiceListView/ServiceListView';
 
-
-
-
 function App() {
   return (
     <UserProvider> 
       <Router>
         <div className="App">
-          <Switch>
-            <Route exact path="/" component={Home} />
-            <Route exact path="/register" component={RegisterOptions} />
-            <Route exact path="/login" component={LoginForm} />
-            <Route exact path="/create-service" component={CreateServiceForm} />
-            <Route exact path="/register-normal" component={RegistrationForm} />
-            <Route exact path="/register-host" component={RegistrationFormHost} />
-            <Route exact path='/service/:id/detail' component={ServiceDetail} />
-            <Route exact path="/search-results" component={ServiceListView} />
-            <Route exact path='/user/profile' component={UserProfile} />
-            <Route exact path='/user/editUser' component={EditUserProfile} />
-            <Route exact path='/nosotros' component={AboutUs} />
-            <Route exact path="/reserva/:serviceId" component={ReservaPage} />
-            <Route component={NotFoundPage} />
-          </Switch>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<RegisterOptions />} />
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/create-service" element={<CreateServiceForm />} />
+            <Route path="/register-normal" element={<RegistrationForm />} />
+            <Route path="/register-host" element={<RegistrationFormHost />} />
+            <Route path='/service/:id/detail' element={<ServiceDetail />} />
+            <Route path="/search-results" element={<ServiceListView />} />
+            <Route path='/user/profile' element={<UserProfile />} />
+            <Route path='/user/editUser' element={<EditUserProfile />} />
+            <Route path='/nosotros' element={<AboutUs />} />
+            <Route path="/reserva/:serviceId" element={<ReservaPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
         </div>
       </Router>
     </UserProvider>

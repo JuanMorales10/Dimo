@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../assets/img/logowhat.png';
 import './NavBar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,11 +8,11 @@ import { UserContext } from '../UserContext/UserContext';
 
 const NavBar = () => {
   const { user, logout, token } = useContext(UserContext);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout().then(() => {
-      history.push('/');
+      navigate('/');
     });
   };
 

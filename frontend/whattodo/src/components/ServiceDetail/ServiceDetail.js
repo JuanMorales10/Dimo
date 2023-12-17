@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { UserContext } from '../UserContext/UserContext';
 import NavBar from '../NavBar/NavBar';
 import Footer from '../Footer/Footer';
@@ -13,7 +13,7 @@ import { faStar } from '@fortawesome/free-solid-svg-icons';
 
 function ServiceDetail() {
     const { id } = useParams();
-    const history = useHistory();
+    const navigate = useNavigate();
     const { token } = useContext(UserContext);
     const [service, setService] = useState(null);
     const [error, setError] = useState('');
@@ -96,7 +96,7 @@ function ServiceDetail() {
     }
 
     const handleReserveClick = () => {
-        history.push(`/reserva/${service.service.id}`);
+        navigate(`/reserva/${service.service.id}`);
     };
 
     const createGoogleMapsLink = (address) => {

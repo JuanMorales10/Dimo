@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import NavBar from '../../../components/NavBar/NavBar';
 import './EditUserProfile.css';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../../components/UserContext/UserContext';
 import logo from '../../../assets/img/logowhat.png';
 
 const EditUserProfile = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { token, user} = useContext(UserContext);
   const [avatarFile, setAvatarFile] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
@@ -80,7 +80,7 @@ const EditUserProfile = () => {
       const data = await response.json();
 
       console.log(data)
-        history.push('/user/editUser'); 
+        navigate('/user/editUser'); 
       // Manejar la respuesta del servidor aquí
     } catch (error) {
       console.error('Error updating profile:', error);

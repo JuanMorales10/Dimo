@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './RegisterOptions.css'
 
 const RegisterOptions = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleSelectOption = (option) => {
     if (option === 'normal') {
-      history.push('/register-normal');
+      navigate('/register-normal');
     } else if (option === 'host') {
-      history.push('/register-host');
+      navigate('/register-host');
     }
   };
 

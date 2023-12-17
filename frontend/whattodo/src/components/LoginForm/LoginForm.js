@@ -6,11 +6,11 @@ import backgroundImage from '../../assets/img/pexels-roberto-nickson-2559941.jpg
 import { Link } from 'react-router-dom';
 import logo from '../../assets/img/logowhat.png'
 import LoadingScreen from '../LoadingScreen/LoadingScreen';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../UserContext/UserContext';
 
 function LoginForm() {
-    const history = useHistory();
+    const navigate = useNavigate();
     const [keepSession, setKeepSession] = useState(false);
     const { login } = useContext(UserContext);
     const [loading, setLoading] = useState(true);
@@ -63,7 +63,7 @@ function LoginForm() {
         e.preventDefault();
         try {
             await login(formData.email, formData.password, keepSession);
-            history.push('/');
+            navigate('/');
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
         }

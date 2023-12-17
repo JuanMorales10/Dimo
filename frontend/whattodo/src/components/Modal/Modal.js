@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMoneyBill, faCalendarDays, faUsers } from '@fortawesome/free-solid-svg-icons';
 import './Modal.css';
@@ -10,7 +10,7 @@ import noche from '../../assets/img/noche.jpg';
 import trans from '../../assets/img/transporte.jpg';
 
 function Modal({ closeModal }) {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nombre: '',
     categoria_id: '',
@@ -61,7 +61,7 @@ function Modal({ closeModal }) {
 
       const data = await response.json();
 
-      history.push('/search-results', { services: data });
+      navigate('/search-results', { services: data });
     } catch (error) {
       console.error('Error al enviar el formulario:', error);
     }

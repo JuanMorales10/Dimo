@@ -33,22 +33,47 @@ function ServiceDetail() {
             if (serviceResponse.status !== 200) {
                 throw new Error('Network response for service was not ok');
             }
+
             const serviceData = await serviceResponse.json();
             setService(serviceData);
 
-            const idUser = serviceData.service.usuario_dni;
-            const ownerResponse = await fetch(`${backendUrl}/user/detailService/${idUser}`, {
-                headers: { 'Authorization': `Bearer ${token}` },
-            });
-            const ownerData = await ownerResponse.json();
-            setServiceOwner(ownerData.profile);
-            setIsLoading(false);
+            // Asegúrate de que serviceData.service exista antes de usarlo
+            if (serviceData.service) {
+                const idUser = serviceData.service.usuario_dni;
+                const ownerResponse = await fetch(`${backendUrl}/user/detailService/${idUser}`, {
+                    headers: { 'Authorization': `Bearer ${token}` },
+                });
+
+                // Asegúrate de que la respuesta de ownerResponse sea válida
+                if (ownerResponse.ok) {
+                    const ownerData = await ownerResponse.json();
+                    setServiceOwner(ownerData.profile);
+                } else {
+                    // Manejar el caso donde ownerResponse no es válido
+                    console.error('Error fetching service owner details');
+                }
+            } else {
+                // Manejar el caso donde serviceData.service no está disponible
+                console.error('Service data is not available');
+            }
         } catch (error) {
             setError('Failed to load service details');
             console.error('There has been a problem with your fetch operation:', error);
+        } finally {
+            setIsLoading(false); // Esto asegura que se actualice el estado de carga independientemente del resultado
         }
     };
 
+    useEffect(() => {
+        fetchService();
+        if (user && user.id) {
+            checkIfUserHasReserved();
+        }
+    }, [id, token, user]);
+
+    if (isLoading || !service || !serviceOwner) {
+        return <LoadingScreen />;
+    }
 
     const checkIfUserHasReserved = async () => {
         try {
@@ -66,19 +91,9 @@ function ServiceDetail() {
         }
     };
 
-    useEffect(() => {
-        fetchService();
-        checkIfUserHasReserved();
-    }, [id, token, user.profile.id]);
-
     if (error) {
         return <div>Error: {error}</div>;
     }
-
-    if (isLoading) {
-        return <LoadingScreen />;
-    }
-
 
     const handleReserveClick = () => {
         history.push(`/reserva/${service.service.id}`);
@@ -107,9 +122,13 @@ function ServiceDetail() {
         }
     };
 
-    console.log(service)
+   
     return (
         <>
+        {isLoading ? (
+            <LoadingScreen />
+        ) : (
+            <>
             <NavBar />
             <div className="service-detail-container">
                 <Carousel responsive={responsive} infinite={true} autoPlay={true} className="service-carousel">
@@ -123,18 +142,21 @@ function ServiceDetail() {
                     <ServiceHeader title={service.service.nombre} rating={service.service.rating} />
                 </div>
                 <TabContainer
-                    details={<ServiceDescription service={service.service} user={serviceOwner} />}
-                    comments={<ServiceComments comments={service.comments} token={token} user={serviceOwner} hasUserReserved={hasUserReserved} service={service.service} />}
+                    details={serviceOwner && <ServiceDescription service={service.service} user={serviceOwner} />}
+                    comments={serviceOwner && <ServiceComments comments={service.comments} token={token} user={serviceOwner} hasUserReserved={hasUserReserved} service={service.service} />}
                     reservar={<ServiceMeta service={service.service} handleReserveClick={handleReserveClick} createGoogleMapsLink={createGoogleMapsLink} />}
-                //   policies={/* ... contenido para policies ... */}
+                    //   policies={/* ... contenido para policies ... */}
                 />
                 <div className="service-detail-content">
                     <Cards />
                 </div>
             </div>
             <Footer />
+            </>
+            )}
         </>
     );
+    
 }
 
 function ServiceHeader({ title, rating }) {

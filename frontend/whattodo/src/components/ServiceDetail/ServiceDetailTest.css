@@ -1,7 +1,6 @@
 .service-detail-container {
     width: 100%;
     color: #333;
-    margin-top: 77px;
     display: flex;
     flex-direction: column; /* Ajustado para una mejor disposición */
   }
@@ -9,7 +8,6 @@
   .service-carousel {
     position: relative;
     width: 100vw; /* Establece el carrusel para que ocupe el ancho completo de la ventana */
-    margin-top: 2em; /* Espacio para el navbar si es necesario */
     overflow: hidden; /* Oculta cualquier desbordamiento causado por el carrusel */
   }
   
@@ -27,7 +25,7 @@
   }
   .service-detail-overlay {
     position: absolute;
-    top: 75%;
+    top: 60%;
     left: 25%;
     transform: translate(-50%, -50%);
     background-color: #fff;
@@ -116,7 +114,6 @@
     align-items: center;
     justify-content: space-evenly;
     box-shadow: 0 2px 5px rgb(0 0 0 / 73%);
-    background-color: #008cbafa;
     padding: 10px 0;
     border-radius: 12px;
   }
@@ -175,6 +172,7 @@
   border-radius: 8px;
   display: flex;
   align-items: center;
+  justify-content: space-around;
 }
 
 .form-comment label {

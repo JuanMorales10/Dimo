@@ -3,10 +3,3 @@
     flex-direction: column;
   }
   
-
-h2{
-  display: flex;
-  margin-left: 3vw;
-  font-size: 1.25rem;
-  margin-top: 70px;
-}

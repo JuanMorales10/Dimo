@@ -1,0 +1,39 @@
+.tab-container {
+    margin-top: 20px;
+  }
+  
+  .tab-navigation {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  
+  .tab-navigation button {
+    padding: 10px 20px;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  
+  .tab-navigation button.active {
+    border-bottom: 3px solid #008cba;
+    font-weight: bold;
+  }
+  
+  .tab-content .tab-pane {
+    display: none;
+  }
+  
+  .tab-content .tab-pane.active {
+    display: block;
+  }
+  
+
+  .tab-pane {
+    display: none; /* Esconde todos los tab-pane por defecto */
+  }
+  
+  .tab-pane.active {
+    display: block; /* Solo muestra el tab-pane que tenga la clase 'active' */
+  }
+  

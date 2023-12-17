@@ -22,7 +22,7 @@ const responsive = {
   }
 };
 
-const CardSection = ({ nombre, descripcion, images }) => {
+const CardSection = ({ nombre, images }) => {
   return (
     <div className="card">
       {images && images.length > 0 ? (

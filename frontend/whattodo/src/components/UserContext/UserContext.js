@@ -1,21 +1,33 @@
 import React, { createContext, useState, useEffect } from 'react';
 
-
 export const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(() => localStorage.getItem('token') || null);
+  const [userRole, setUserRole] = useState(null);
+  const [token, setToken] = useState(() => localStorage.getItem('token') || sessionStorage.getItem('token'));
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    if (storedToken) {
-      setToken(storedToken);
+    if (token) {
       fetchUserProfile();
     }
-  }, []);
+  }, [token]);
 
-  const login = async (email, password) => {
+  const setCookie = (name, value, days) => {
+    let expires = "";
+    if (days) {
+      let date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+  };
+
+  const deleteCookie = (name) => {
+    document.cookie = name + '=; Max-Age=-99999999;';
+  };
+
+  const login = async (email, password, keepSession) => {
     try {
       const response = await fetch('http://localhost:3008/user/login', {
         method: 'POST',
@@ -24,21 +36,30 @@ export const UserProvider = ({ children }) => {
       });
       const data = await response.json();
       if (data.token) {
-        localStorage.setItem('token', data.token);
+        if (keepSession) {
+          localStorage.setItem('token', data.token);
+          setCookie('userEmail', email, 7); 
+        } else {
+          sessionStorage.setItem('token', data.token);
+        }
         setToken(data.token);
+        await fetchUserProfile(data.token);
+        window.location.href = '/';
       } else {
-        // Manejar errores o falta de token
+        console.error('Error en la autenticación');
       }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
     }
-    fetchUserProfile();
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
+    deleteCookie('userEmail'); 
     setToken(null);
-    setUser(null); 
+    setUser(null);
+    window.location.href = '/';
     return Promise.resolve();
   };
 
@@ -48,21 +69,18 @@ export const UserProvider = ({ children }) => {
         const response = await fetch('http://localhost:3008/user/profile', {
           headers: { 'Authorization': `Bearer ${token}` },
         });
-
-        if (!response.ok) {
-          throw new Error('Fetching user profile failed');
-        }
         const profileData = await response.json();
-        setUser(profileData); // Actualiza el estado del usuario
+        setUser(profileData);
+        setUserRole(profileData.type);
       } catch (error) {
         console.error('Error al obtener el perfil del usuario:', error);
-        setUser(null); // En caso de error, resetea el estado del usuario
+        setUser(null);
       }
     }
   };
 
   return (
-    <UserContext.Provider value={{ token, user , login, logout, fetchUserProfile }}>
+    <UserContext.Provider value={{ token, user, login, logout, fetchUserProfile, userRole }}>
       {children}
     </UserContext.Provider>
   );

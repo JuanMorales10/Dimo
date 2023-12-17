@@ -23,7 +23,7 @@ function CreateServiceForm() {
         rating: 0,
         precio: '',
         duracion: '',
-        disponibilidad: '',
+        disponibilidad: true,
         direccion: '',
         operating_hours_start: '',
         operating_hours_end: '',
@@ -38,8 +38,12 @@ function CreateServiceForm() {
     };
 
     const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
+        const { name, checked, value } = event.target;
+        if (name === 'atp') {
+            setFormData({ ...formData, [name]: checked ? true : false });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
 
     const handleLocationSelect = (locationName, lat, lng) => {

@@ -11,7 +11,8 @@ const authenticateJWT = (req, res, next) => {
           return res.sendStatus(403); // Acceso prohibido si el token no es válido
         }
   
-        req.user = user;
+        req.session.user = user;
+        
         next();
       });
     } else {

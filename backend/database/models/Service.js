@@ -30,7 +30,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN
         },
         rating:{
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            validate: {
+                min: 1,
+                max: 5
+            }
         },
         precio: {
             type: DataTypes.INTEGER,
@@ -119,6 +123,12 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'servicio_id',
             as: 'comments', // Esto permite acceder a los comentarios de un servicio como service.comments
             timestamps: false
+          });
+
+          Service.belongsToMany(models.User, {
+            through: models.Favorite,
+            foreignKey: 'servicio_id',
+            as: 'favoritedBy'
           });
     }
 

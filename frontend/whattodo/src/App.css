@@ -19,7 +19,7 @@
 
 body{
   font-family: 'Centra', sans-serif !important;
-  background-color: #E5E8EA;
+  background-color: #3a77a0;
 }
 
 .App {
@@ -29,6 +29,21 @@ body{
 .navbar{
   padding: 0%;
 }
+
+@keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .fade-in {
+    animation: fadeIn 1s ease-out;
+  }
 
 
 body{

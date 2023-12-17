@@ -30,13 +30,13 @@ const JustInSection = () => {
   }, [])
 
   return (
-    <section className="recien-llegados-seccion" style={{ backgroundImage: `url(${backgroundImage})` }}>
+    <section className="recien-llegados-seccion fade-in" style={{ backgroundImage: `url(${backgroundImage})` }}>
       <div className="container">
         <div className='justIn'>
         <h2>¡Recién Llegados!</h2>
         <p>Explora nuestras experiencias más recientes</p>
         </div>
-         <div className="card-container-sec">
+         <div className="card-container-sec fade-in">
           {data.map((service, index) => (
             <CardSection key={index} {...service} />
             ))}

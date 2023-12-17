@@ -63,6 +63,12 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'usuario_dni',
             timestamps: false
           });
+
+          User.belongsToMany(models.Service, {
+            through: models.Favorite,
+            foreignKey: 'usuario_dni',
+            as: 'favorites'
+          });
     }
 
     return User;

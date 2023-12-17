@@ -9,7 +9,7 @@ import './Card.css';
 
 function Card({id, nombre, descripcion, precio, rating, imageUrl }) {
 
-    const { token } = useContext(UserContext);
+    const { token , user} = useContext(UserContext);
     const [images, setImages] = useState([])
     const [isFavorited, setIsFavorited] = useState(false);
     const [error, setError] = useState('');
@@ -33,14 +33,42 @@ function Card({id, nombre, descripcion, precio, rating, imageUrl }) {
         }
     };
 
-    const toggleFavorite = () => {
-        setIsFavorited(!isFavorited);
-        // Aquí puedes agregar la lógica para manejar los favoritos
-    };
 
-    useEffect(()=>{
+    const toggleFavorite = async () => {
+        setIsFavorited(!isFavorited);
+        try {
+          const response = await fetch(`http://localhost:3008/service/service/${id}/favorite`, {
+            method: isFavorited ? 'DELETE' : 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+          });
+          console.log(response)
+        } catch (error) {
+          console.error('Error al actualizar favoritos:', error);
+        }
+      };
+
+      const checkFavorite = async () => {
+        try {
+            const response = await fetch(`http://localhost:3008/service/service/${id}/favorite`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            const data = await response.json();
+            setIsFavorited(data.isFavorited);
+        } catch (error) {
+            console.error('Error al verificar favoritos:', error);
+        }
+    };
+    
+    useEffect(() => {
         fetchService();
-    },[id])
+        checkFavorite();
+    }, [id]);
 
     const responsive = {
         all: {

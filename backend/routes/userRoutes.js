@@ -12,6 +12,7 @@ router.get("/registerHost",userController.getRegisterHost);
 router.get('/profile', authenticateJWT, userController.getProfile);
 router.get('/services', authenticateJWT, userController.getServices);
 router.get('/detail/:dni', authenticateJWT, userController.getUserDetail);
+router.get('/detailService/:dni', userController.getUserServiceDetail);
 
 //@Post
 router.post('/registerUser', avatar.single("avatar"),userController.registerUser);

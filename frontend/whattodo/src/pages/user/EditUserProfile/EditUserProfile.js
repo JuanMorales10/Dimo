@@ -7,7 +7,7 @@ import logo from '../../../assets/img/logowhat.png';
 
 const EditUserProfile = () => {
   const history = useHistory();
-  const { fetchUserProfile, token } = useContext(UserContext);
+  const { token, user} = useContext(UserContext);
   const [avatarFile, setAvatarFile] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [formData, setFormData] = useState({
@@ -22,21 +22,24 @@ const EditUserProfile = () => {
     avatar: '',
   });
 
+  console.log(user)
+  // Actualizar el estado del formulario cuando el usuario cambie
   useEffect(() => {
-    const loadUserProfile = async () => {
-      try {
-        const profileData = await fetchUserProfile();
-        if (profileData.profile) {
-          setCurrentUser(profileData.profile);
-          setFormData(profileData.profile);
-        }
-      } catch (error) {
-        console.error('Error al cargar perfil de usuario:', error);
-      }
-    };
-
-    loadUserProfile();
-  }, [fetchUserProfile]);
+    if (user) {
+      
+      setFormData({
+        ...formData,
+        dni: user.profile.dni || '',
+        nombre: user.profile.nombre || '',
+        apellido: user.profile.apellido || '',
+        email: user.profile.email || '',
+        ciudad: user.profile.ciudad || '',
+        direccion: user.profile.direccion || '',
+        telefono: user.profile.telefono || '',
+        avatar: user.profile.avatar || '',
+      });
+    }
+  }, [user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -95,7 +98,7 @@ const EditUserProfile = () => {
       <div className="edit-user-profile">
         <form onSubmit={handleSubmit} className="profile-form" encType='multipart/form-data'>
           <div className="form-header">
-            <img className="profile-picture" src={`http://localhost:3008/img/avatar/${currentUser?.avatar}`} alt={`${currentUser?.nombre} ${currentUser?.apellido}`} />
+            <img className="profile-picture" src={`http://localhost:3008/img/avatar/${user?.profile?.avatar}`} alt={`${user?.profile?.nombre} ${user?.profile?.apellido}`} />
             <h2>Editar Perfil</h2>
           </div>
           <div className="form-body">

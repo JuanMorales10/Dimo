@@ -125,20 +125,29 @@
     margin-top: 20px;
 }
 
-input{
+input {
     border: 1px solid #bbb3b3;
     border-radius: 8px;
-    height: 20px;
-   margin: 10px;
-}
-
-input[type="date"]{
- width: 181px;
- border: 1px solid #bbb3b3;
+    height: 35px; /* Ajustado para más espacio */
+    margin: 10px;
+    padding: 0 10px; /* Agrega padding horizontal */
+    font-size: 16px; /* Tamaño de fuente más grande */
+    color: #333; /* Color de fuente para mejor contraste */
+  }
+  
+  input[type="date"] {
+    width: 181px;
+    border: 1px solid #bbb3b3;
     border-radius: 8px;
-    height: 20px;
-   margin: 10px;
-}
+    height: 35px; /* Ajustado para más espacio */
+    margin: 10px;
+    padding: 0 10px; /* Agrega padding horizontal */
+    font-size: 16px; /* Tamaño de fuente más grande */
+    color: #333; /* Color de fuente para mejor contraste */
+  }
+  
+  /* Puedes necesitar ajustes adicionales para navegadores específicos */
+  
 
 .modal-body input[type="text"]{
     width: 100%;
@@ -181,7 +190,8 @@ input[type="date"]{
 
 .precio-cont{
     display:flex;
-    width:70%
+    width:70%;
+    align-items: center;
 }
 
 .info-cont{
@@ -196,4 +206,11 @@ input[type="date"]{
 
 .modal-search{
     margin:0;
+}
+
+.fl{
+    display: flex;
+    width: 60%;
+    justify-content: center;
+    align-items: center;
 }

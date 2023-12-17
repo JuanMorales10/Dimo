@@ -25,10 +25,22 @@ module.exports = (sequelize, DataTypes) => {
                         key: 'id'
                     }
                 },
-                descripcion: {
+                comentario: {
                     type: DataTypes.STRING,
                     allowNull: false,
-                }
+                },
+                rating: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                    references: {
+                        model: 'service',
+                        key: 'rating'
+                    },
+                    validate: {
+                        min: 1,
+                        max: 5
+                    }
+                },
             },
             {
                 tableName: 'comment',

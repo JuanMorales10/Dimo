@@ -1,5 +1,4 @@
-import React from 'react'
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import Card from '../Card/Card';
@@ -7,9 +6,10 @@ import './cards.css';
 
 
 function Cards() {
-  const [data, setData] = useState([])
-
-
+  const [data, setData] = useState([]);
+  const [isVisible, setIsVisible] = useState(false);
+  const cardListRef = useRef(null);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -57,8 +57,34 @@ function Cards() {
     }
   };
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Si el componente es visible en el viewport, actualizar el estado
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect(); // Opcional: desconectar el observer una vez visible
+        }
+      },
+      {
+        rootMargin: '0px',
+        threshold: 0.1 // Ajusta el umbral según tus necesidades
+      }
+    );
+
+    if (cardListRef.current) {
+      observer.observe(cardListRef.current);
+    }
+
+    return () => {
+      if (cardListRef.current) {
+        observer.unobserve(cardListRef.current);
+      }
+    };
+  }, [cardListRef]);
+
   return (
-    <div className='card-list'>
+    <div className={`card-list ${isVisible ? 'fade-in' : ''}`} ref={cardListRef}>
       <h2>Ultimas Experiencias Cargadas</h2>
       <Carousel responsive={responsive} infinite={true} className="owl-carousel owl-theme skill-slider">
       {data.map((service)=>{
@@ -66,7 +92,7 @@ function Cards() {
       })}
       </Carousel>
     </div>
-  )
+  );
 }
 
 export default Cards

@@ -71,6 +71,7 @@ const userController = {
 
       const user = await User.create({
         id: req.body.dni,
+        nombre: req.body.nombre,
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password, 10),
         type: "Personal",
@@ -173,6 +174,39 @@ const userController = {
   getRegisterHost: (req, res) => {
 
     // res.render("./users/register");
+  },
+  getUserServiceDetail: async (req, res) => {
+    try {
+      
+      const userId = req.params.dni;
+
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "Usuario no autenticado." });
+      }
+
+      const user = await User.findByPk(userId);
+
+      if (user) {
+        const userProfile = {
+          id: user.id,
+          email: user.email,
+          nombre: user.nombre,
+          apellido: user.apellido,
+          telefono: user.telefono,
+          ciudad: user.ciudad,
+          direccion: user.direccion,
+          type: user.type,
+          avatar: user.avatar
+        };
+
+        res.json({ success: true, profile: userProfile });
+      } else {
+        res.status(404).json({ success: false, message: "Perfil de usuario no encontrado." });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: "Error interno del servidor al obtener el perfil." });
+    }
   },
   getUserDetail: async (req, res) => {
     try {

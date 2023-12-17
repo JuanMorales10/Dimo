@@ -10,7 +10,7 @@ const AboutUs = () => {
   return (
     <>
     <NavBar />
-      <section id="about-us" className="about-section">
+    <section id="about-us" className="about-section fade-in">
         <div className="container">
           <div className="about-header">
             <h1>Sobre Nosotros</h1>
@@ -26,7 +26,7 @@ const AboutUs = () => {
           </div>
         </div>
       </section>
-      <section className="about-bottom-section">
+      <section className="about-bottom-section fade-in">
         <div className="container">
           <div className="about-features">
             <div className="feature">
@@ -44,8 +44,8 @@ const AboutUs = () => {
           </div>
         </div>
       </section>
-      <JustInSection />
-      <DiscoverOurBests />
+      <JustInSection /> 
+      <DiscoverOurBests /> 
       <Footer />
     </>
   );

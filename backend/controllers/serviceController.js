@@ -31,6 +31,11 @@ const serviceController = {
         where: {
           servicio_id: id,
         },
+        include: [{
+          model: User,
+          as: 'user', 
+          attributes: ['nombre', 'avatar'] 
+      }],
       });
 
       const images = await ServiceImage.findAll({
@@ -202,23 +207,39 @@ const serviceController = {
     }
   },
 
-  postComment: async (req, res) => {
+ postComment : async (req, res) => {
     try {
-      const serviceId = req.params.id;
-      const userId = req.session.user.id;
-      const comment = await Comment.create({
-        descripcion: req.body.comment,
-        servicio_id: serviceId,
-        usuario_dni: req.body.userdni,
-      });
-      return res.status(204).send();
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ error: 'Error al crear el comentario' });
-    }
-  },
+        const serviceId = req.params.id;
+        const userId = req.session.user.userId; // Asegúrate de que esta línea refleja cómo obtienes el ID del usuario
 
-  
+        // Crear el comentario con la descripción y el rating
+        const comment = await Comment.create({
+            comentario: req.body.comment,
+            rating: req.body.rating,
+            servicio_id: serviceId,
+            usuario_dni: userId, 
+        });
+
+        // Calcular el nuevo rating promedio para el servicio
+        const comments = await Comment.findAll({
+            where: { servicio_id: serviceId }
+        });
+
+        const averageRating = comments.reduce((acc, comment) => acc + comment.rating, 0) / comments.length;
+
+        // Actualizar el servicio con el nuevo rating promedio
+        const service = await Service.findByPk(serviceId);
+        await service.update({ rating: averageRating });
+        console.log(comment)
+        console.log(service)
+
+        return res.status(201).json(comment); 
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Error al crear el comentario' });
+    }
+},
+
  filterServices : async (req, res) => {
   try {
     const {

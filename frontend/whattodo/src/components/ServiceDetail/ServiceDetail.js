@@ -8,6 +8,8 @@ import TabContainer from '../TabContainer/TabContainer';
 import 'react-multi-carousel/lib/styles.css';
 import Cards from '../Cards/Cards';
 import './ServiceDetailTest.css'
+import LoadingScreen from '../LoadingScreen/LoadingScreen';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
 
 function ServiceDetail() {
     const { id } = useParams();
@@ -16,7 +18,11 @@ function ServiceDetail() {
     const [service, setService] = useState(null);
     const [error, setError] = useState('');
     const [serviceOwner, setServiceOwner] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
     const backendUrl = "http://localhost:3008";
+    const [hasUserReserved, setHasUserReserved] = useState(false);
+    const { user } = useContext(UserContext);
+
 
     const fetchService = async () => {
         try {
@@ -36,23 +42,41 @@ function ServiceDetail() {
             });
             const ownerData = await ownerResponse.json();
             setServiceOwner(ownerData.profile);
-
+            setIsLoading(false);
         } catch (error) {
             setError('Failed to load service details');
             console.error('There has been a problem with your fetch operation:', error);
         }
     };
 
+
+    const checkIfUserHasReserved = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/reserva/reserva/check?serviceId=${id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}` // Si es necesario
+                }
+            });
+            const data = await response.json();
+            console.log(data)
+            setHasUserReserved(data.hasReserved);
+        } catch (error) {
+            console.error('Error al verificar la reserva:', error);
+        }
+    };
+
     useEffect(() => {
         fetchService();
-    }, [id, token]);
+        checkIfUserHasReserved();
+    }, [id, token, user.profile.id]);
 
     if (error) {
         return <div>Error: {error}</div>;
     }
 
-    if (!service || !serviceOwner) {
-        return <div>Cargando...</div>;
+    if (isLoading) {
+        return <LoadingScreen />;
     }
 
 
@@ -83,6 +107,7 @@ function ServiceDetail() {
         }
     };
 
+    console.log(service)
     return (
         <>
             <NavBar />
@@ -98,9 +123,9 @@ function ServiceDetail() {
                     <ServiceHeader title={service.service.nombre} rating={service.service.rating} />
                 </div>
                 <TabContainer
-                    details={<ServiceMeta service={service.service} user={serviceOwner} handleReserveClick={handleReserveClick} createGoogleMapsLink={createGoogleMapsLink} />}
-                    comments={<ServiceComments comments={service.comments} />}
-                //   amenities={/* ... contenido para amenities ... */}
+                    details={<ServiceDescription service={service.service} user={serviceOwner} />}
+                    comments={<ServiceComments comments={service.comments} token={token} user={serviceOwner} hasUserReserved={hasUserReserved} service={service.service} />}
+                    reservar={<ServiceMeta service={service.service} handleReserveClick={handleReserveClick} createGoogleMapsLink={createGoogleMapsLink} />}
                 //   policies={/* ... contenido para policies ... */}
                 />
                 <div className="service-detail-content">
@@ -122,15 +147,15 @@ function ServiceHeader({ title, rating }) {
 }
 
 function RatingStars({ rating }) {
-    // Crea un arreglo con 5 elementos [0, 0, 0, 0, 0]
     const totalStars = 5;
-    let stars = Array(totalStars).fill(0);
 
     return (
         <div className="rating">
-            {stars.map((_, index) => {
+            {[...Array(totalStars)].reverse().map((_, index) => {
+                // Calcula el valor correcto para cada estrella
+                const starNumber = totalStars - index;
                 return (
-                    <span key={index} className={index < rating ? "star filled" : "star"}>
+                    <span key={index} className={starNumber <= rating ? "star filled" : "star"}>
                         &#9733;
                     </span>
                 );
@@ -139,18 +164,28 @@ function RatingStars({ rating }) {
     );
 }
 
-function ServiceMeta({ service, user, handleReserveClick, createGoogleMapsLink }) {
-    const backendUrl = "http://localhost:3008";
+function ServiceMeta({ service, handleReserveClick, createGoogleMapsLink }) {
+
+    const formatDuration = (duration) => {
+        const parts = duration.split(':');
+        const hours = parseInt(parts[0], 10);
+        const minutes = parseInt(parts[1], 10);
+        return `${hours > 0 ? `${hours} hora(s) ` : ''}${minutes > 0 ? `${minutes} minuto(s)` : ''}`;
+    };
+
+    const formatOperatingDays = (days) => {
+        return days.split(',').join(', ');
+    };
+
+
+
     return (
         <>
             <div className="service-meta">
-                <ServiceDescription description={service.descripcion} />
-                <p>Precio: <b>${service.precio}</b></p>
-                <p>Capacidad: {service.capacidad} personas máximo</p>
-                <div className='prop-detail'>
-                    <img src={`${backendUrl}/img/avatar/${user.avatar}`} className='img-service-owner' />
-                    <p>{user.nombre + ' ' + user.apellido}</p>
-                </div>
+                <h3>{service.nombre}</h3>
+                <p>Duración: {formatDuration(service.duracion)}</p>
+                <p>Horario: De {service.operating_hours_start} a {service.operating_hours_end}</p>
+                <p>Días hábiles: {formatOperatingDays(service.operating_days)}</p>
                 <a href={createGoogleMapsLink(service.direccion)} target="_blank" rel="noopener noreferrer" className="google-maps-link">
                     Ver Ubicación en Google Maps
                 </a>
@@ -160,26 +195,138 @@ function ServiceMeta({ service, user, handleReserveClick, createGoogleMapsLink }
     );
 }
 
-function ServiceDescription({ description }) {
+
+function ServiceDescription({ service, user }) {
+    const backendUrl = "http://localhost:3008";
     return (
         <div className="service-description">
-            <p>{description}</p>
+            <div className='des-cont'>
+                <p>{service.descripcion}</p>
+                <p>Precio: <b>${service.precio}</b></p>
+                <p>Capacidad: {service.capacidad} personas máximo</p>
+            </div>
+            <div className='prop-detail'>
+                <img src={`${backendUrl}/img/avatar/${user.avatar}`} className='img-service-owner' />
+                <p>{user.nombre + ' ' + user.apellido}</p>
+            </div>
         </div>
     );
 }
 
-function ServiceComments({ comments }) {
-    if (comments.length === 0) {
-        return <div>No hay comentarios aún.</div>;
-    }
+function ServiceComments({ comments, hasUserReserved, token, user, service }) {
+    const backendUrl = "http://localhost:3008";
+    const [message, setMessage] = useState('');
+    const [commentData, setCommentData] = useState({
+        comment: '',
+        rating: ''
+    });
+
+    // Actualizar el estado con los datos del formulario
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setCommentData({
+            ...commentData,
+            [name]: value
+        });
+    };
+
+    const handleSubmitComment = async (e) => {
+        e.preventDefault();
+
+        console.log(commentData)
+
+        try {
+            const response = await fetch(`${backendUrl}/service/${service.id}/postComment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+
+                },
+                body: JSON.stringify({
+                    servicio_id: service.id,
+                    usuario_dni: user.id,
+                    rating: commentData.rating,
+                    comment: commentData.comment
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data)
+                setMessage('Comentario enviado con éxito.');
+                setCommentData({ rating: '', comment: '' });
+            } else {
+                // Manejar respuestas de error del servidor
+                setMessage('Error al enviar el comentario.');
+            }
+        } catch (error) {
+            // Manejar errores de conexión, etc.
+            setMessage('Error al conectar con el servidor.');
+        }
+    };
+
     return (
-        <div className="service-comments">
-            {comments.map(comment => (
-                <div key={comment.id} className="comment">
-                    <p>{comment.text}</p>
+        <>
+            {comments.length === 0 ? (
+                <div>No hay comentarios aún.</div>
+            ) : (
+                <div className="service-comments">
+                    {comments.map(comment => (
+                        <div key={comment.id} className="comment">
+                            <p>{comment.comentario}</p>
+                            <div className='com-u'>
+                                <div className='prop-detail'>
+                                    <img src={`${backendUrl}/img/avatar/${comment.user.avatar}`} className='img-comment-owner' />
+                                    <p>{comment.user.nombre}</p>
+                                    <RatingStars rating={comment.rating} />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-            ))}
-        </div>
+            )}
+
+            {hasUserReserved && (
+                <form onSubmit={handleSubmitComment}>
+                    <div className="form-comment">
+                        <div className='comment-left'>
+                            <label htmlFor="comment">Tu Comentario:</label>
+                        <textarea
+                            id="comment"
+                            name="comment"
+                            value={commentData.comment}
+                            onChange={handleInputChange}
+                            required
+                        ></textarea>
+                        </div>
+                        <div className='rating-right'>
+                            <label>Tu Rating:</label>
+                        <div className="rating">
+                            {[...Array(5)].reverse().map((_, index) => {
+                                const ratingValue = 5 - index;
+                                return (
+                                    <React.Fragment key={index}>
+                                        <input
+                                            type="radio"
+                                            id={`star${ratingValue}`}
+                                            name="rating"
+                                            value={ratingValue}
+                                            checked={commentData.rating === `${ratingValue}`}
+                                            onChange={handleInputChange}
+                                        />
+                                        <label htmlFor={`star${ratingValue}`}></label>
+                                    </React.Fragment>
+                                );
+                            })}
+                        </div>
+                        </div>
+                        {message && <p>{message}</p>}
+                        <button type="submit">Enviar Comentario</button>
+                    </div>
+                </form>
+            )}
+        </>
     );
 }
 

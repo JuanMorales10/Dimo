@@ -37,18 +37,18 @@ function Modal({ closeModal }) {
     setFormData({ ...formData, categoria_id: category });
   };
 
-  const validateForm = () => {
-    if (formData.precioMin && formData.precioMax && formData.precioMin > formData.precioMax) {
-      alert('El precio mínimo no puede ser mayor que el precio máximo.');
-      return false;
-    }
-    return true;
-  };
+  // const validateForm = () => {
+  //   if (formData.precioMin && formData.precioMax && formData.precioMin > formData.precioMax) {
+  //     alert('El precio mínimo no puede ser mayor que el precio máximo.');
+  //     return false;
+  //   }
+  //   return true;
+  // };
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    // if (!validateForm()) return;
 
     try {
       const response = await fetch('http://localhost:3008/service/filter', {

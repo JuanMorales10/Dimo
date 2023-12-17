@@ -80,6 +80,32 @@ const ReservaController = {
       return res.status(500).json({ message: "Error al obtener las reservas", error });
     }
   },
+  checkUserReservation: async (req, res) => {
+    console.log(req.session)
+    try {
+
+      const { serviceId } = req.query; 
+      const userId = req.session.user.userId
+
+      const reservation = await Order.findOne({
+        where: {
+          usuario_dni: userId,
+          service_id: serviceId
+        }
+      });
+
+      console.log(reservation)
+
+      const hasReserved = reservation !== null;
+
+        
+      
+      return res.status(200).json({hasReserved}); 
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Error al verificar la reserva", error });
+    }
+  },
 
   updateReserva: async (req, res) => {
     try {

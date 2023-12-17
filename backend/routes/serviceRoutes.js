@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const serviceController = require('../controllers/serviceController');
 const serviceImage = require('../middlewares/processServiceImage');
+const authenticateJWT = require('../middlewares/authenticateJWT');
 const { validateServiceUpdate } = require('../middlewares/validateServiceUpdate');
 
 //@Get
@@ -17,7 +18,7 @@ router.get('/:id/available-slots', serviceController.getAvailableSlots);
 
 //@Post
 router.post('/createService', serviceImage.array('image'), serviceController.postCreateService);
-router.post('/:id/postComment', serviceController.postComment);
+router.post('/:id/postComment', authenticateJWT ,serviceController.postComment);
 router.post('/filter', serviceController.filterServices); 
 
 //@Put

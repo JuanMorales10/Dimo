@@ -30,7 +30,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN
         },
         rating:{
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            validate: {
+                min: 1,
+                max: 5
+            }
         },
         precio: {
             type: DataTypes.INTEGER,

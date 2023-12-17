@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import logo from '../../assets/img/logowhat.png';
 import './NavBar.css';
@@ -16,6 +16,10 @@ const NavBar = () => {
       history.push('/');
     });
   };
+
+  useEffect(()=>{
+    
+  },[user, token])
 
 
   return (

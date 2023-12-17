@@ -120,6 +120,38 @@
     padding: 10px 0;
     border-radius: 12px;
   }
+
+  .service-description, .service-detail-overlay, .comment, .service-meta {
+    background: linear-gradient(139deg, #13c8ca, #008cba);
+    /* background-color: #f8f8f8; */
+    background-size: 400% 400%;
+
+    -webkit-animation: AnimationName 0s ease infinite;
+    -moz-animation: AnimationName 0s ease infinite;
+    -o-animation: AnimationName 0s ease infinite;
+    animation: AnimationName 0s ease infinite;
+}
+
+@-webkit-keyframes AnimationName {
+    0%{background-position:0% 58%}
+    50%{background-position:100% 43%}
+    100%{background-position:0% 58%}
+}
+@-moz-keyframes AnimationName {
+    0%{background-position:0% 58%}
+    50%{background-position:100% 43%}
+    100%{background-position:0% 58%}
+}
+@-o-keyframes AnimationName {
+    0%{background-position:0% 58%}
+    50%{background-position:100% 43%}
+    100%{background-position:0% 58%}
+}
+@keyframes AnimationName {
+    0%{background-position:0% 58%}
+    50%{background-position:100% 43%}
+    100%{background-position:0% 58%}
+}
   
   .des-cont{
     display: flex;
@@ -241,7 +273,6 @@
     margin: 0;
     padding-bottom: 0.5em;
     font-size: 1.7rem;
-    color: #fff;
   }
 
   .img-comment-owner{
@@ -293,6 +324,10 @@
   .tab-content {
     padding: 20px;
     background: #fff;
+  }
+
+  .tab-content p{
+    color: black;
   }
   
   .tab-pane {

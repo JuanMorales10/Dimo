@@ -24,7 +24,8 @@ export const UserProvider = ({ children }) => {
       if (data.token) {
         localStorage.setItem('token', data.token);
         setToken(data.token);
-      } else {
+        fetchUserProfile(data.token); 
+      }else {
         // Manejar errores o falta de token
       }
     } catch (error) {
@@ -40,8 +41,9 @@ export const UserProvider = ({ children }) => {
     return Promise.resolve();
   };
 
-  const fetchUserProfile = async () => {
-    if (token) {
+  const fetchUserProfile = async (currentToken) => {
+    const authToken = currentToken || token;
+    if (authToken) {
       try {
         const response = await fetch('http://localhost:3008/user/profile', {
           headers: { 'Authorization': `Bearer ${token}` },

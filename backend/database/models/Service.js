@@ -124,6 +124,12 @@ module.exports = (sequelize, DataTypes) => {
             as: 'comments', // Esto permite acceder a los comentarios de un servicio como service.comments
             timestamps: false
           });
+
+          Service.belongsToMany(models.User, {
+            through: models.Favorite,
+            foreignKey: 'servicio_id',
+            as: 'favoritedBy'
+          });
     }
 
     return Service;

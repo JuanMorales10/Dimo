@@ -12,7 +12,7 @@ const authenticateJWT = (req, res, next) => {
         }
   
         req.session.user = user;
-        console.log('Req.session.user:  ',req.session.user)
+        
         next();
       });
     } else {

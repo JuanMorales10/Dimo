@@ -3,7 +3,6 @@
     margin: 0 auto;
     padding: 20px;
     color: #333;
-    margin-top: 175px;
   }
   
   .user-info {
@@ -56,15 +55,7 @@
     margin: 10px;
   }
   
-  .edit-profile-btn {
-    background-color: #008cba;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-top: 2em;
-  }
+ 
   
   .user-bio {
     margin-bottom: 20px;

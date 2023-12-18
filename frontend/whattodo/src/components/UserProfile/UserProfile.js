@@ -12,26 +12,7 @@ const UserProfile = () => {
 
   
   useEffect(() => {
-    const loadServices = async () => {
-      try {
-        if (user && user.profile) {
-          const response = await fetch(`http://localhost:3008/service/userServices/${user.profile.id}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-          
-          if (!response.ok) {
-            throw new Error('No se pudieron obtener los servicios');
-          }
-          
-          const servicesData = await response.json();
-          setServices(servicesData.services);
-        }
-      } catch (error) {
-        setError(error.message);
-      }
-    };
-    
-    loadServices();
+
   }, [user?.profile?.id, token]);
   
   if (!user || !user.profile) {
@@ -60,14 +41,6 @@ const UserProfile = () => {
                 <button className="edit-profile-btn">Crear Servicio</button>
               </Link>
             </div>
-          </div>
-        </div>
-        <div className="listed-items">
-          <h2>Listed recently</h2>
-          <div className="items-container">
-            {services.map((service) => (
-              <Card key={service.id} {...service} />
-            ))}
           </div>
         </div>
       </div>

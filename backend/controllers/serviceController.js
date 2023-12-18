@@ -61,6 +61,11 @@ const serviceController = {
         where: {
           usuario_dni: userId,
         },
+        include: [{
+          model: ServiceImage,
+          as: 'images',
+          attributes: ['url']
+        }]
       });
 
       return res.json({

@@ -72,7 +72,7 @@ function ReservaForm({ service, onSubmit }) {
   };
 
   return (
-    <>
+    <div className='res-page'>
       <div className="reserva-form-container">
         <h2>Reserva tu experiencia</h2>
         <form onSubmit={handleSubmit} className="reserva-form">
@@ -108,7 +108,7 @@ function ReservaForm({ service, onSubmit }) {
           <button type="submit" className="book-now-btn">Reservar Ahora</button>
         </form>
       </div>
-    </>
+    </div>
   );
 }
 

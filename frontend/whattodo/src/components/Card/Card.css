@@ -59,6 +59,7 @@
 
 .card-link {
     display: inline-block;
+    text-decoration: none;
 }
 
 .card-img-container {

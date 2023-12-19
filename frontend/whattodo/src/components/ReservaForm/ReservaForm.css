@@ -1,4 +1,12 @@
-
+.res-page{
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #f0f0f0;
+}
 .reserva-form-container {
     max-width: 500px;
     margin: 120px auto;

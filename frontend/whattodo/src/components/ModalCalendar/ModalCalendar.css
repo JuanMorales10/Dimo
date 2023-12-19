@@ -11,12 +11,20 @@
     z-index: 1000;
   }
   
+  
   .modal {
+    width: 350px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     background-color: #fff;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     z-index: 1001;
+    position: relative;
+    left: 8%;
   }
   
   .modal h2 {
@@ -28,7 +36,7 @@
   }
   
   .modal button {
-    background-color: #007bff;
+    background-color: #15afcf;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -38,6 +46,28 @@
   }
   
   .modal button:hover {
-    background-color: #0056b3;
+    background-color: #168da5;
   }
+
+  @media (max-width: 760px) {
+    .modal{
+      left: 15%;
+    }
+    
+  }
+  
+  @media (max-width: 670px) {
+    .modal{
+      left: 19%;
+    }
+    
+  }
+
+  @media (max-width: 600px) {
+    .modal{
+      left: 0;
+    }
+    
+  }
+
   

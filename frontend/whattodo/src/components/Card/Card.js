@@ -1,19 +1,28 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
-import { faHeart, faStar } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
+import { faHeart, faStar, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Carousel from 'react-multi-carousel';
-import 'react-multi-carousel/lib/styles.css'; 
+import 'react-multi-carousel/lib/styles.css';
 import { UserContext } from '../UserContext/UserContext';
 import './Card.css';
 
-function Card({id, nombre, descripcion, precio, rating, imageUrl }) {
+function Card({ id, nombre, descripcion, precio, rating, imageUrl }) {
 
-    const { token , user} = useContext(UserContext);
+    const { token, user } = useContext(UserContext);
     const [images, setImages] = useState([])
     const [isFavorited, setIsFavorited] = useState(false);
     const [error, setError] = useState('');
-   
+    const navigate = useNavigate();
+
+    const handleCardClick = () => {
+        navigate(`/service/${id}/detail`);
+    };
+
+    const handleCarouselClick = (event) => {
+        event.stopPropagation(); // Esto detiene la propagación del evento
+    };
+
     const fetchService = async () => {
         try {
             const serviceResponse = await fetch(`http://localhost:3008/service/${id}/detail`, {
@@ -37,20 +46,20 @@ function Card({id, nombre, descripcion, precio, rating, imageUrl }) {
     const toggleFavorite = async () => {
         setIsFavorited(!isFavorited);
         try {
-          const response = await fetch(`http://localhost:3008/service/service/${id}/favorite`, {
-            method: isFavorited ? 'DELETE' : 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
-          });
-          console.log(response)
+            const response = await fetch(`http://localhost:3008/service/service/${id}/favorite`, {
+                method: isFavorited ? 'DELETE' : 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+            });
+            console.log(response)
         } catch (error) {
-          console.error('Error al actualizar favoritos:', error);
+            console.error('Error al actualizar favoritos:', error);
         }
-      };
+    };
 
-      const checkFavorite = async () => {
+    const checkFavorite = async () => {
         try {
             const response = await fetch(`http://localhost:3008/service/service/${id}/favorite`, {
                 method: 'GET',
@@ -64,7 +73,7 @@ function Card({id, nombre, descripcion, precio, rating, imageUrl }) {
             console.error('Error al verificar favoritos:', error);
         }
     };
-    
+
     useEffect(() => {
         fetchService();
         checkFavorite();
@@ -73,34 +82,36 @@ function Card({id, nombre, descripcion, precio, rating, imageUrl }) {
     const responsive = {
         all: {
             breakpoint: { max: 4000, min: 0 },
-            items: 1, 
+            items: 1,
         }
     };
 
 
     return (
-        <div className="card-container">
+        <div className="card-container" onClick={handleCardClick}>
             <div className="card">
-                <Carousel responsive={responsive} swipeable={true} showDots={true} arrows={false}>
+            <div onClick={handleCarouselClick}>
+                    <Carousel responsive={responsive} swipeable={true} showDots={true} arrows={false}>
                         {images.map((image, index) => (
                             <div key={index} className="carousel-img-container">
                                 <img src={`http://localhost:3008/img/service/${image.url}`} className="card-img-top" alt="Service" />
                             </div>
                         ))}
                     </Carousel>
-                    <div className="card-rating">
-                        <FontAwesomeIcon icon={faStar} />
-                        <span>{rating}</span>
-                    </div>
-                    <div className="card-favorite">
-                        <button onClick={toggleFavorite} className="favorite-button">
-                            <FontAwesomeIcon icon={faHeart} color={isFavorited ? '#ab0000' : 'black'} /> 
-                        </button>
-                    </div>
-                
+                </div>
+                <div className="card-rating">
+                    <FontAwesomeIcon icon={faStar} />
+                    <span>{rating}</span>
+                </div>
+                <div className="card-favorite">
+                    <button onClick={toggleFavorite} className="favorite-button">
+                        <FontAwesomeIcon icon={faHeart} color={isFavorited ? '#ab0000' : 'black'} />
+                    </button>
+                </div>
+
                 <div className="card-body">
                     <h5 className="card-title">{nombre}</h5>
-                    <Link to={`/service/${id}/detail`} className="card-link">Detalle</Link>
+                    <p>${precio}</p>
                 </div>
             </div>
         </div>

@@ -50,6 +50,8 @@ function Modal({ closeModal }) {
     e.preventDefault();
     // if (!validateForm()) return;
 
+    console.log(formData)
+
     try {
       const response = await fetch('http://localhost:3008/service/filter', {
         method: 'POST',

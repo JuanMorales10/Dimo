@@ -18,7 +18,7 @@ function Calendar() {
 
 
   return (
-    <div>
+    <div className='calendar-dash'>
       <FullCalendar
         plugins={[dayGridPlugin]}
         initialView="dayGridMonth"

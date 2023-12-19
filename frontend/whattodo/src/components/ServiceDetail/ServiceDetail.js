@@ -63,18 +63,6 @@ function ServiceDetail() {
             setIsLoading(false); // Esto asegura que se actualice el estado de carga independientemente del resultado
         }
     };
-
-    useEffect(() => {
-        fetchService();
-        if (user && user.id) {
-            checkIfUserHasReserved();
-        }
-    }, [id, token, user]);
-
-    if (isLoading || !service || !serviceOwner) {
-        return <LoadingScreen />;
-    }
-
     const checkIfUserHasReserved = async () => {
         try {
             const response = await fetch(`${backendUrl}/reserva/reserva/check?serviceId=${id}`, {
@@ -90,6 +78,21 @@ function ServiceDetail() {
             console.error('Error al verificar la reserva:', error);
         }
     };
+
+    useEffect(() => {
+        fetchService();
+    }, [id, token]);
+
+    useEffect(() => {
+        if (user ) {
+            checkIfUserHasReserved();
+        }
+    }, [user, id, token]);
+
+    if (isLoading || !service || !serviceOwner) {
+        return <LoadingScreen />;
+    }
+
 
     if (error) {
         return <div>Error: {error}</div>;
@@ -236,6 +239,7 @@ function ServiceDescription({ service, user }) {
 }
 
 function ServiceComments({ comments, hasUserReserved, token, user, service }) {
+    const navigate = useNavigate();
     const backendUrl = "http://localhost:3008";
     const [message, setMessage] = useState('');
     const [commentData, setCommentData] = useState({
@@ -278,6 +282,7 @@ function ServiceComments({ comments, hasUserReserved, token, user, service }) {
                 console.log(data)
                 setMessage('Comentario enviado con éxito.');
                 setCommentData({ rating: '', comment: '' });
+                navigate(`/service/${service.service.id}/detail`);
             } else {
                 // Manejar respuestas de error del servidor
                 setMessage('Error al enviar el comentario.');

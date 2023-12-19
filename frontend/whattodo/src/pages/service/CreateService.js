@@ -237,8 +237,9 @@ function CreateServiceForm() {
                                 ))}
                             </div>
                         </section>
-
+                        <div className='sub-but'>
                         <button type="submit" className="submit-button">Crear Experiencia</button>
+                        </div>
                     </div>
 
                 </div>

@@ -54,9 +54,9 @@ const NavBar = () => {
                     </div>
                   </button>
                   <ul className="dropdown-menu">
-                    <li><a className="dropdown-item" href="#">Dashboard</a></li>
-                    <li><a className="dropdown-item" href="#">Perfil</a></li>
-                    <li><a className="dropdown-item" href="#">Reservas</a></li>
+                    <li><Link to="/dashboard" className="dropdown-item">Dashboard</Link></li>
+                    <li><Link to="/dashboard/profile" className="dropdown-item">Perfil</Link></li>
+                    <li><Link to="/reservations" className="dropdown-item">Reservas</Link></li>
                   </ul>
                 </div>
               </div>
@@ -76,7 +76,7 @@ const NavBar = () => {
                 <ul >
                   <li className='li-nav'><Link to='/register' className="navbar-action register">Register</Link></li>
                   <li className='li-nav'><Link to='/login' className="navbar-action login">Log In</Link></li>
-                  </ul>
+                </ul>
               </div>
             </div>
           </>
@@ -91,11 +91,11 @@ const NavBar = () => {
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
           </div>
           <div className="offcanvas-body">
-            <ul >
+            <ul>
               <button onClick={handleLogout} className="logout">Log Out</button>
-              <li><a className="dropdown-item" href="#">Dashboard</a></li>
-              <li><a className="dropdown-item" href="#">Perfil</a></li>
-              <li><a className="dropdown-item" href="#">Reservas</a></li>
+              <li><Link to="/dashboard" className="dropdown-item">Dashboard</Link></li>
+              <li><Link to="/dashboard/profile" className="dropdown-item">Perfil</Link></li>
+              <li><Link to="/reservations" className="dropdown-item">Reservas</Link></li>
             </ul>
           </div>
         </div>

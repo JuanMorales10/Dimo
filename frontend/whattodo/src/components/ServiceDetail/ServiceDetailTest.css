@@ -120,14 +120,16 @@
   }
 
   .service-description, .service-detail-overlay, .comment, .service-meta {
-   background:white;
-    /* background-color: #f8f8f8; */
+    background: linear-gradient(169deg, rgb(66, 66, 74), rgb(25, 25, 25));
     background-size: 400% 400%;
-
     -webkit-animation: AnimationName 0s ease infinite;
     -moz-animation: AnimationName 0s ease infinite;
     -o-animation: AnimationName 0s ease infinite;
     animation: AnimationName 0s ease infinite;
+}
+
+.service-meta h3{
+  color: #fff;
 }
 
 @-webkit-keyframes AnimationName {
@@ -272,6 +274,7 @@
     margin: 0;
     padding-bottom: 0.5em;
     font-size: 1.7rem;
+    color: #fff;
   }
 
   .img-comment-owner{
@@ -326,7 +329,7 @@
   }
 
   .tab-content p{
-    color: black;
+    color: white;
   }
   
   .tab-pane {

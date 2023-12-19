@@ -60,7 +60,9 @@ function Sidenav({ mobileOpen, setMobileOpen }) {
                         padding: '16px',
                     }}
                 >
-                    <img src={Logo} alt="Logo" style={{ maxHeight: '40px' }} />
+                    <Link to="/">
+                        <img src={Logo} alt="Logo" style={{ maxHeight: '40px' }} />
+                    </Link>
                 </Box>
                 <Divider />
                 <List>

@@ -16,6 +16,7 @@ router.get('/availableServices', serviceController.getAvailableServices);
 router.get('/searchServicesByName', serviceController.searchServicesByName);
 router.get('/:id/available-slots', serviceController.getAvailableSlots);
 router.get('/service/:id/favorite', authenticateJWT ,favoriteController.isFavorite);
+router.get('/service/favorite', authenticateJWT ,favoriteController.favorites);
 
 //@Post
 router.post('/createService', serviceImage.array('image'), serviceController.postCreateService);

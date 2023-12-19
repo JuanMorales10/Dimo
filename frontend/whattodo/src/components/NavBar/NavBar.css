@@ -119,12 +119,19 @@ h1 {
   color: #fff;
 }
 .offcanvas-header{
-  background-color: #1c1a1acf;
   border-bottom: 1px solid #d9c6c6;
   height: 70px;
 }
-.offcanvas-body{
-  background-color: #1c1a1acf;
+.offcanvas-body ul{
+ margin: 0;
+ padding: 0;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+}
+
+.offcanvas-body button.logout{
+  width: 60%;
 }
 
 .bottom {
@@ -157,6 +164,29 @@ h1 {
   left: 0;
   width: 100%;
   background-color: #000;
+}
+
+.offcanvas , .offcanvas-start{
+  transform: none;
+  margin: 10px;
+  width: 240px;
+  border-radius: 12px;
+}
+
+
+.offcanvas.show:not(.hiding), .offcanvas.showing {
+  background: linear-gradient(195deg, rgb(66, 66, 74), rgb(25, 25, 25));
+  width: 240px;
+
+  ul{
+    padding: 0;
+    margin: 0;
+  }
+}
+
+
+.dropdown-menu.show {
+  background: linear-gradient(169deg, rgb(66, 66, 74), rgb(25, 25, 25));
 }
 
 @media (max-width:1000px) {

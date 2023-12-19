@@ -130,6 +130,11 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'servicio_id',
             as: 'favoritedBy'
           });
+
+          Service.hasMany(models.Favorite, {
+            foreignKey: 'servicio_id',
+            as: 'favorites'
+          });
     }
 
     return Service;

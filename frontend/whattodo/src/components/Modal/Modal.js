@@ -60,8 +60,9 @@ function Modal({ closeModal }) {
       });
 
       const data = await response.json();
+      console.log(data)
 
-      navigate('/search-results', { services: data });
+      navigate('/search-results', { state: { services: data } });
     } catch (error) {
       console.error('Error al enviar el formulario:', error);
     }

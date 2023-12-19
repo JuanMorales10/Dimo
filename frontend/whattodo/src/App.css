@@ -19,8 +19,11 @@
 
 body{
   font-family: 'Centra', sans-serif !important;
-  background-color: #3a77a0;
 }
+/* 
+html{
+  background: #f0f0f0;
+} */
 
 .App {
   text-align: center;

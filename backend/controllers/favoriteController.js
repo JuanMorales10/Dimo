@@ -1,4 +1,4 @@
-const { Favorite, Service, User } = require('../database/models');
+const { User, Service, ServiceImage, Category, Comment, Region, Order, Favorite } = require('../database/models');
 
 const favoriteController = {
   addFavorite: async (req, res) => {
@@ -69,7 +69,42 @@ const favoriteController = {
       console.error(error);
       return res.status(500).json({ message: "Error al verificar favoritos" });
     }
-  }
+  },
+  favorites: async (req, res) => {
+    try {
+      const userId = req.session.user.userId;
+  
+      // Obtener favoritos junto con los detalles del servicio
+      const favorites = await Favorite.findAll({
+        where: { usuario_dni: userId },
+        include: [{
+          model: Service,
+          as: 'service',
+          attributes: ['id', 'nombre', 'descripcion', 'precio', 'categoria_id'],
+          include: [{
+            model: ServiceImage, // Asegúrate de que este modelo esté importado
+            as: 'images',
+            attributes: ['url'] // Asume que la URL de la imagen se almacena en la columna 'url'
+          }]
+          // Aquí puedes incluir más relaciones si son necesarias
+        }],
+        attributes: []
+      });
+  
+      const services = favorites.map(fav => ({
+        ...fav.service.get({ plain: true }),
+        images: fav.service.images.map(img => img.url), // Extraer URLs de imágenes
+        isFavorite: true
+      }));
+
+  
+      return res.status(200).json(services);
+  
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Error al obtener los favoritos" });
+    }
+  },
 };
 
 module.exports = favoriteController;

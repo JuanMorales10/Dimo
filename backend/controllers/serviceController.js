@@ -300,7 +300,6 @@ const serviceController = {
 
     const services = await Service.findAll({
       where: filterCriteria,
-      logging: console.log,
       include: [
         {
           model: ServiceImage,
@@ -320,9 +319,33 @@ const serviceController = {
       ],
     });
 
+    const formattedServices = services.map(service => ({
+      id: service.id,
+      nombre: service.nombre,
+      descripcion: service.descripcion,
+      precio: service.precio,
+      duracion: service.duracion,
+      direccion: service.direccion,
+      disponibilidad: service.disponibilidad,
+      atp: service.atp,
+      capacidad: service.capacidad,
+      categoria: {
+        id: service.category.id,
+        nombre: service.category.nombre,
+        descripcion: service.category.descripcion,
+      },
+      usuario: {
+        nombre: service.user.nombre,
+        apellido: service.user.apellido,
+      },
+      // Puedes formatear las imágenes y otros campos relacionados de la misma manera
+      images: service.images.map(image => image.url),
+      // ... más campos según sea necesario ...
+    }));
+
     console.log(services)
 
-    return res.status(200).json(services);
+    return res.status(200).json({ services: formattedServices });
   } catch (error) {
     console.error('Error al filtrar los servicios:', error);
     return res.status(500).json({ error: 'Error interno del servidor' });

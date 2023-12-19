@@ -7,7 +7,7 @@ import NavBar from '../../../components/NavBar/NavBar';
 
 function ReservaPage() {
   const { serviceId } = useParams();
-  const { token, user} = useContext(UserContext);
+  const { token, user, addEvent} = useContext(UserContext);
   const [error, setError] = useState('');
   const [service, setService] = useState(null);
 
@@ -93,12 +93,23 @@ function ReservaPage() {
         },
         body: JSON.stringify(reservaData)
       });
-  
-      const data = await response.json();
+
+      const reservaCreada = await response.json();
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to create reservation');
+        throw new Error(reservaCreada.message || 'Failed to create reservation');
       }
-      console.log('Reservation created:', data);
+      
+      const newEvent = {
+        title: `${reservaCreada.nombreReserva} - ${reservaCreada.nombreUsuario}`,
+        start: reservaCreada.start_datetime,
+        end: reservaCreada.end_datetime,
+        extendedProps: {
+          cantidadPersonas: reservaCreada.cantidadPersonas,
+        }
+      }
+      addEvent(newEvent);
+
+      console.log('Reservation created:', reservaCreada);
     } catch (error) {
       console.error('Error creating reservation:', error);
       setError(error.message);

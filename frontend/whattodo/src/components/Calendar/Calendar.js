@@ -1,14 +1,34 @@
-import React from 'react';
-import './Calendar.css';
-
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import { UserContext } from '../UserContext/UserContext';
+import './Calendar.css'
+import { useContext, useState } from 'react';
+import Modal from '../ModalCalendar/ModalCalendar';
 function Calendar() {
-  // Podrías integrar una librería de calendario como FullCalendar o react-big-calendar
+  const { events } = useContext(UserContext);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const handleEventClick = ({ event }) => {
+    setSelectedEvent({
+      title: event.title,
+      start: event.start,
+      end: event.end,
+      cantidadPersonas: event.extendedProps.cantidadPersonas,
+    });
+  };
+
 
   return (
-    <div className="calendar">
-      Calendario
+    <div>
+      <FullCalendar
+        plugins={[dayGridPlugin]}
+        initialView="dayGridMonth"
+        events={events}
+        eventClick={handleEventClick}
+      />
+      {selectedEvent && <Modal event={selectedEvent} onClose={() => setSelectedEvent(null)} />}
     </div>
   );
 }
 
 export default Calendar;
+

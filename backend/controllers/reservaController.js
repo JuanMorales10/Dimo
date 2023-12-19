@@ -64,17 +64,40 @@ const ReservaController = {
       return res.status(500).json({ message: "Error al crear la reserva", error });
     }
   },
-
-
   getReservas: async (req, res) => {
+    const userId = req.session.user.userId
     try {
       const reservas = await Order.findAll({
+        where:{
+          usuario_dni: userId
+        },
         include: [
-          { model: User, as: 'user' },
-          { model: Service, as: 'service' }
+          { 
+            model: User, 
+            as: 'user',
+            attributes: ['nombre'] 
+          },
+          { 
+            model: Service, 
+            as: 'service',
+            attributes: ['nombre'] 
+          }
         ]
       });
-      return res.status(200).json(reservas);
+  
+      // Transformar las reservas para el frontend
+      const reservasTransformadas = reservas.map(reserva => ({
+        id: reserva.id,
+        title: `${reserva.service.nombre} - ${reserva.user.nombre}`,
+        start: reserva.start_datetime,
+        end: reserva.end_datetime,
+        cantidadPersonas: reserva.cantidadPersonas,
+        nombreUsuario: reserva.nombreUsuario,
+        nombreReserva: reserva.nombreReserva
+      
+      }));
+  
+      return res.status(200).json(reservasTransformadas);
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Error al obtener las reservas", error });

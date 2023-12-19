@@ -3,6 +3,7 @@ import React, { createContext, useState, useEffect } from 'react';
 export const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
+  const [events, setEvents] = useState([]);
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem('token') || sessionStorage.getItem('token'));
@@ -10,8 +11,30 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     if (token) {
       fetchUserProfile();
+      fetchReservas();
     }
   }, [token]);
+
+  const fetchReservas = async () => {
+    try {
+      const response = await fetch('http://localhost:3008/reserva/reservas', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error('No se pudieron cargar las reservas');
+      const reservasEventos = await response.json();
+      setEvents(reservasEventos);
+    } catch (error) {
+      console.error('Error al cargar reservas:', error);
+    }
+  };
+
+  const addEvent = (newEvent) => {
+    console.log(newEvent)
+    setEvents((currentEvents) => [...currentEvents, newEvent]);
+    console.log(events)
+  };
+
+  console.log(events)
 
   const setCookie = (name, value, days) => {
     let expires = "";
@@ -80,7 +103,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ token, user, login, logout, fetchUserProfile, userRole }}>
+    <UserContext.Provider value={{ token, user, login, logout, fetchUserProfile, userRole, events, addEvent }}>
       {children}
     </UserContext.Provider>
   );

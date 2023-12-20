@@ -3,12 +3,12 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import ServiceCard from '../ServiceCard/ServiceCard';
 import { UserContext } from '../UserContext/UserContext';
+import { useNavigate } from 'react-router-dom';
 import { useTheme , Button} from '@mui/material';
 import { Link } from 'react-router-dom';
 
 function ServiceList() {
-    const theme = useTheme();
-    const isMobile = useTheme().breakpoints.down('sm'); // Ajusta este breakpoint si es necesario
+    const navigate = useNavigate();
     const { token, user } = useContext(UserContext);
     const [services, setServices] = useState([]);
     const [error, setError] = useState('');
@@ -38,10 +38,7 @@ function ServiceList() {
     }, [user?.profile?.id, token]);
 
     const handleEdit = (serviceId) => {
-        // Aquí puedes establecer un estado con la información del servicio a editar
-        // o abrir un modal/formulario para editar el servicio
-        console.log('Editar servicio', serviceId);
-        // Implementa la lógica de edición aquí
+        navigate(`/edit-service/${serviceId}`);
     };
 
     const handleDelete = async (serviceId) => {
@@ -50,11 +47,14 @@ function ServiceList() {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-
-            if (!response.ok) {
-                throw new Error('No se pudo eliminar el servicio');
+    
+            const data = await response.json();
+            console.log(data)
+            if (response.ok) {
+                setServices(prevServices => prevServices.filter(service => service.id !== serviceId));
+            } else {
+                throw new Error(data.error || 'No se pudo eliminar el servicio');
             }
-            setServices(prevServices => prevServices.filter(service => service.id !== serviceId));
         } catch (error) {
             setError(error.message);
         }
@@ -87,8 +87,8 @@ function ServiceList() {
                         Crear Servicio
                     </Button>
                 </Link>
-                {error && <p>Error: {error}</p>}
             </Box>
+                {error && <p>Error: {error}</p>}
             <Box
                 sx={{
                     display: 'flex',

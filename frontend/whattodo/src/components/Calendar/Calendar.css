@@ -34,6 +34,11 @@
   border-radius: 12px;
 }
 
+.fc-toolbar-title {
+  text-transform: capitalize;
+}
+
+
 .fc .fc-view-harness-active > .fc-view {
   inset: 0px;
   position: absolute;

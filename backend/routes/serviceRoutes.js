@@ -8,7 +8,7 @@ const { validateServiceUpdate } = require('../middlewares/validateServiceUpdate'
 
 //@Get
 router.get('/createService', serviceController.getCreateService);
-router.get('/:id/detail', serviceController.getServiceDetails);
+router.get('/:id/detail',serviceController.getServiceDetails);
 router.get('/allServices', serviceController.getAllServices);
 router.get('/userServices/:id', serviceController.getUserServices);
 router.get('/popularServices', serviceController.getPopularServices);
@@ -25,7 +25,7 @@ router.post('/filter', serviceController.filterServices);
 router.post('/service/:id/favorite', authenticateJWT ,favoriteController.addFavorite);
 
 //@Put
-router.put('/updateService/:id', serviceImage.array('image'),validateServiceUpdate, serviceController.putUpdateService);
+router.put('/updateService/:id', serviceImage.array('image'),authenticateJWT ,validateServiceUpdate, serviceController.putUpdateService);
 
 //@Delete
 router.delete('/deleteService/:id',authenticateJWT ,serviceController.deleteService);

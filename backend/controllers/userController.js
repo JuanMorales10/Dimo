@@ -121,35 +121,46 @@ const userController = {
   ,
   updateProfile: async (req, res) => {
     try {
-      const id = req.body.id;
-      const user = await User.findByPk(id);
+        const userId = req.session.user.userId;
+        const user = await User.findByPk(userId);
 
-      if (!user) {
-        return res.status(404).json({ message: "Usuario no encontrado" });
-      }
+        if (!user) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
 
-    
-      const isPasswordMatch = await bcrypt.compare(req.body.currentPassword, user.password);
-      if (!isPasswordMatch) {
-        return res.status(401).json({ message: "Contraseña incorrecta" });
-      }
+        // Construye el objeto updatedProfile con los campos permitidos
+        const updatedProfile = {
+            nombre: req.body.nombre || user.nombre,
+            apellido: req.body.apellido || user.apellido,
+            email: req.body.email || user.email,
+            telefono: req.body.telefono || user.telefono,
+            direccion: req.body.direccion || user.direccion,
+            type: req.body.type || user.type,
+        };
 
-     
-      const updatedProfile = { ...req.body };
-      if (req.file) {
-        updatedProfile.avatar = req.file.filename;
-      } else if (!updatedProfile.avatar) {
-        updatedProfile.avatar = user.avatar;
-      }
+        // Actualizar avatar si se ha subido uno nuevo
+        if (req.file) {
+            updatedProfile.avatar = req.file.filename;
+        }
 
-   
-      await User.update(updatedProfile, { where: { id: id } });
-      res.json({ message: "Perfil actualizado correctamente" });
+        // Cambio de contraseña
+        if (req.body.currentPassword && req.body.newPassword) {
+            const isMatch = await bcrypt.compare(req.body.currentPassword, user.password);
+            if (!isMatch) {
+                return res.status(400).json({ message: "Contraseña actual incorrecta" });
+            }
+            updatedProfile.password = bcrypt.hashSync(req.body.newPassword, 10);
+        }
+
+        // Actualiza el usuario en la base de datos
+        await user.update(updatedProfile);
+
+        res.json({ message: "Perfil actualizado correctamente" });
     } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: "Error al actualizar el perfil" });
+        console.log(error);
+        res.status(500).json({ message: "Error al actualizar el perfil" });
     }
-  },
+},
   deleteAccount: async (req, res) => {
     try {
       await User.destroy({

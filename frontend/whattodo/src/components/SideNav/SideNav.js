@@ -80,7 +80,7 @@ function Sidenav({ mobileOpen, setMobileOpen }) {
                         <ListItemIcon>
                             <HomeIcon />
                         </ListItemIcon>
-                        <ListItemText primary="Lista de Servicios" />
+                        <ListItemText primary="Mis Servicios" />
                     </ListItem>
                     <ListItem button component={Link} to="/dashboard/profile">
                         <ListItemIcon>
@@ -99,6 +99,12 @@ function Sidenav({ mobileOpen, setMobileOpen }) {
                             <FavoriteIcon />
                         </ListItemIcon>
                         <ListItemText primary="Favoritos" />
+                    </ListItem>
+                    <ListItem button component={Link} to="/dashboard/reservas">
+                        <ListItemIcon>
+                            <FavoriteIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Mis Reservas" />
                     </ListItem>
                     <ListItem button onClick={handleLogout}>
                         <ListItemIcon>

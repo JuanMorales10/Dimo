@@ -21,7 +21,7 @@ router.post('/login', authCookie.authenticateUser, userController.login);
 router.post('/logOut', userController.logOut);
 
 //@Put
-router.put('/updateProfile', authenticateJWT, avatar.single("avatar"), userController.updateProfile);
+router.put('/updateProfile', avatar.single("avatar"),authenticateJWT, userController.updateProfile);
 
 //@Delete
 router.delete('/deleteAccount', userController.deleteAccount);

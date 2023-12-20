@@ -1,108 +1,233 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Box, Typography, TextField, Button, Switch, FormControlLabel, Avatar } from '@mui/material';
-import { UserContext } from '../UserContext/UserContext'; // Asegúrate de que esta es la ruta correcta
+import { Box, Typography, TextField, Button, Avatar, FormControlLabel, Switch } from '@mui/material';
+import { UserContext } from '../UserContext/UserContext';
 import NavBar from '../NavBar/NavBar';
-import './UserProfile.css'; // Asegúrate de que tus estilos están definidos aquí
+import LoadingScreen from '../LoadingScreen/LoadingScreen';
+import './UserProfile.css';
 
 const UserProfile = () => {
-    const { user } = useContext(UserContext);
-    const [isEditing, setIsEditing] = useState(false); // Estado para controlar si se está editando o no
+    const { token, user, fetchUserProfile } = useContext(UserContext);
+    const [isEditing, setIsEditing] = useState(false);
+    const [avatarFile, setAvatarFile] = useState(null);
+    const [formData, setFormData] = useState({
+        nombre: '',
+        apellido: '',
+        email: '',
+        telefono: '',
+        direccion: '',
+        avatar: null,
+        type: '',
+    });
+    const [passwordData, setPasswordData] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    });
 
-    // Reemplaza con tus propios estados y lógica de efectos
     useEffect(() => {
-        // Lógica de carga de datos del usuario o servicios
-    }, [user?.profile?.id]);
+        if (user && user.profile) {
+            console.log(user.profile)
+            setFormData({
+                nombre: user.profile.nombre || '',
+                apellido: user.profile.apellido || '',
+                email: user.profile.email || '',
+                telefono: user.profile.telefono || '',
+                direccion: user.profile.direccion || '',
+                avatar: user.profile.avatar || '',
+                type: user.profile.type
+            });
+        }
+    }, [user]);
+
+    const handlePasswordChange = (e) => {
+        const { name, value } = e.target;
+        setPasswordData({ ...passwordData, [name]: value });
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const handleFileChange = (e) => {
+        setAvatarFile(e.target.files[0]);
+    };
+
+    const handleTypeChange = (event) => {
+        setFormData({ ...formData, type: event.target.checked ? 'Host' : 'Personal' });
+    };
+
+    const handlePasswordUpdate = async (e) => {
+        e.preventDefault();
+
+        // Verifica que la nueva contraseña y la confirmación coincidan
+        if (passwordData.newPassword !== passwordData.confirmPassword) {
+            alert('Las contraseñas no coinciden');
+            return;
+        }
+
+        // Crea el objeto con los datos de la contraseña
+        const passwordUpdateData = {
+            currentPassword: passwordData.currentPassword,
+            newPassword: passwordData.newPassword
+        };
+
+        try {
+            const response = await fetch('http://localhost:3008/user/updateProfile', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(passwordUpdateData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            // Manejo de la respuesta
+            alert('Contraseña actualizada con éxito');
+        } catch (error) {
+            console.error('Error al actualizar la contraseña:', error);
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const updatedData = new FormData();
+        Object.keys(formData).forEach(key => {
+            if (key !== 'avatar') {
+                updatedData.append(key, formData[key]);
+            }
+        });
+
+        if (avatarFile) {
+            updatedData.append('avatar', avatarFile);
+        }
+
+        console.log(updatedData)
+
+        try {
+            const response = await fetch('http://localhost:3008/user/updateProfile', {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: updatedData,
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            await fetchUserProfile();
+            setIsEditing(false);
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        }
+    };
 
     if (!user || !user.profile) {
-        return <div>Loading...</div>;
+        return <LoadingScreen />;
     }
 
-    // Funciones para manejar la edición de la información del perfil y el cambio de contraseña
     const handleEditInfo = () => {
         setIsEditing(!isEditing);
-        // Aquí más lógica para manejar la edición
     };
-
-    const handlePasswordChange = () => {
-        // Lógica para manejar el cambio de contraseña
-    };
-    console.log(user.profile)
 
     return (
         <>
-            <Box className="user-profile" sx={{
-                display: 'flex',
-                 flexDirection: 'column',
-                  justifyContent: 'center',
-                   padding: '10px 24px',
-                    marginTop: {
-                    xs: '70px',
-                    sm: 0
-                },
-            }}>
-                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', m: 3, boxShadow: '0 4px 20px 0 rgba(0,0,0,0.12), 0 7px 8px -5px rgba(0,0,0,0.2);', padding: '15px', height: '110px', borderRadius: '12px', margin: '0', background: 'linear-gradient(169deg, rgb(66, 66, 74), rgb(25, 25, 25));', backgroundColor: '#fff' }}>
-                    <Avatar
-                        sx={{ width: 80, height: 80 }}
-                        src={`http://localhost:3008/img/avatar/${user.profile.avatar}`}
-                        alt={`${user.profile.nombre} ${user.profile.apellido}`}
-                    />
+            <Box className="user-profile" sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '10px 24px', marginTop: { xs: '70px', sm: 0 } }}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', m: 3, boxShadow: '0 4px 20px 0 rgba(0,0,0,0.12), 0 7px 8px -5px rgba(0,0,0,0.2)', padding: '15px', height: '110px', borderRadius: '12px', margin: '0', background: 'linear-gradient(169deg, rgb(66, 66, 74), rgb(25, 25, 25))', backgroundColor: '#fff' }}>
+                    <Avatar sx={{ width: 80, height: 80 }} src={`http://localhost:3008/img/avatar/${user.profile.avatar}`} alt={`${user.profile.nombre} ${user.profile.apellido}`} />
                     <Typography variant="h5" sx={{ mt: 2, marginTop: '0', marginLeft: '10px', color: 'white' }}>
                         {`${user.profile.nombre} ${user.profile.apellido ? user.profile.apellido : ''}`}
                     </Typography>
-                    {/* Agrega aquí más detalles del perfil */}
                 </Box>
 
-                {/* Formulario de Información Básica */}
                 <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, margin: '20px 0px' }}>
-                    {/* Cambiar esta sección según corresponda para edición o visualización */}
                     {isEditing ? (
-                        <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, boxShadow: '0 4px 20px 0 rgba(0,0,0,0.12), 0 7px 8px -5px rgba(0,0,0,0.2);', padding: '15px', backgroundColor: '#fff' }} >
-                            <Typography variant="h5" sx={{ mt: 2, margin: '10px 0', display: 'flex', padding: '15px', }}>
-                                Informacion de Usuario:
-                            </Typography>
-                            <TextField label="Nombre" variant="outlined" defaultValue={user.profile.nombre} sx={{ margin: '10px' }} />
-                            <TextField label="Apellido" variant="outlined" defaultValue={user.profile.apellido} sx={{ margin: '10px' }} />
-                            <TextField label="Email" variant="outlined" defaultValue={user.profile.email} sx={{ margin: '10px' }} />
-                            <TextField label="Dni" variant="outlined" defaultValue={user.profile.id} sx={{ margin: '10px' }} />
-                            {/* Agrega todos los campos necesarios */}
+                        <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, boxShadow: '0 4px 20px 0 rgba(0,0,0,0.12), 0 7px 8px -5px rgba(0,0,0,0.2)', padding: '15px', borderRadius: '12px', backgroundColor: '#fff' }}>
+                            <form onSubmit={handleSubmit} className='formedit' >
+                                <TextField label="Nombre" variant="outlined" name="nombre" value={formData.nombre} onChange={handleInputChange} sx={{ margin: '10px' }} />
+                                <TextField label="Apellido" variant="outlined" name="apellido" value={formData.apellido} onChange={handleInputChange} sx={{ margin: '10px' }} />
+                                <TextField label="Email" variant="outlined" name="email" value={formData.email} onChange={handleInputChange} sx={{ margin: '10px' }} />
+                                <TextField label="Teléfono" variant="outlined" name="telefono" value={formData.telefono} onChange={handleInputChange} sx={{ margin: '10px' }} />
+                                <TextField label="Dirección" variant="outlined" name="direccion" value={formData.direccion} onChange={handleInputChange} sx={{ margin: '10px' }} />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={formData.type === 'Host'}
+                                            onChange={handleTypeChange}
+                                            name="type"
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Cambiar a Host"
+                                />
+
+                                <input type="file" name="avatar" onChange={handleFileChange} />
+                                <Button type="submit" sx={{ margin: '10px' }}>Guardar Cambios</Button>
+                            </form>
                         </Box>
                     ) : (
                         <>
-                            <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, boxShadow: '0 4px 20px 0 rgba(0,0,0,0.12), 0 7px 8px -5px rgba(0,0,0,0.2);', padding: '15px', borderRadius: '12px', backgroundColor: '#fff' }} >
-                                <Typography variant="h5" sx={{ mt: 2, margin: '10px 0', display: 'flex', padding: '15px', }}>
-                                    Informacion de Usuario:
-                                </Typography>
-                                <Box sx={{ display: 'flex', flexDirection: 'row', margin: '10px', justifyContent: 'flex-start', }}>
-                                    <Typography variant='label' sx={{ fontSize: '18px', width: '112px', display: 'flex' }}>Nombre: </Typography>
-                                    <Typography>{user.profile.nombre}</Typography>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, boxShadow: '0 4px 20px 0 rgba(0,0,0,0.12), 0 7px 8px -5px rgba(0,0,0,0.2)', padding: '15px', borderRadius: '12px', backgroundColor: '#fff' }}>
+                                <Typography variant="h5" sx={{ mt: 2, margin: '10px 0', display: 'flex', padding: '15px' }}>Informacion de Usuario:</Typography>
+                                <Box sx={{ display: 'flex', flexDirection: 'row', margin: '10px', justifyContent: 'flex-start' }}>
+                                    <Typography variant="body1" sx={{ fontSize: '18px', width: '112px' }}>Nombre: </Typography>
+                                    <Typography variant="body1">{user.profile.nombre}</Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', flexDirection: 'row', margin: '10px' }}>
-                                    <Typography variant='label' sx={{ fontSize: '18px', width: '112px', display: 'flex' }}>Apellido: </Typography>
-                                    <Typography>{user.profile.apellido}</Typography>
+                                    <Typography variant="body1" sx={{ fontSize: '18px', width: '112px' }}>Apellido: </Typography>
+                                    <Typography variant="body1">{user.profile.apellido}</Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', flexDirection: 'row', margin: '10px' }}>
-                                    <Typography variant='label' sx={{ fontSize: '18px', width: '112px', display: 'flex' }}>Email: </Typography>
-                                    <Typography>{user.profile.email}</Typography>
+                                    <Typography variant="body1" sx={{ fontSize: '18px', width: '112px' }}>Email: </Typography>
+                                    <Typography variant="body1">{user.profile.email}</Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', flexDirection: 'row', margin: '10px' }}>
-                                    <Typography variant='label' sx={{ fontSize: '18px', width: '112px', display: 'flex' }}>Dni: </Typography>
-                                    <Typography>{user.profile.id}</Typography>
+                                    <Typography variant="body1" sx={{ fontSize: '18px', width: '112px' }}>Teléfono: </Typography>
+                                    <Typography variant="body1">{user.profile.telefono}</Typography>
+                                </Box>
+                                <Box sx={{ display: 'flex', flexDirection: 'row', margin: '10px' }}>
+                                    <Typography variant="body1" sx={{ fontSize: '18px', width: '112px' }}>Dirección: </Typography>
+                                    <Typography variant="body1">{user.profile.direccion}</Typography>
                                 </Box>
                             </Box>
+                            <Button onClick={handleEditInfo} sx={{ margin: '10px' }}>{isEditing ? 'Guardar Cambios' : 'Editar Perfil'}</Button>
                         </>
                     )}
-
-                    {/* Botones para cambiar el estado de edición */}
-                    <Button onClick={handleEditInfo}>{isEditing ? 'Guardar Cambios' : 'Editar Perfil'}</Button>
-
-                    {/* Formulario de Cambio de Contraseña */}
-                    <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, boxShadow: '0 4px 20px 0 rgba(0,0,0,0.12), 0 7px 8px -5px rgba(0,0,0,0.2);', padding: '15px', borderRadius: '12px', backgroundColor: '#fff' }} >
-                        <Typography variant="h5" sx={{ mt: 2, margin: '10px 0', display: 'flex', padding: '15px', }}>Change Password</Typography>
-                        <TextField label="Current Password" variant="outlined" type="password" />
-                        <TextField label="New Password" variant="outlined" type="password" sx={{ my: 2 }} />
-                        <TextField label="Confirm New Password" variant="outlined" type="password" />
-                        <Button onClick={handlePasswordChange}>Update Password</Button>
-                    </Box>
+                </Box>
+                <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, boxShadow: '0 4px 20px 0 rgba(0,0,0,0.12), 0 7px 8px -5px rgba(0,0,0,0.2)', padding: '15px', borderRadius: '12px', backgroundColor: '#fff' }}>
+                    <form onSubmit={handlePasswordUpdate} className='formedit' >
+                        <TextField
+                            label="Contraseña Actual"
+                            variant="outlined"
+                            type="password"
+                            name="currentPassword"
+                            onChange={handlePasswordChange}
+                            sx={{ margin: '10px' }}
+                        />
+                        <TextField
+                            label="Nueva Contraseña"
+                            variant="outlined"
+                            type="password"
+                            name="newPassword"
+                            onChange={handlePasswordChange}
+                            sx={{ margin: '10px' }}
+                        />
+                        <TextField
+                            label="Confirmar Nueva Contraseña"
+                            variant="outlined"
+                            type="password"
+                            name="confirmPassword"
+                            onChange={handlePasswordChange}
+                            sx={{ margin: '10px' }}
+                        />
+                        <Button type="submit">Actualizar Contraseña</Button>
+                    </form>
                 </Box>
             </Box>
         </>
@@ -110,3 +235,4 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
+

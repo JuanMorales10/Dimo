@@ -1,12 +1,15 @@
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
+import esLocale from '@fullcalendar/core/locales/es';
 import { UserContext } from '../UserContext/UserContext';
-import './Calendar.css'
+import './Calendar.css';
 import { useContext, useState } from 'react';
 import Modal from '../ModalCalendar/ModalCalendar';
+
 function Calendar() {
   const { events } = useContext(UserContext);
   const [selectedEvent, setSelectedEvent] = useState(null);
+
   const handleEventClick = ({ event }) => {
     setSelectedEvent({
       title: event.title,
@@ -16,7 +19,6 @@ function Calendar() {
     });
   };
 
-
   return (
     <div className='calendar-dash'>
       <FullCalendar
@@ -24,6 +26,7 @@ function Calendar() {
         initialView="dayGridMonth"
         events={events}
         eventClick={handleEventClick}
+        locale={esLocale}
       />
       {selectedEvent && <Modal event={selectedEvent} onClose={() => setSelectedEvent(null)} />}
     </div>
@@ -31,4 +34,5 @@ function Calendar() {
 }
 
 export default Calendar;
+
 

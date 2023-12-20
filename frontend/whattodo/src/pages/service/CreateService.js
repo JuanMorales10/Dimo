@@ -19,7 +19,7 @@ function CreateServiceForm() {
         categoria_id: '',
         capacidad: '',
         id_region: 1,
-        atp: '',
+        atp: true,
         rating: 0,
         precio: '',
         duracion: '',
@@ -64,6 +64,10 @@ function CreateServiceForm() {
         });
     };
 
+    const handleRemoveSelectedFile = (fileIndex) => {
+        setSelectedFiles(selectedFiles.filter((_, index) => index !== fileIndex));
+    };
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -78,7 +82,7 @@ function CreateServiceForm() {
             submitData.append('image', file);
         });
 
-       
+
 
         try {
             const response = await axios.post('http://localhost:3008/service/createService', submitData, {
@@ -104,7 +108,7 @@ function CreateServiceForm() {
 
                     {/* Paso 1: Categoría */}
                     <div className='inside-1'>
-                            <h3>Paso 1</h3>
+                        <h3>Paso 1</h3>
                         <section className="form-step">
                             <h5>
                                 Elije la Categoria de tu Experiencia
@@ -142,7 +146,7 @@ function CreateServiceForm() {
                                 </div>
                             </div>
                         </section>
-                            <h3>Paso 2</h3>
+                        <h3>Paso 2</h3>
                         <section className="form-step">
                             <input type="text" placeholder="Nombra tu experiencia" name='nombre' onChange={handleInputChange} />
                             <label>Selecciona tu ubicacion</label>
@@ -159,86 +163,89 @@ function CreateServiceForm() {
                         </section>
                     </div>
                     <div className='inside-2'>
-                            <h3>Paso 3</h3>
+                        <h3>Paso 3</h3>
                         <section className="form-step">
                             <div>
                                 <h4>Días de Operación</h4>
                                 <div className='days-cont'>
-                                {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].map((day, index) => (
-                                    <div key={index}>
-                                        <input
-                                            type="checkbox"
-                                            name="operating_days"
-                                            value={day}
-                                            onChange={handleDayChange}
-                                            checked={formData.operating_days.includes(day)}
-                                        />
-                                        {day}
-                                    </div>
-                                ))}
+                                    {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].map((day, index) => (
+                                        <div key={index}>
+                                            <input
+                                                type="checkbox"
+                                                name="operating_days"
+                                                value={day}
+                                                onChange={handleDayChange}
+                                                checked={formData.operating_days.includes(day)}
+                                            />
+                                            {day}
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                             <h4> Horarios de Operación</h4>
                             <div className='hor-flex'>
-                            <label>Inicio</label>
-                            <input
-                                type="time"
-                                name="operating_hours_start"
-                                onChange={handleInputChange}
-                                value={formData.operating_hours_start}
-                                placeholder="Hora de inicio"
-                            />
+                                <label>Inicio</label>
+                                <input
+                                    type="time"
+                                    name="operating_hours_start"
+                                    onChange={handleInputChange}
+                                    value={formData.operating_hours_start}
+                                    placeholder="Hora de inicio"
+                                />
                             </div>
                             <div className='hor-flex'>
-                            <label>Fin</label>
-                            <input
-                                type="time"
-                                name="operating_hours_end"
-                                onChange={handleInputChange}
-                                value={formData.operating_hours_end}
-                                placeholder="Hora de fin"
-                            />
+                                <label>Fin</label>
+                                <input
+                                    type="time"
+                                    name="operating_hours_end"
+                                    onChange={handleInputChange}
+                                    value={formData.operating_hours_end}
+                                    placeholder="Hora de fin"
+                                />
                             </div>
                         </section>
 
-                            <h3>Paso 4</h3>
+                        <h3>Paso 4</h3>
                         <section className="form-step">
                             <h5>Detalla tu Experiencia</h5>
                             <div className='column'>
-                            <div className='row'>
-                            <div className='formflexcreat'>
-                                <label className='lab'>Precio:</label>
-                                <input type="number" name='precio' onChange={handleInputChange}></input>
-                            </div>
-                            <div className='formflexcreat'>
-                                <label className='lab'>Duración:</label>
-                                <input type="time" name='duracion' onChange={handleInputChange} value={formData.duracion} />
-                            </div>
-                            </div>
-                            <div className='row'>
-                            <div className='formflexcreat'>
-                                <label className='lab'>Maximo de Personas:</label>
-                                <input type="number" style={{ width: '30%' }} name='capacidad' onChange={handleInputChange}></input>
-                            </div>
-                            <div className='formflexcreat'>
-                                <label className='lab'>Apto para todo Publico:</label>
-                                <input type='checkbox' style={{ width: '20%' }} name='atp' onChange={handleInputChange}></input>
-                            </div>
-                            </div>
+                                <div className='row'>
+                                    <div className='formflexcreat'>
+                                        <label className='lab'>Precio:</label>
+                                        <input type="number" name='precio' onChange={handleInputChange}></input>
+                                    </div>
+                                    <div className='formflexcreat'>
+                                        <label className='lab'>Duración:</label>
+                                        <input type="time" name='duracion' onChange={handleInputChange} value={formData.duracion} />
+                                    </div>
+                                </div>
+                                <div className='row'>
+                                    <div className='formflexcreat'>
+                                        <label className='lab'>Maximo de Personas:</label>
+                                        <input type="number" style={{ width: '30%' }} name='capacidad' onChange={handleInputChange}></input>
+                                    </div>
+                                    <div className='formflexcreat'>
+                                        <label className='lab'>Apto para todo Publico:</label>
+                                        <input type='checkbox' style={{ width: '20%' }} name='atp' onChange={handleInputChange}  checked={formData.atp} ></input>
+                                    </div>
+                                </div>
                             </div>
                         </section>
-                            <h3>Paso 5</h3>
+                        <h3>Paso 5</h3>
                         <section className="form-step">
-                            <h5>Sube imágenes sobre tu experiencia</h5>
+                            <h5>Sube imágenes sobre tu experiencia: </h5>
                             <input type="file" onChange={handleImageChange} multiple name='images' />
                             <div className="image-preview-container">
                                 {selectedFiles.map((file, index) => (
-                                    <img key={index} src={URL.createObjectURL(file)} alt={`preview ${index}`} className="image-preview" />
+                                    <div key={index} className="image-preview-wrapper">
+                                        <img src={URL.createObjectURL(file)} alt={`preview ${index}`} className="image-preview" />
+                                        <button onClick={() => handleRemoveSelectedFile(index)} className='submit-button'>Eliminar</button>
+                                    </div>
                                 ))}
                             </div>
                         </section>
                         <div className='sub-but'>
-                        <button type="submit" className="submit-button">Crear Experiencia</button>
+                            <button type="submit" className="submit-button">Crear Experiencia</button>
                         </div>
                     </div>
 

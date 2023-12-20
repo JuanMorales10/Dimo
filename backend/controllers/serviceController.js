@@ -1,4 +1,4 @@
-const { User, Service, ServiceImage, Category, Comment, Region, Order } = require('../database/models');
+const { User, Service, ServiceImage, Category, Comment, Region, Order, Favorite } = require('../database/models');
 const { Op } = require('sequelize');
 const moment = require('moment-timezone');
 
@@ -167,10 +167,10 @@ const serviceController = {
         return res.status(404).json({ error: 'Servicio no encontrado' });
       }
 
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
+      // const errors = validationResult(req);
+      // if (!errors.isEmpty()) {
+      //   return res.status(400).json({ errors: errors.array() });
+      // }
 
       const updatedFields = {
         nombre: req.body.nombre,
@@ -189,6 +189,8 @@ const serviceController = {
         operating_days: req.body.operating_days
       };
 
+      console.log(updatedFields)
+
       await service.update(updatedFields);
 
       return res.status(200).json({ message: 'Servicio actualizado con éxito', service });
@@ -201,16 +203,19 @@ const serviceController = {
   deleteService: async (req, res) => {
     const { id } = req.params;
     try {
-      const service = await Service.findByPk(id);
-      if (!service) {
-        return res.status(404).json({ error: 'Servicio no encontrado' });
-      }
-      await service.destroy();
-      return res.status(204).send();
+        // Elimina primero las referencias en la tabla 'favorite'
+        await Favorite.destroy({ where: { servicio_id: id } });
+
+        // Ahora puedes eliminar el servicio
+        await Service.destroy({ where: { id: id } });
+
+        console.log('Servicio Eliminado: ' + id);
+        return res.status(200).json({ message: 'Servicio eliminado' });
     } catch (error) {
-      return res.status(500).json({ error: 'Error al eliminar el servicio' });
+        console.error('Detalle del error:', error);
+        return res.status(500).json({ error: 'Error al eliminar el servicio', detalle: error.message });
     }
-  },
+},
 
  postComment : async (req, res) => {
     try {

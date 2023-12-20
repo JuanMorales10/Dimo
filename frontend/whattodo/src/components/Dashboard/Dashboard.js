@@ -29,6 +29,7 @@ function Dashboard() {
                     <Route path="calendar" element={<Calendar />} />
                     <Route path="favorites" element={<Favorites />} />
                     <Route path="profile" element={<UserProfile />} />
+                    <Route path="reservas" element={<UserProfile />} />
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </main>

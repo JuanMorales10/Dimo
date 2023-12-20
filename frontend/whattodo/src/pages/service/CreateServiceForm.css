@@ -30,6 +30,11 @@ input[type='time']{
   margin: 1rem 0;
 }
 
+button.selected-category {
+  border: 1px solid black;
+  transform: scale(1.1); /* Opcional: escalar ligeramente el botón */
+}
+
 .hor-flex{
   display: flex;
   width: 20%;
@@ -90,7 +95,7 @@ input[type='time']{
 }
 
 .submit-button:hover {
-  background-color: #0056b3;
+  background-color: #1190aa;
 }
 
 .category-button {
@@ -179,9 +184,18 @@ section.form-step{
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave para dar profundidad */
 }
 
+.image-preview-container{
+  display: flex;
+  justify-content: space-around;
+  width: 90%;
+  flex-wrap: wrap;
+  margin-bottom: 15px ;
+}
+
 
 .form-cont{
-  width: 800px;
+  max-width: 800px;
+  min-width: 300px;
 }
 
 .row{
@@ -195,3 +209,17 @@ section.form-step{
   display: flex;
   flex-direction: column;
 }
+
+.delete-button{
+  background-color: #15afcf;
+  color: white;
+  padding: 5px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 50%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+

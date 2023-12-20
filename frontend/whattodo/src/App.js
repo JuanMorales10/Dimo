@@ -15,6 +15,7 @@ import AboutUs from './components/AboutUs/AboutUs';
 import ReservaPage from './pages/service/ReservaPage/ReservaPage';
 import ServiceListView from './pages/service/ServiceListView/ServiceListView';
 import Dashboard from './components/Dashboard/Dashboard';
+import EditServicePage from './pages/service/EditServicePage/EditServicePage';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
             <Route path='/user/profile' element={<UserProfile />} />
             <Route path='/user/editUser' element={<EditUserProfile />} />
             <Route path='/nosotros' element={<AboutUs />} />
+            <Route path="/edit-service/:serviceId" element={<EditServicePage />} />
             <Route path="/reserva/:serviceId" element={<ReservaPage />} />
             <Route path="/dashboard/*" element={<Dashboard />} />
             <Route path="*" element={<NotFoundPage />} />

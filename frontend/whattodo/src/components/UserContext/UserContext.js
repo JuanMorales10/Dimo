@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 
+
 export const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
@@ -50,7 +51,7 @@ export const UserProvider = ({ children }) => {
     document.cookie = name + '=; Max-Age=-99999999;';
   };
 
-  const login = async (email, password, keepSession) => {
+  const login = async (email, password, keepSession, navigate) => {
     try {
       const response = await fetch('http://localhost:3008/user/login', {
         method: 'POST',
@@ -58,6 +59,7 @@ export const UserProvider = ({ children }) => {
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
+      
       if (data.token) {
         if (keepSession) {
           localStorage.setItem('token', data.token);
@@ -66,8 +68,8 @@ export const UserProvider = ({ children }) => {
           sessionStorage.setItem('token', data.token);
         }
         setToken(data.token);
-        await fetchUserProfile(data.token);
-        window.location.href = '/';
+       await fetchUserProfile(data.token);
+    return Promise.resolve();
       } else {
         console.error('Error en la autenticación');
       }
@@ -82,7 +84,6 @@ export const UserProvider = ({ children }) => {
     deleteCookie('userEmail'); 
     setToken(null);
     setUser(null);
-    window.location.href = '/';
     return Promise.resolve();
   };
 
@@ -94,13 +95,16 @@ export const UserProvider = ({ children }) => {
         });
         const profileData = await response.json();
         setUser(profileData);
-        setUserRole(profileData.type);
+        setUserRole(profileData.profile.type);
       } catch (error) {
         console.error('Error al obtener el perfil del usuario:', error);
         setUser(null);
       }
     }
   };
+
+  console.log(userRole)
+  console.log(user)
 
   return (
     <UserContext.Provider value={{ token, user, login, logout, fetchUserProfile, userRole, events, addEvent }}>

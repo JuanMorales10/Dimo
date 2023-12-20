@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import logo from '../../assets/img/logowhat.png';
 import './NavBar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,11 +9,18 @@ import { UserContext } from '../UserContext/UserContext';
 const NavBar = () => {
   const { user, logout, token } = useContext(UserContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
-    logout().then(() => {
+    logout();
+  
+    if (location.pathname === '/') {
+      // Si ya estás en la página de inicio, recarga la página
+      window.location.reload();
+    } else {
+      // Si no, navega a la página de inicio
       navigate('/');
-    });
+    }
   };
 
   useEffect(() => {

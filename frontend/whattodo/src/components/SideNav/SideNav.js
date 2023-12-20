@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
     Drawer, List, ListItem, ListItemIcon, ListItemText, IconButton, useTheme,
     useMediaQuery, Box, Divider
@@ -13,22 +13,32 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import MenuIcon from '@mui/icons-material/Menu';
 import Logo from '../../assets/img/logowhat.png';
 import './SideNav.css'
+import { UserContext } from '../UserContext/UserContext';
 
 
 function Sidenav({ mobileOpen, setMobileOpen }) {
+    const {logout} = useContext(UserContext)
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const navigate = useNavigate();
     const drawerWidth = 240; // Define el ancho del drawer
+    const location = useLocation();
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
 
     const handleLogout = () => {
-        // Lógica para manejar el cierre de sesión
-        navigate('/login');
-    }
+        logout();
+      
+        if (location.pathname === '/') {
+          // Si ya estás en la página de inicio, recarga la página
+          window.location.reload();
+        } else {
+          // Si no, navega a la página de inicio
+          navigate('/');
+        }
+      };
 
 
     const drawerContent = (

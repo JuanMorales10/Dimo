@@ -52,6 +52,7 @@ const ReservaController = {
 
     // Crear un objeto con la información de la reserva para enviar como respuesta
     const reservaResponse = {
+      id: newOrder.service_id,
       ...reserva.dataValues,
       start_datetime: startDateTimeLocal.format(),
       end_datetime: endDateTimeLocal.format()

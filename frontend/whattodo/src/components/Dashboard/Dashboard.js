@@ -8,6 +8,7 @@ import Favorites from '../Favorites/Favorites';
 import UserProfile from '../UserProfile/UserProfileDashboard';
 import MiniNavbar from '../MiniNavBar/MiniNavBar';
 import NotFoundPage from '../../pages/user/NotFound/NotFoundPage';
+import ReservasView from '../ReservasViews/ReservasViews';
 
 function Dashboard() {
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -29,7 +30,7 @@ function Dashboard() {
                     <Route path="calendar" element={<Calendar />} />
                     <Route path="favorites" element={<Favorites />} />
                     <Route path="profile" element={<UserProfile />} />
-                    <Route path="reservas" element={<UserProfile />} />
+                    <Route path="reservas" element={<ReservasView />} />
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </main>

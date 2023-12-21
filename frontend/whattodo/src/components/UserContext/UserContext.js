@@ -23,6 +23,7 @@ export const UserProvider = ({ children }) => {
       });
       if (!response.ok) throw new Error('No se pudieron cargar las reservas');
       const reservasEventos = await response.json();
+      console.log(reservasEventos)
       setEvents(reservasEventos);
     } catch (error) {
       console.error('Error al cargar reservas:', error);
@@ -32,7 +33,7 @@ export const UserProvider = ({ children }) => {
   const addEvent = (newEvent) => {
     console.log(newEvent)
     setEvents((currentEvents) => [...currentEvents, newEvent]);
-    console.log(events)
+    
   };
 
   console.log(events)
@@ -103,11 +104,8 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  console.log(userRole)
-  console.log(user)
-
   return (
-    <UserContext.Provider value={{ token, user, login, logout, fetchUserProfile, userRole, events, addEvent }}>
+    <UserContext.Provider value={{ token, user, login, logout, fetchUserProfile, userRole, events, addEvent , fetchReservas}}>
       {children}
     </UserContext.Provider>
   );

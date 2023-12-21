@@ -21,6 +21,7 @@ function ReservaPage() {
           throw new Error('Network response for service was not ok');
         }
         const serviceData = await serviceResponse.json();
+        console.log(serviceData)
         setService(serviceData);
       } catch (error) {
         setError('Failed to load service details');
@@ -98,12 +99,14 @@ function ReservaPage() {
       if (!response.ok) {
         throw new Error(reservaCreada.message || 'Failed to create reservation');
       }
+
       
       const newEvent = {
         title: `${reservaCreada.nombreReserva} - ${reservaCreada.nombreUsuario}`,
         start: reservaCreada.start_datetime,
         end: reservaCreada.end_datetime,
         extendedProps: {
+          id: reservaCreada.id,
           cantidadPersonas: reservaCreada.cantidadPersonas,
         }
       }

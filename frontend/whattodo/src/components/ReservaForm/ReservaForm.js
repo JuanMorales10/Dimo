@@ -6,6 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './ReservaForm.css';
 
 function ReservaForm({ service, onSubmit }) {
+  console.log(service)
   const serviceId = service.service.id
   const { user } = useContext(UserContext);
   const [availableSlots, setAvailableSlots] = useState({ dates: [], times: [] });
@@ -36,7 +37,7 @@ function ReservaForm({ service, onSubmit }) {
     }
   }, [availableSlots.times]);
 
-  // Función para cargar los slots disponibles
+
   const fetchAvailableSlots = async (selectedDate) => {
     
     const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
@@ -78,13 +79,15 @@ function ReservaForm({ service, onSubmit }) {
         <form onSubmit={handleSubmit} className="reserva-form">
           {/* Input para la cantidad de personas */}
           <div className="form-group">
-            <label htmlFor="cantidadPersonas">Cantidad de Personas:</label>
+            <label htmlFor="cantidadPersonas">Cuántas personas van?</label>
+            <label htmlFor="cantidadPersonas">Maximo {service.service.capacidad} personas</label>
             <input
               type="number"
               name="cantidadPersonas"
               value={reserva.cantidadPersonas}
               onChange={handleChange}
               min="1"
+              max={service.service.capacidad}
               required
             />
           </div>

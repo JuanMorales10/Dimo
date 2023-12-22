@@ -1,6 +1,7 @@
 import './ModalCalendar.css';
 
 function Modal({ event, onClose }) {
+  console.log(event)
   return (
     <div className="modal-overlay">
       <div className="modal">

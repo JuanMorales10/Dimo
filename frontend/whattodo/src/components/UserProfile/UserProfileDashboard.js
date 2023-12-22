@@ -4,6 +4,8 @@ import { UserContext } from '../UserContext/UserContext';
 import NavBar from '../NavBar/NavBar';
 import LoadingScreen from '../LoadingScreen/LoadingScreen';
 import './UserProfile.css';
+import Swal from 'sweetalert2';
+
 
 const UserProfile = () => {
     const { token, user, fetchUserProfile } = useContext(UserContext);
@@ -60,20 +62,33 @@ const UserProfile = () => {
     const handlePasswordUpdate = async (e) => {
         e.preventDefault();
 
-        // Verifica que la nueva contraseña y la confirmación coincidan
         if (passwordData.newPassword !== passwordData.confirmPassword) {
-            alert('Las contraseñas no coinciden');
+            Swal.fire('Error', 'Las contraseñas no coinciden', 'error');
             return;
         }
+    
+       
+        const result = await Swal.fire({
+            title: '¿Estás seguro de que quieres cambiar tu contraseña?',
+            text: "¡Asegúrate de recordar tu nueva contraseña!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#15afcf',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, cambiarla!',
+            cancelButtonText: 'No, cancelar'
+        });
 
-        // Crea el objeto con los datos de la contraseña
-        const passwordUpdateData = {
-            currentPassword: passwordData.currentPassword,
-            newPassword: passwordData.newPassword
-        };
-
-        try {
-            const response = await fetch('http://localhost:3008/user/updateProfile', {
+        if (result.isConfirmed) {
+     
+            // Crea el objeto con los datos de la contraseña
+            const passwordUpdateData = {
+                currentPassword: passwordData.currentPassword,
+                newPassword: passwordData.newPassword
+            };
+            
+            try {
+                const response = await fetch('http://localhost:3008/user/updateProfile', {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -85,20 +100,34 @@ const UserProfile = () => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-
+            
             // Manejo de la respuesta
             alert('Contraseña actualizada con éxito');
         } catch (error) {
             console.error('Error al actualizar la contraseña:', error);
         }
+    }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const updatedData = new FormData();
-        Object.keys(formData).forEach(key => {
-            if (key !== 'avatar') {
+        const result = await Swal.fire({
+            title: '¿Estás seguro de que quieres actualizar tu perfil?',
+            text: "¡No podrás revertir los cambios!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#15afcf',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, actualizar!',
+            cancelButtonText: 'No, cancelar'
+        });
+
+        if (result.isConfirmed) {
+
+            const updatedData = new FormData();
+            Object.keys(formData).forEach(key => {
+                if (key !== 'avatar') {
                 updatedData.append(key, formData[key]);
             }
         });
@@ -106,26 +135,26 @@ const UserProfile = () => {
         if (avatarFile) {
             updatedData.append('avatar', avatarFile);
         }
-
-        console.log(updatedData)
-
+        
+        
         try {
             const response = await fetch('http://localhost:3008/user/updateProfile', {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: updatedData,
             });
-
+            
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-
+            
             const data = await response.json();
             await fetchUserProfile();
             setIsEditing(false);
         } catch (error) {
             console.error('Error updating profile:', error);
         }
+    }
     };
 
     if (!user || !user.profile) {

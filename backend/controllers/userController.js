@@ -1,12 +1,19 @@
 const { User } = require('../database/models');
 const bcrypt = require('bcryptjs');
+const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 
 const userController = {
   login: async (req, res) => {
-
-
     try {
+
+      const errors = validationResult(req);
+
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
       const user = await User.findOne({
         where: {
           email: req.body.email,
@@ -14,7 +21,7 @@ const userController = {
       });
 
       if (!user) {
-        return res.status(401).json({ message: "El correo electrónico o la contraseña son incorrectos" });
+        return res.status(401).json({ error: "El correo electrónico o la contraseña son incorrectos" });
       }
 
       const validPw = await bcrypt.compare(req.body.password, user.dataValues.password);
@@ -27,13 +34,12 @@ const userController = {
           { expiresIn: '24h' } // Configura la expiración del token
         );
 
-        console.log(token)
 
         // Enviar el token al cliente
         res.json({ success: true, message: "Login exitoso.", token: token });
       } else {
         // Contraseña no válida
-        return res.status(401).json({ message: "El correo electrónico o la contraseña son incorrectos" });
+        return res.status(401).json({ error: "El correo electrónico o la contraseña son incorrectos" });
       }
     } catch (error) {
       console.log(error);
@@ -59,6 +65,13 @@ const userController = {
   registerUser: async (req, res) => {
     let avatar = 'defaultAvatar.jpg';
     try {
+
+      const errors = validationResult(req);
+
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
 
       if (req.body.password === req.body.password2) {
 
@@ -89,6 +102,14 @@ const userController = {
 
     try {
       let avatar = 'defaultAvatar.jpg';
+
+      const errors = validationResult(req);
+
+      console.log(errors)
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
 
       if (req.file && req.file.filename) {
         avatar = req.file.filename;
@@ -121,46 +142,46 @@ const userController = {
   ,
   updateProfile: async (req, res) => {
     try {
-        const userId = req.session.user.userId;
-        const user = await User.findByPk(userId);
+      const userId = req.session.user.userId;
+      const user = await User.findByPk(userId);
 
-        if (!user) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
+      if (!user) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+
+      // Construye el objeto updatedProfile con los campos permitidos
+      const updatedProfile = {
+        nombre: req.body.nombre || user.nombre,
+        apellido: req.body.apellido || user.apellido,
+        email: req.body.email || user.email,
+        telefono: req.body.telefono || user.telefono,
+        direccion: req.body.direccion || user.direccion,
+        type: req.body.type || user.type,
+      };
+
+      // Actualizar avatar si se ha subido uno nuevo
+      if (req.file) {
+        updatedProfile.avatar = req.file.filename;
+      }
+
+      // Cambio de contraseña
+      if (req.body.currentPassword && req.body.newPassword) {
+        const isMatch = await bcrypt.compare(req.body.currentPassword, user.password);
+        if (!isMatch) {
+          return res.status(400).json({ message: "Contraseña actual incorrecta" });
         }
+        updatedProfile.password = bcrypt.hashSync(req.body.newPassword, 10);
+      }
 
-        // Construye el objeto updatedProfile con los campos permitidos
-        const updatedProfile = {
-            nombre: req.body.nombre || user.nombre,
-            apellido: req.body.apellido || user.apellido,
-            email: req.body.email || user.email,
-            telefono: req.body.telefono || user.telefono,
-            direccion: req.body.direccion || user.direccion,
-            type: req.body.type || user.type,
-        };
+      // Actualiza el usuario en la base de datos
+      await user.update(updatedProfile);
 
-        // Actualizar avatar si se ha subido uno nuevo
-        if (req.file) {
-            updatedProfile.avatar = req.file.filename;
-        }
-
-        // Cambio de contraseña
-        if (req.body.currentPassword && req.body.newPassword) {
-            const isMatch = await bcrypt.compare(req.body.currentPassword, user.password);
-            if (!isMatch) {
-                return res.status(400).json({ message: "Contraseña actual incorrecta" });
-            }
-            updatedProfile.password = bcrypt.hashSync(req.body.newPassword, 10);
-        }
-
-        // Actualiza el usuario en la base de datos
-        await user.update(updatedProfile);
-
-        res.json({ message: "Perfil actualizado correctamente" });
+      res.json({ message: "Perfil actualizado correctamente" });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Error al actualizar el perfil" });
+      console.log(error);
+      res.status(500).json({ message: "Error al actualizar el perfil" });
     }
-},
+  },
   deleteAccount: async (req, res) => {
     try {
       await User.destroy({
@@ -188,7 +209,7 @@ const userController = {
   },
   getUserServiceDetail: async (req, res) => {
     try {
-      
+
       const userId = req.params.dni;
 
       if (!userId) {

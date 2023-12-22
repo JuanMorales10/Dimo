@@ -305,6 +305,7 @@ const serviceController = {
 
     const services = await Service.findAll({
       where: filterCriteria,
+      attributes: { include: ['rating'] },
       include: [
         {
           model: ServiceImage,
@@ -331,6 +332,7 @@ const serviceController = {
       precio: service.precio,
       duracion: service.duracion,
       direccion: service.direccion,
+      rating: service.rating,
       disponibilidad: service.disponibilidad,
       atp: service.atp,
       capacidad: service.capacidad,

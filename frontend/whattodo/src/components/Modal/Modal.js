@@ -9,6 +9,7 @@ import aven from '../../assets/img/aventura.jpg';
 import noche from '../../assets/img/noche.jpg';
 import trans from '../../assets/img/transporte.jpg';
 
+
 function Modal({ closeModal }) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -62,6 +63,8 @@ function Modal({ closeModal }) {
       });
 
       const data = await response.json();
+      console.log(data)
+
       console.log(data)
 
       navigate('/search-results', { state: { services: data } });

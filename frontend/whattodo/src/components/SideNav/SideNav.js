@@ -23,7 +23,7 @@ function Sidenav({ mobileOpen, setMobileOpen }) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const navigate = useNavigate();
-    const drawerWidth = 240; // Define el ancho del drawer
+    const drawerWidth = 240; 
     const location = useLocation();
 
     const handleDrawerToggle = () => {
@@ -33,11 +33,9 @@ function Sidenav({ mobileOpen, setMobileOpen }) {
     const handleLogout = () => {
         logout();
 
-        if (location.pathname === '/') {
-            // Si ya estás en la página de inicio, recarga la página
+        if (location.pathname === '/'){
             window.location.reload();
         } else {
-            // Si no, navega a la página de inicio
             navigate('/');
         }
     };

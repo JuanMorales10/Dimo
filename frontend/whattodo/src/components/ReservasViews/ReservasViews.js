@@ -10,24 +10,9 @@ const ReservasView = () => {
     const [reservasViejas, setReservasViejas] = useState([]);
     const [proximasReservas, setProximasReservas] = useState([]);
 
-    // useEffect(() => {
-    //     if (events && events.length > 0) {
-    //         const hoy = moment();
-    //         const viejas = events.filter(reserva => moment(reserva.fecha).isBefore(hoy, 'day'));
-    //         const proximas = events.filter(reserva => moment(reserva.fecha).isSameOrAfter(hoy, 'day'));
-    //         console.log(events)
-    //         console.log(viejas)
-    //         console.log('proximas:', proximas)
-
-    //         setReservasViejas(viejas);
-    //         setProximasReservas(proximas);
-    //     }
-    // }, [events]);
-
-
     useEffect(() => {
         if (events && events.length > 0) {
-            const hoy = moment().utc(); // Asegúrate de que 'hoy' también esté en UTC
+            const hoy = moment().utc(); 
             const viejas = events.filter(reserva =>
                 moment.utc(reserva.start).isBefore(hoy, 'day')
             );
@@ -86,9 +71,6 @@ const ReservasView = () => {
             {proximasReservas.map((reserva, index) => (
                 <Reserva key={index} reserva={reserva} index={index} />
             ))}
-            {/* <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, boxShadow: '0 4px 20px 0 rgba(0,0,0,0.12), 0 7px 8px -5px rgba(0,0,0,0.2)', padding: '15px', borderRadius: '12px', backgroundColor: '#fff' }}>
-                
-                </Box> */}
         </Box>
     );
 };

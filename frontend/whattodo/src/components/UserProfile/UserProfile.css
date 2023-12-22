@@ -85,3 +85,12 @@ form.formedit {
   color: red;
   text-align: center;
 }
+
+
+.my-confirm-button {
+  background-color: #15afcf !important; 
+}
+
+.my-cancel-button {
+  background-color: #ba1111 !important;
+}

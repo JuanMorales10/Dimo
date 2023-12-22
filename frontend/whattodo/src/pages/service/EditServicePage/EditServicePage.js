@@ -10,6 +10,8 @@ import noche from '../../../assets/img/noche.jpg';
 import trans from '../../../assets/img/transporte.jpg';
 import Footer from '../../../components/Footer/Footer';
 import NavBar from '../../../components/NavBar/NavBar';
+import Swal from 'sweetalert2';
+
 
 const EditServicePage = () => {
     const { token } = useContext(UserContext)
@@ -134,11 +136,43 @@ const EditServicePage = () => {
     
             const data = await response.json();
             console.log(data);
+    
+        
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: '¡Servicio Actualizado!',
+                text: 'El servicio ha sido actualizado con éxito.',
+                showConfirmButton: false,
+                timer: 1500,
+                width: '300px',
+                customClass: {
+                    title: 'my-title-class',
+                    content: 'my-content-class'
+                }
+            });
+
+
         } catch (error) {
             console.error('Error al enviar el formulario:', error);
+    
+          
+            Swal.fire({
+                position: "top-end",
+                title: 'Error',
+                text: 'Hubo un problema al actualizar el servicio: ' + error.message,
+                icon: 'error',
+                showConfirmButton: false,
+                timer: 1500,
+                width: '300px',
+                customClass: {
+                    title: 'my-title-class',
+                    content: 'my-content-class'
+                }
+            });
         }
     };
-
+    
     if (isLoading) {
         return <LoadingScreen />;
     }

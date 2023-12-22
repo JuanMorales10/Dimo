@@ -10,8 +10,12 @@ import trans from '../../assets/img/transporte.jpg';
 import './CreateServiceForm.css';
 import NavBar from '../../components/NavBar/NavBar';
 import Footer from '../../components/Footer/Footer';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
+import MapComponent from '../../components/LocationPicker/LocationPicker';
 
 function CreateServiceForm() {
+    const navigate = useNavigate();
     const { token, user } = useContext(UserContext);
     const [formData, setFormData] = useState({
         nombre: '',
@@ -20,7 +24,7 @@ function CreateServiceForm() {
         capacidad: '',
         id_region: 1,
         atp: true,
-        rating: 0,
+        rating: 1,
         precio: '',
         duracion: '',
         disponibilidad: true,
@@ -54,6 +58,10 @@ function CreateServiceForm() {
         setFormData({ ...formData, categoria_id: category });
     };
 
+    const isCategorySelected = (category) => {
+        return formData.categoria_id === category;
+    };
+
     const handleDayChange = (event) => {
         const { value, checked } = event.target;
         setFormData(prevFormData => {
@@ -67,6 +75,10 @@ function CreateServiceForm() {
     const handleRemoveSelectedFile = (fileIndex) => {
         setSelectedFiles(selectedFiles.filter((_, index) => index !== fileIndex));
     };
+
+    // const handleLocationSelect = ({ lat, lng }) => {
+    //     setFormData({ ...formData, latitud: lat, longitud: lng });
+    // };
 
 
     const handleSubmit = async (event) => {
@@ -91,11 +103,29 @@ function CreateServiceForm() {
                     'Authorization': `Bearer ${token}`
                 }
             });
-            console.log(response.data);
-            // Manejar respuesta...
+    
+            const serviceId = response.data.service.id;
+    
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: '¡Servicio Creado!',
+                text: 'El servicio ha sido creado con éxito.',
+                showConfirmButton: false,
+                timer: 1500,
+                width: '300px',
+                customClass: {
+                    title: 'my-title-class',
+                    content: 'my-content-class'
+                }
+            }).then(() => {
+
+                navigate(`/service/${serviceId}/detail`);
+            });
+    
         } catch (error) {
             console.error('Error al enviar el formulario:', error);
-            // Manejo de errores...
+            // Aquí podrías agregar otra alerta para manejar el caso de error
         }
     };
 
@@ -115,31 +145,51 @@ function CreateServiceForm() {
                             </h5>
                             <div className="categories-container">
                                 <div>
-                                    <button type='button' className="category-button" onClick={() => handleCategorySelect('2')} name='categoria_id'>
+                                    <button
+                                        type='button'
+                                        className={`category-button ${isCategorySelected(2) ? 'selected-category' : ''}`}
+                                        onClick={() => handleCategorySelect(2)}
+                                    >
                                         <img src={gast} alt="Gastronomy" />
                                     </button>
                                     Gastronomia
                                 </div>
                                 <div>
-                                    <button type='button' className="category-button" onClick={() => handleCategorySelect('1')} name='categoria_id'>
+                                    <button
+                                        type='button'
+                                        className={`category-button ${isCategorySelected(1) ? 'selected-category' : ''}`}
+                                        onClick={() => handleCategorySelect(1)}
+                                    >
                                         <img src={vit} alt="Wineries" />
                                     </button>
                                     Vitivinicola
                                 </div>
                                 <div>
-                                    <button type='button' className="category-button" onClick={() => handleCategorySelect('4')} name='categoria_id'>
+                                    <button
+                                        type='button'
+                                        className={`category-button ${isCategorySelected(4) ? 'selected-category' : ''}`}
+                                        onClick={() => handleCategorySelect(4)}
+                                    >
                                         <img src={aven} alt="Adventure" />
                                     </button>
                                     Aventura
                                 </div>
                                 <div>
-                                    <button type='button' className="category-button" onClick={() => handleCategorySelect('3')} name='categoria_id'>
+                                    <button
+                                        type='button'
+                                        className={`category-button ${isCategorySelected(3) ? 'selected-category' : ''}`}
+                                        onClick={() => handleCategorySelect(3)}
+                                    >
                                         <img src={trans} alt="Transport" />
                                     </button>
                                     Transporte
                                 </div>
                                 <div>
-                                    <button type='button' className="category-button" onClick={() => handleCategorySelect('5')} name='categoria_id'>
+                                    <button
+                                        type='button'
+                                        className={`category-button ${isCategorySelected(5) ? 'selected-category' : ''}`}
+                                        onClick={() => handleCategorySelect(5)}
+                                    >
                                         <img src={noche} alt="Nightlife" />
                                     </button>
                                     Noche

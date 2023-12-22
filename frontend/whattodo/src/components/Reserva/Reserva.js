@@ -12,8 +12,8 @@ const Reserva = ({ reserva, index }) => {
     const navigate = useNavigate();
     const { title, start } = reserva;
 
+    console.log(reserva)
 
-    // Formatear fecha y hora
     const fecha = moment(start).format('D [de] MMMM, YYYY');
     const hora = moment(start).format('HH:mm'); 
 

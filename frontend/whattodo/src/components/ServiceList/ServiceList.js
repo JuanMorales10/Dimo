@@ -6,6 +6,8 @@ import { UserContext } from '../UserContext/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { useTheme , Button} from '@mui/material';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import './ServiceList.css'
 
 function ServiceList() {
     const navigate = useNavigate();
@@ -42,23 +44,63 @@ function ServiceList() {
     };
 
     const handleDelete = async (serviceId) => {
-        try {
-            const response = await fetch(`http://localhost:3008/service/deleteService/${serviceId}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'my-confirm-button',
+                cancelButton: 'my-cancel-button'
+            },
+            buttonsStyling: true
+        });
     
-            const data = await response.json();
-            console.log(data)
-            if (response.ok) {
-                setServices(prevServices => prevServices.filter(service => service.id !== serviceId));
-            } else {
-                throw new Error(data.error || 'No se pudo eliminar el servicio');
+        swalWithBootstrapButtons.fire({
+            title: "¿Estás seguro?",
+            text: "¡No podrás revertir esto!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar!",
+            cancelButtonText: "No, cancelar",
+            width: '350px',
+            reverseButtons: true
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`http://localhost:3008/service/deleteService/${serviceId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+    
+                    const data = await response.json();
+                    console.log(data)
+                    if (response.ok) {
+                        setServices(prevServices => prevServices.filter(service => service.id !== serviceId));
+    
+                        swalWithBootstrapButtons.fire({
+                            title: "Eliminado!",
+                            text: "El servicio ha sido eliminado.",
+                            icon: "success"
+                        });
+                    } else {
+                        throw new Error(data.error || 'No se pudo eliminar el servicio');
+                    }
+                } catch (error) {
+                    setError(error.message);
+    
+                    swalWithBootstrapButtons.fire({
+                        title: "Error",
+                        text: "Hubo un problema al eliminar el servicio: " + error.message,
+                        icon: "error"
+                    });
+                }
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                swalWithBootstrapButtons.fire({
+                    title: "Cancelado",
+                    text: "Tu servicio está seguro :)",
+                    icon: "error"
+                });
             }
-        } catch (error) {
-            setError(error.message);
-        }
+        });
     };
+    
 
     return (
         <Box sx={{

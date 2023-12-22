@@ -254,6 +254,7 @@
     justify-content: space-evenly;
     background-color: #008cba;
     border-radius: 12px;
+    margin: 10px;
   }
   
   .comment:last-child {

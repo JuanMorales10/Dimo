@@ -21,3 +21,17 @@
  button:hover{
     background-color: #f0f0f0;
 }
+/* 
+div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
+    background-color: #15afcf !important;    
+} */
+
+.my-confirm-button {
+    background-color: #15afcf !important; 
+  }
+  
+  .my-cancel-button {
+    background-color: #ba1111 !important;
+  }
+  
+    

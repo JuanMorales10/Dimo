@@ -22,6 +22,7 @@ function Favorites() {
         }
 
         const favoritesData = await response.json();
+        console.log(favoritesData)
         setFavorites(favoritesData);
       } catch (error) {
         setError(error.message);

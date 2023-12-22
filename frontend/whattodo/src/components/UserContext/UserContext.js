@@ -33,10 +33,9 @@ export const UserProvider = ({ children }) => {
   const addEvent = (newEvent) => {
     console.log(newEvent)
     setEvents((currentEvents) => [...currentEvents, newEvent]);
-    
+
   };
 
-  console.log(events)
 
   const setCookie = (name, value, days) => {
     let expires = "";
@@ -52,37 +51,54 @@ export const UserProvider = ({ children }) => {
     document.cookie = name + '=; Max-Age=-99999999;';
   };
 
-  const login = async (email, password, keepSession, navigate) => {
+  const login = async (email, password, keepSession) => {
     try {
       const response = await fetch('http://localhost:3008/user/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
+
       const data = await response.json();
-      
+
+      console.log(data)
+
       if (data.token) {
         if (keepSession) {
           localStorage.setItem('token', data.token);
-          setCookie('userEmail', email, 7); 
+          setCookie('userEmail', email, 7);
         } else {
           sessionStorage.setItem('token', data.token);
         }
         setToken(data.token);
-       await fetchUserProfile(data.token);
-    return Promise.resolve();
+        await fetchUserProfile(data.token);
+        return Promise.resolve();
       } else {
-        console.error('Error en la autenticación');
+        // Verificar si es un error de middleware o un array de errores de validación
+        if (data.errors && Array.isArray(data.errors)) {
+          // Errores de express-validator
+          const formattedErrors = data.errors.reduce((acc, error) => {
+            acc[error.path] = error.msg;
+            return acc;
+          }, {});
+          return { errors: formattedErrors };
+        } else if (data.error) {
+          // Error directo del middleware
+          return { errors: { general: data.error } };
+        }
       }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
+      return { errors: { general: 'Error al conectar con el servidor.' } };
     }
   };
+
+
 
   const logout = () => {
     localStorage.removeItem('token');
     sessionStorage.removeItem('token');
-    deleteCookie('userEmail'); 
+    deleteCookie('userEmail');
     setToken(null);
     setUser(null);
     return Promise.resolve();
@@ -105,7 +121,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ token, user, login, logout, fetchUserProfile, userRole, events, addEvent , fetchReservas}}>
+    <UserContext.Provider value={{ token, user, login, logout, fetchUserProfile, userRole, events, addEvent, fetchReservas }}>
       {children}
     </UserContext.Provider>
   );

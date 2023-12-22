@@ -74,7 +74,6 @@ const favoriteController = {
     try {
       const userId = req.session.user.userId;
   
-      // Obtener favoritos junto con los detalles del servicio
       const favorites = await Favorite.findAll({
         where: { usuario_dni: userId },
         include: [{
@@ -82,14 +81,15 @@ const favoriteController = {
           as: 'service',
           attributes: ['id', 'nombre', 'descripcion', 'precio', 'categoria_id'],
           include: [{
-            model: ServiceImage, // Asegúrate de que este modelo esté importado
+            model: ServiceImage, 
             as: 'images',
-            attributes: ['url'] // Asume que la URL de la imagen se almacena en la columna 'url'
+            attributes: ['url'] 
           }]
-          // Aquí puedes incluir más relaciones si son necesarias
         }],
         attributes: []
       });
+
+      console.log(favorites)
   
       const services = favorites.map(fav => ({
         ...fav.service.get({ plain: true }),

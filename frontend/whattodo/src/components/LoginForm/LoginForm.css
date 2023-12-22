@@ -122,3 +122,28 @@
   } 
 
   
+  .error-message {
+    color: #ff3860; /* Color rojo para los errores */
+    margin-top: 5px; /* Espacio arriba del mensaje de error */
+    font-size: 0.85rem; /* Tamaño del texto */
+    line-height: 1.2; /* Espaciado de línea para el mensaje */
+}
+
+.formflex .error-message {
+    margin-left: 10px; /* Espacio a la izquierda si el error está al lado de un input */
+}
+
+/* Si prefieres que el mensaje de error esté debajo del input */
+.formcolumn .error-message {
+    margin-left: 10px; /* Espacio a la izquierda del mensaje de error */
+}
+
+
+.input-error {
+  border: 1px solid red;
+}
+
+.error-message {
+  color: red;
+  /* Otros estilos para tu mensaje de error */
+}

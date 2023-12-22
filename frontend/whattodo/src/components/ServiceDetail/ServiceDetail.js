@@ -10,6 +10,7 @@ import Cards from '../Cards/Cards';
 import './ServiceDetailTest.css'
 import LoadingScreen from '../LoadingScreen/LoadingScreen';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
+import Swal from 'sweetalert2';
 
 function ServiceDetail() {
     const { id } = useParams();
@@ -241,7 +242,6 @@ function ServiceDescription({ service, user }) {
 function ServiceComments({ comments, hasUserReserved, token, user, service }) {
     const navigate = useNavigate();
     const backendUrl = "http://localhost:3008";
-    const [message, setMessage] = useState('');
     const [commentData, setCommentData] = useState({
         comment: '',
         rating: ''
@@ -258,16 +258,13 @@ function ServiceComments({ comments, hasUserReserved, token, user, service }) {
 
     const handleSubmitComment = async (e) => {
         e.preventDefault();
-
-        console.log(commentData)
-
+    
         try {
             const response = await fetch(`${backendUrl}/service/${service.id}/postComment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
-
                 },
                 body: JSON.stringify({
                     servicio_id: service.id,
@@ -276,20 +273,48 @@ function ServiceComments({ comments, hasUserReserved, token, user, service }) {
                     comment: commentData.comment
                 })
             });
-
-            if (response.ok) {
-                const data = await response.json();
-                console.log(data)
-                setMessage('Comentario enviado con éxito.');
-                setCommentData({ rating: '', comment: '' });
-                navigate(`/service/${service.service.id}/detail`);
-            } else {
-                // Manejar respuestas de error del servidor
-                setMessage('Error al enviar el comentario.');
+    
+            console.log(response);
+    
+            if (!response.ok) {
+                // Si la respuesta no está bien, mostrar un mensaje de error
+                throw new Error('Hubo un problema con la solicitud: ' + response.statusText);
             }
+    
+            const data = await response.json();
+            console.log(data);
+            setCommentData({ rating: '', comment: '' });
+    
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: '¡Comentario Creado!',
+                text: 'Tu comentario ha sido creado con éxito.',
+                showConfirmButton: false,
+                timer: 1500,
+                width: '300px',
+                customClass: {
+                    title: 'my-title-class',
+                    content: 'my-content-class'
+                }
+            });
+    
+            navigate(`/service/${service.id}/detail`);
         } catch (error) {
-            // Manejar errores de conexión, etc.
-            setMessage('Error al conectar con el servidor.');
+            console.error('Error en la solicitud:', error);
+            Swal.fire({
+                position: "top-end",
+                title: 'Error',
+                text: 'Hubo un problema al crear el comentario: ' + error.message,
+                icon: 'error',
+                showConfirmButton: false,
+                timer: 1500,
+                width: '300px',
+                customClass: {
+                    title: 'my-title-class',
+                    content: 'my-content-class'
+                }
+            });
         }
     };
 
@@ -348,7 +373,6 @@ function ServiceComments({ comments, hasUserReserved, token, user, service }) {
                             })}
                         </div>
                         </div>
-                        {message && <p>{message}</p>}
                         <button type="submit">Enviar Comentario</button>
                     </div>
                 </form>

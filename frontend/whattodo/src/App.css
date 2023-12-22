@@ -48,6 +48,25 @@ html{
     animation: fadeIn 1s ease-out;
   }
 
+  .my-title-class {
+    font-size: 16px; /* Menor tamaño para el título */
+  }
+  
+  .my-content-class {
+    font-size: 14px; /* Menor tamaño para el contenido */
+  }
+  
+
+  .input-error {
+    border: 1px solid red;
+  }
+  
+  .error-message {
+    color: red;
+    margin-top: 5px;
+  }
+  
+
 
 body{
   background-color: #fff;

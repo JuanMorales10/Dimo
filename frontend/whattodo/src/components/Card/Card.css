@@ -102,4 +102,7 @@
     height: auto;
 }
 
-
+button.favorite-button:hover {
+    background-color: transparent;
+    border: 50%;
+}

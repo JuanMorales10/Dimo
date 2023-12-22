@@ -6,6 +6,7 @@ export const UserContext = createContext(null);
 export const UserProvider = ({ children }) => {
   const [events, setEvents] = useState([]);
   const [user, setUser] = useState(null);
+  const [googleToken, setGoogleToken] = useState(localStorage.getItem('googleToken'));
   const [userRole, setUserRole] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem('token') || sessionStorage.getItem('token'));
 
@@ -34,6 +35,31 @@ export const UserProvider = ({ children }) => {
     console.log(newEvent)
     setEvents((currentEvents) => [...currentEvents, newEvent]);
 
+  };
+
+  const handleGoogleAuth = async (code) => {
+    try {
+      const response = await fetch('http://localhost:3008/auth/google/callback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al procesar la autenticación de Google');
+      }
+
+      const data = await response.json();
+      setGoogleToken(data.token); // Guarda el token en el estado
+      localStorage.setItem('googleToken', data.token); // También podrías guardar en localStorage
+
+      // Otras acciones como actualizar el perfil de usuario, si es necesario
+    } catch (error) {
+      console.error('Error en la autenticación de Google:', error);
+      throw error; // Re-throw the error to be handled in the component
+    }
   };
 
 
@@ -121,7 +147,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ token, user, login, logout, fetchUserProfile, userRole, events, addEvent, fetchReservas }}>
+    <UserContext.Provider value={{ token, user, login, logout, fetchUserProfile, userRole, events, addEvent, fetchReservas, handleGoogleAuth, googleToken }}>
       {children}
     </UserContext.Provider>
   );

@@ -20,6 +20,7 @@ const EditServicePage = () => {
     const [images, setImages] = useState([])
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+    const [formErrors, setFormErrors] = useState({});
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [service, setService] = useState({
         nombre: '',
@@ -118,7 +119,7 @@ const EditServicePage = () => {
         });
     
         selectedFiles.forEach(file => {
-            submitData.append('image', file); 
+            submitData.append('image', file);
         });
     
         try {
@@ -130,33 +131,41 @@ const EditServicePage = () => {
                 body: submitData
             });
     
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-    
             const data = await response.json();
-            console.log(data);
+
     
-        
-            Swal.fire({
-                position: "top-end",
-                icon: "success",
-                title: '¡Servicio Actualizado!',
-                text: 'El servicio ha sido actualizado con éxito.',
-                showConfirmButton: false,
-                timer: 1500,
-                width: '300px',
-                customClass: {
-                    title: 'my-title-class',
-                    content: 'my-content-class'
+            if (!response.ok) {
+                // Manejar errores de validación
+                if (data.errors) {
+                    const errors = data.errors.reduce((acc, error) => {
+                        acc[error.path] = error.msg;
+                        return acc;
+                    }, {});
+                    
+                    setFormErrors(errors);
+                } else {
+                    throw new Error(data.message || 'Error desconocido al actualizar el servicio');
                 }
-            });
-
-
+            } else {
+                // Proceder con la lógica de éxito
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: '¡Servicio Actualizado!',
+                    text: 'El servicio ha sido actualizado con éxito.',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    width: '300px',
+                    customClass: {
+                        title: 'my-title-class',
+                        content: 'my-content-class'
+                    }
+                }).then(() => {
+                    navigate(`/service/${serviceId}/detail`);
+                });
+            }
         } catch (error) {
             console.error('Error al enviar el formulario:', error);
-    
-          
             Swal.fire({
                 position: "top-end",
                 title: 'Error',
@@ -172,6 +181,9 @@ const EditServicePage = () => {
             });
         }
     };
+
+    console.log(formErrors)
+    
     
     if (isLoading) {
         return <LoadingScreen />;
@@ -244,21 +256,25 @@ const EditServicePage = () => {
                                     Noche
                                 </div>
                             </div>
+                            {formErrors.categoria_id && <div className="error-message">{formErrors.categoria_id}</div>}
                         </section>
                         <h3>Paso 2</h3>
                         <section className="form-step">
                             <input type="text" placeholder="Nombra tu experiencia" name='nombre' onChange={handleInputChange} value={service.nombre} />
+                            {formErrors.nombre && <div className="error-message">{formErrors.nombre}</div>}
                             <label>Selecciona tu ubicacion</label>
                             <LocationPicker
                                 apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
                                 onLocationSelect={handleLocationSelect}
                             />
+                             {formErrors.direccion && <div className="error-message">{formErrors.direccion}</div>}
                             {service.direccion && (
                                 <div style={{ padding: '10px', fontSize: '1rem' }}>
                                     <strong>Dirección Seleccionada:</strong> {service.direccion}
                                 </div>
                             )}
                             <textarea placeholder="Describe que van a hacer tus visitas durante la experiencia" name='descripcion' onChange={handleInputChange} value={service.descripcion}></textarea>
+                            {formErrors.descripcion && <div className="error-message">{formErrors.descripcion}</div>}
                         </section>
                     </div>
                     <div className='inside-2'>
@@ -280,6 +296,7 @@ const EditServicePage = () => {
                                         </div>
                                     ))}
                                 </div>
+                                {formErrors.operating_days && <div className="error-message">{formErrors.operating_days}</div>}
                             </div>
                             <h4> Horarios de Operación</h4>
                             <div className='hor-flex'>
@@ -292,6 +309,7 @@ const EditServicePage = () => {
                                     placeholder="Hora de inicio"
                                 />
                             </div>
+                            {formErrors.operating_hours_start && <div className="error-message">{formErrors.operating_hours_start}</div>}
                             <div className='hor-flex'>
                                 <label>Fin</label>
                                 <input
@@ -302,6 +320,7 @@ const EditServicePage = () => {
                                     placeholder="Hora de fin"
                                 />
                             </div>
+                            {formErrors.operating_hours_end && <div className="error-message">{formErrors.operating_hours_end}</div>}
                         </section>
 
                         <h3>Paso 4</h3>
@@ -312,10 +331,12 @@ const EditServicePage = () => {
                                     <div className='formflexcreat'>
                                         <label className='lab'>Precio:</label>
                                         <input type="number" name='precio' onChange={handleInputChange} value={service.precio}></input>
+                                        {formErrors.precio && <div className="error-message">{formErrors.precio}</div>}
                                     </div>
                                     <div className='formflexcreat'>
                                         <label className='lab'>Duración:</label>
                                         <input type="time" name='duracion' onChange={handleInputChange} value={service.duracion} />
+                                        {formErrors.duracion && <div className="error-message">{formErrors.duracion}</div>}
                                     </div>
                                 </div>
                                 <div className='row'>
@@ -323,6 +344,7 @@ const EditServicePage = () => {
                                         <label className='lab'>Maximo de Personas:</label>
                                         <input type="number" style={{ width: '30%' }} name='capacidad' onChange={handleInputChange} value={service.capacidad}></input>
                                     </div>
+                                    {formErrors.capacidad && <div className="error-message">{formErrors.capacidad}</div>}
                                     <div className='formflexcreat'>
                                         <label className='lab'>Apto para todo Publico:</label>
                                         <input type='checkbox' style={{ width: '20%' }} name='atp' onChange={handleInputChange}></input>
@@ -344,6 +366,7 @@ const EditServicePage = () => {
 
                             <h5>Sube nuevas imágenes</h5>
                             <input type="file" onChange={handleImageChange} multiple name='images' />
+                            {formErrors.images && <div className="error-message">{formErrors.images}</div>}
                             <div className="image-preview-container">
                                 {selectedFiles.map((file, index) => (
                                     <div key={index} className="image-preview-wrapper">

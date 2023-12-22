@@ -12,11 +12,11 @@ import NavBar from '../../components/NavBar/NavBar';
 import Footer from '../../components/Footer/Footer';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
-import MapComponent from '../../components/LocationPicker/LocationPicker';
 
 function CreateServiceForm() {
     const navigate = useNavigate();
     const { token, user } = useContext(UserContext);
+    const [formErrors, setFormErrors] = useState({});
     const [formData, setFormData] = useState({
         nombre: '',
         descripcion: '',
@@ -76,26 +76,17 @@ function CreateServiceForm() {
         setSelectedFiles(selectedFiles.filter((_, index) => index !== fileIndex));
     };
 
-    // const handleLocationSelect = ({ lat, lng }) => {
-    //     setFormData({ ...formData, latitud: lat, longitud: lng });
-    // };
-
-
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+    
         const submitData = new FormData();
-        submitData.append('usuario_dni', user.profile.id);
         Object.keys(formData).forEach(key => {
             submitData.append(key, formData[key]);
         });
-
         selectedFiles.forEach(file => {
             submitData.append('image', file);
         });
-
-
-
+    
         try {
             const response = await axios.post('http://localhost:3008/service/createService', submitData, {
                 headers: {
@@ -104,31 +95,39 @@ function CreateServiceForm() {
                 }
             });
     
-            const serviceId = response.data.service.id;
-    
-            Swal.fire({
-                position: "top-end",
-                icon: "success",
-                title: '¡Servicio Creado!',
-                text: 'El servicio ha sido creado con éxito.',
-                showConfirmButton: false,
-                timer: 1500,
-                width: '300px',
-                customClass: {
-                    title: 'my-title-class',
-                    content: 'my-content-class'
-                }
-            }).then(() => {
-
-                navigate(`/service/${serviceId}/detail`);
-            });
-    
+            if (response.status === 200 || response.status === 201) {
+                Swal.fire({
+                    title: '¡Servicio Creado!',
+                    text: 'El servicio ha sido creado con éxito.',
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    navigate(`/service/${response.data.service.id}/detail`);
+                });
+            } else {
+                throw new Error('Error en la creación del servicio');
+            }
         } catch (error) {
-            console.error('Error al enviar el formulario:', error);
-            // Aquí podrías agregar otra alerta para manejar el caso de error
+            if (error.response && error.response.data && error.response.data.errors) {
+                const errors = error.response.data.errors.reduce((acc, err) => {
+                    acc[err.path] = err.msg;
+                    return acc;
+                }, {});
+                setFormErrors(errors);
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un problema al enviar el formulario. Intente de nuevo.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
         }
     };
-
+    
+    
+    console.log(formErrors)
+    
     return (
         <>
             <NavBar />
@@ -195,21 +194,25 @@ function CreateServiceForm() {
                                     Noche
                                 </div>
                             </div>
+                            {formErrors.categoria_id && <div className="error-message">{formErrors.categoria_id}</div>}
                         </section>
                         <h3>Paso 2</h3>
                         <section className="form-step">
                             <input type="text" placeholder="Nombra tu experiencia" name='nombre' onChange={handleInputChange} />
+                            {formErrors.nombre && <div className="error-message">{formErrors.nombre}</div>}
                             <label>Selecciona tu ubicacion</label>
                             <LocationPicker
                                 apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
                                 onLocationSelect={handleLocationSelect}
                             />
+                            {formErrors.direccion && <div className="error-message">{formErrors.direccion}</div>}
                             {formData.direccion && (
                                 <div style={{ padding: '10px', fontSize: '1rem' }}>
                                     <strong>Dirección Seleccionada:</strong> {formData.direccion}
                                 </div>
                             )}
-                            <textarea placeholder="Describe what are your guests gonna do during your experience" name='descripcion' onChange={handleInputChange}></textarea>
+                            <textarea placeholder="Describe que van a hacer las visitas durante la experiencia/estadia" name='descripcion' onChange={handleInputChange}></textarea>
+                            {formErrors.descripcion && <div className="error-message">{formErrors.descripcion}</div>}
                         </section>
                     </div>
                     <div className='inside-2'>
@@ -231,6 +234,7 @@ function CreateServiceForm() {
                                         </div>
                                     ))}
                                 </div>
+                                {formErrors.operating_days && <div className="error-message">{formErrors.operating_days}</div>}
                             </div>
                             <h4> Horarios de Operación</h4>
                             <div className='hor-flex'>
@@ -243,6 +247,7 @@ function CreateServiceForm() {
                                     placeholder="Hora de inicio"
                                 />
                             </div>
+                            {formErrors.operating_hours_start && <div className="error-message">{formErrors.operating_hours_start}</div>}
                             <div className='hor-flex'>
                                 <label>Fin</label>
                                 <input
@@ -253,6 +258,7 @@ function CreateServiceForm() {
                                     placeholder="Hora de fin"
                                 />
                             </div>
+                            {formErrors.operating_hours_end && <div className="error-message">{formErrors.operating_hours_end}</div>}
                         </section>
 
                         <h3>Paso 4</h3>
@@ -263,10 +269,12 @@ function CreateServiceForm() {
                                     <div className='formflexcreat'>
                                         <label className='lab'>Precio:</label>
                                         <input type="number" name='precio' onChange={handleInputChange}></input>
+                                    {formErrors.precio && <div className="error-message">{formErrors.precio}</div>}
                                     </div>
                                     <div className='formflexcreat'>
                                         <label className='lab'>Duración:</label>
                                         <input type="time" name='duracion' onChange={handleInputChange} value={formData.duracion} />
+                                        {formErrors.duracion && <div className="error-message">{formErrors.duracion}</div>}
                                     </div>
                                 </div>
                                 <div className='row'>
@@ -274,6 +282,7 @@ function CreateServiceForm() {
                                         <label className='lab'>Maximo de Personas:</label>
                                         <input type="number" style={{ width: '30%' }} name='capacidad' onChange={handleInputChange}></input>
                                     </div>
+                                    {formErrors.capacidad && <div className="error-message">{formErrors.capacidad}</div>}
                                     <div className='formflexcreat'>
                                         <label className='lab'>Apto para todo Publico:</label>
                                         <input type='checkbox' style={{ width: '20%' }} name='atp' onChange={handleInputChange}  checked={formData.atp} ></input>
@@ -284,7 +293,8 @@ function CreateServiceForm() {
                         <h3>Paso 5</h3>
                         <section className="form-step">
                             <h5>Sube imágenes sobre tu experiencia: </h5>
-                            <input type="file" onChange={handleImageChange} multiple name='images' />
+                            <input type="file" onChange={handleImageChange} multiple name='images' required />
+                            {formErrors.images && <div className="error-message">{formErrors.images}</div>}
                             <div className="image-preview-container">
                                 {selectedFiles.map((file, index) => (
                                     <div key={index} className="image-preview-wrapper">

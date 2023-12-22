@@ -4,7 +4,7 @@ const serviceController = require('../controllers/serviceController');
 const serviceImage = require('../middlewares/processServiceImage');
 const authenticateJWT = require('../middlewares/authenticateJWT');
 const favoriteController = require('../controllers/favoriteController')
-const { validateServiceUpdate } = require('../middlewares/validateServiceUpdate');
+const {validateCreateService, validateEditService} = require('../middlewares/validations')
 
 //@Get
 router.get('/createService', serviceController.getCreateService);
@@ -19,13 +19,13 @@ router.get('/service/:id/favorite', authenticateJWT ,favoriteController.isFavori
 router.get('/service/favorite', authenticateJWT ,favoriteController.favorites);
 
 //@Post
-router.post('/createService', serviceImage.array('image'), serviceController.postCreateService);
+router.post('/createService', serviceImage.array('image'), validateCreateService ,serviceController.postCreateService);
 router.post('/:id/postComment', authenticateJWT ,serviceController.postComment);
 router.post('/filter', serviceController.filterServices); 
 router.post('/service/:id/favorite', authenticateJWT ,favoriteController.addFavorite);
 
 //@Put
-router.put('/updateService/:id', serviceImage.array('image'),authenticateJWT ,validateServiceUpdate, serviceController.putUpdateService);
+router.put('/updateService/:id', serviceImage.array('image'),authenticateJWT ,validateEditService, serviceController.putUpdateService);
 
 //@Delete
 router.delete('/deleteService/:id',authenticateJWT ,serviceController.deleteService);

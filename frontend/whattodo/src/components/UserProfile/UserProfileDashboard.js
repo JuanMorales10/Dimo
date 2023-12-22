@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 
 const UserProfile = () => {
     const { token, user, fetchUserProfile } = useContext(UserContext);
+    const clientIdCalendar = process.env.CLIENT_ID_CALENDAR;
     const [isEditing, setIsEditing] = useState(false);
     const [avatarFile, setAvatarFile] = useState(null);
     const [formData, setFormData] = useState({
@@ -66,8 +67,8 @@ const UserProfile = () => {
             Swal.fire('Error', 'Las contraseñas no coinciden', 'error');
             return;
         }
-    
-       
+
+
         const result = await Swal.fire({
             title: '¿Estás seguro de que quieres cambiar tu contraseña?',
             text: "¡Asegúrate de recordar tu nueva contraseña!",
@@ -80,33 +81,33 @@ const UserProfile = () => {
         });
 
         if (result.isConfirmed) {
-     
+
             // Crea el objeto con los datos de la contraseña
             const passwordUpdateData = {
                 currentPassword: passwordData.currentPassword,
                 newPassword: passwordData.newPassword
             };
-            
+
             try {
                 const response = await fetch('http://localhost:3008/user/updateProfile', {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(passwordUpdateData)
-            });
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(passwordUpdateData)
+                });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                // Manejo de la respuesta
+                alert('Contraseña actualizada con éxito');
+            } catch (error) {
+                console.error('Error al actualizar la contraseña:', error);
             }
-            
-            // Manejo de la respuesta
-            alert('Contraseña actualizada con éxito');
-        } catch (error) {
-            console.error('Error al actualizar la contraseña:', error);
         }
-    }
     };
 
     const handleSubmit = async (e) => {
@@ -128,34 +129,44 @@ const UserProfile = () => {
             const updatedData = new FormData();
             Object.keys(formData).forEach(key => {
                 if (key !== 'avatar') {
-                updatedData.append(key, formData[key]);
-            }
-        });
-
-        if (avatarFile) {
-            updatedData.append('avatar', avatarFile);
-        }
-        
-        
-        try {
-            const response = await fetch('http://localhost:3008/user/updateProfile', {
-                method: 'PUT',
-                headers: { 'Authorization': `Bearer ${token}` },
-                body: updatedData,
+                    updatedData.append(key, formData[key]);
+                }
             });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+
+            if (avatarFile) {
+                updatedData.append('avatar', avatarFile);
             }
-            
-            const data = await response.json();
-            await fetchUserProfile();
-            setIsEditing(false);
-        } catch (error) {
-            console.error('Error updating profile:', error);
+
+
+            try {
+                const response = await fetch('http://localhost:3008/user/updateProfile', {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: updatedData,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                await fetchUserProfile();
+                setIsEditing(false);
+            } catch (error) {
+                console.error('Error updating profile:', error);
+            }
         }
-    }
     };
+
+    const handleGoogleAuth = () => {
+        const CLIENT_ID = clientIdCalendar;
+        const REDIRECT_URI = 'http://localhost:3000/oauth2callback';
+        const SCOPE = 'https://www.googleapis.com/auth/calendar';
+      
+        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${encodeURIComponent(CLIENT_ID)}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPE)}&access_type=offline&prompt=consent`;
+      
+        window.location.href = authUrl;
+      };
 
     if (!user || !user.profile) {
         return <LoadingScreen />;
@@ -226,6 +237,9 @@ const UserProfile = () => {
                                 </Box>
                             </Box>
                             <Button onClick={handleEditInfo} sx={{ margin: '10px' }}>{isEditing ? 'Guardar Cambios' : 'Editar Perfil'}</Button>
+                            <Button onClick={handleGoogleAuth} variant="contained" color="primary">
+                                Conectar con Google Calendar
+                            </Button>
                         </>
                     )}
                 </Box>

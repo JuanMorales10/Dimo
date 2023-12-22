@@ -1,7 +1,7 @@
 const { User, Service, ServiceImage, Category, Comment, Region, Order, Favorite } = require('../database/models');
 const { Op } = require('sequelize');
 const moment = require('moment-timezone');
-
+const { validationResult } = require('express-validator');
 
 const serviceController = {
   getAllServices: async (req, res) => {
@@ -33,9 +33,9 @@ const serviceController = {
         },
         include: [{
           model: User,
-          as: 'user', 
-          attributes: ['nombre', 'avatar'] 
-      }],
+          as: 'user',
+          attributes: ['nombre', 'avatar']
+        }],
       });
 
       const images = await ServiceImage.findAll({
@@ -100,6 +100,22 @@ const serviceController = {
   postCreateService: async (req, res) => {
     try {
 
+      const errors = validationResult(req);
+
+      if (!req.files || req.files.length === 0) {
+        errors.errors.push({
+          msg: "Se requiere al menos una imagen",
+          path: 'images',
+          param: "image",
+        });
+      }
+
+      console.log(errors)
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
       const atp = req.body.atp === 'on' ? true : false;
       const disponibilidad = req.body.disponibilidad === 'on' ? true : false;
       const operating_hours_start = req.body.operating_hours_start;
@@ -160,6 +176,13 @@ const serviceController = {
 
   putUpdateService: async (req, res) => {
     try {
+
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
       const { id } = req.params;
       const service = await Service.findByPk(id);
 
@@ -167,10 +190,6 @@ const serviceController = {
         return res.status(404).json({ error: 'Servicio no encontrado' });
       }
 
-      // const errors = validationResult(req);
-      // if (!errors.isEmpty()) {
-      //   return res.status(400).json({ errors: errors.array() });
-      // }
 
       const updatedFields = {
         nombre: req.body.nombre,
@@ -203,161 +222,161 @@ const serviceController = {
   deleteService: async (req, res) => {
     const { id } = req.params;
     try {
-        // Elimina primero las referencias en la tabla 'favorite'
-        await Favorite.destroy({ where: { servicio_id: id } });
+      // Elimina primero las referencias en la tabla 'favorite'
+      await Favorite.destroy({ where: { servicio_id: id } });
 
-        // Ahora puedes eliminar el servicio
-        await Service.destroy({ where: { id: id } });
+      // Ahora puedes eliminar el servicio
+      await Service.destroy({ where: { id: id } });
 
-        console.log('Servicio Eliminado: ' + id);
-        return res.status(200).json({ message: 'Servicio eliminado' });
+      console.log('Servicio Eliminado: ' + id);
+      return res.status(200).json({ message: 'Servicio eliminado' });
     } catch (error) {
-        console.error('Detalle del error:', error);
-        return res.status(500).json({ error: 'Error al eliminar el servicio', detalle: error.message });
+      console.error('Detalle del error:', error);
+      return res.status(500).json({ error: 'Error al eliminar el servicio', detalle: error.message });
     }
-},
+  },
 
- postComment : async (req, res) => {
+  postComment: async (req, res) => {
     try {
-        const serviceId = req.params.id;
-        const userId = req.session.user.userId; // Asegúrate de que esta línea refleja cómo obtienes el ID del usuario
+      const serviceId = req.params.id;
+      const userId = req.session.user.userId; // Asegúrate de que esta línea refleja cómo obtienes el ID del usuario
 
-        // Crear el comentario con la descripción y el rating
-        const comment = await Comment.create({
-            comentario: req.body.comment,
-            rating: req.body.rating,
-            servicio_id: serviceId,
-            usuario_dni: userId, 
-        });
+      // Crear el comentario con la descripción y el rating
+      const comment = await Comment.create({
+        comentario: req.body.comment,
+        rating: req.body.rating,
+        servicio_id: serviceId,
+        usuario_dni: userId,
+      });
 
-        // Calcular el nuevo rating promedio para el servicio
-        const comments = await Comment.findAll({
-            where: { servicio_id: serviceId }
-        });
+      // Calcular el nuevo rating promedio para el servicio
+      const comments = await Comment.findAll({
+        where: { servicio_id: serviceId }
+      });
 
-        const averageRating = comments.reduce((acc, comment) => acc + comment.rating, 0) / comments.length;
+      const averageRating = comments.reduce((acc, comment) => acc + comment.rating, 0) / comments.length;
 
-        // Actualizar el servicio con el nuevo rating promedio
-        const service = await Service.findByPk(serviceId);
-        await service.update({ rating: averageRating });
-        console.log(comment)
-        console.log(service)
+      // Actualizar el servicio con el nuevo rating promedio
+      const service = await Service.findByPk(serviceId);
+      await service.update({ rating: averageRating });
+      console.log(comment)
+      console.log(service)
 
-        return res.status(201).json(comment); 
+      return res.status(201).json(comment);
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: 'Error al crear el comentario' });
+      console.error(error);
+      return res.status(500).json({ error: 'Error al crear el comentario' });
     }
-},
+  },
 
- filterServices : async (req, res) => {
-  try {
-    const {
-      categoria_id, precioMin, precioMax, disponibilidad, rating, capacidad, atp, nombre
-    } = req.body;
+  filterServices: async (req, res) => {
+    try {
+      const {
+        categoria_id, precioMin, precioMax, disponibilidad, rating, capacidad, atp, nombre
+      } = req.body;
 
-    let filterCriteria = {};
+      let filterCriteria = {};
 
-    if (categoria_id) {
-      filterCriteria.categoria_id = categoria_id;
-    }
-
-    if (precioMin || precioMax) {
-      filterCriteria.precio = {};
-      if (precioMin) filterCriteria.precio[Op.gte] = parseFloat(precioMin);
-      if (precioMax) filterCriteria.precio[Op.lte] = parseFloat(precioMax);
-    }
-
-    if (disponibilidad !== undefined) {
-      filterCriteria.disponibilidad = disponibilidad;
-    }
-
-    if (rating) {
-      const ratingValue = parseInt(rating, 10);
-      if (ratingValue >= 1 && ratingValue <= 5) {
-        filterCriteria.rating = { [Op.eq]: ratingValue };
-      } else {
-        return res.status(400).json({ error: 'El valor del rating es inválido' });
+      if (categoria_id) {
+        filterCriteria.categoria_id = categoria_id;
       }
-    }
 
-    if (capacidad) {
-      const capacidadValue = parseInt(capacidad, 10);
-      if (!isNaN(capacidadValue)) {
-        filterCriteria.capacidad = { [Op.gte]: capacidadValue };
-      } else {
-        return res.status(400).json({ error: 'El valor de capacidad es inválido' });
+      if (precioMin || precioMax) {
+        filterCriteria.precio = {};
+        if (precioMin) filterCriteria.precio[Op.gte] = parseFloat(precioMin);
+        if (precioMax) filterCriteria.precio[Op.lte] = parseFloat(precioMax);
       }
-    }
 
-    if (atp !== undefined) {
-      if(atp === ''){
-
+      if (disponibilidad !== undefined) {
+        filterCriteria.disponibilidad = disponibilidad;
       }
-      filterCriteria.atp = atp;
+
+      if (rating) {
+        const ratingValue = parseInt(rating, 10);
+        if (ratingValue >= 1 && ratingValue <= 5) {
+          filterCriteria.rating = { [Op.eq]: ratingValue };
+        } else {
+          return res.status(400).json({ error: 'El valor del rating es inválido' });
+        }
+      }
+
+      if (capacidad) {
+        const capacidadValue = parseInt(capacidad, 10);
+        if (!isNaN(capacidadValue)) {
+          filterCriteria.capacidad = { [Op.gte]: capacidadValue };
+        } else {
+          return res.status(400).json({ error: 'El valor de capacidad es inválido' });
+        }
+      }
+
+      if (atp !== undefined) {
+        if (atp === '') {
+
+        }
+        filterCriteria.atp = atp;
+      }
+
+      if (nombre) {
+        filterCriteria.nombre = { [Op.like]: `%${nombre}%` };
+      }
+
+      console.log(filterCriteria)
+
+      const services = await Service.findAll({
+        where: filterCriteria,
+        attributes: { include: ['rating'] },
+        include: [
+          {
+            model: ServiceImage,
+            as: 'images',
+            attributes: ['url']
+          },
+          {
+            model: Category,
+            as: 'category'
+          },
+          {
+            model: User,
+            as: 'user',
+            attributes: ['nombre', 'apellido'] // Asegúrate de que estos campos existan en tu modelo User
+          },
+          // Agrega aquí otras asociaciones según sea necesario
+        ],
+      });
+
+      const formattedServices = services.map(service => ({
+        id: service.id,
+        nombre: service.nombre,
+        descripcion: service.descripcion,
+        precio: service.precio,
+        duracion: service.duracion,
+        direccion: service.direccion,
+        rating: service.rating,
+        disponibilidad: service.disponibilidad,
+        atp: service.atp,
+        capacidad: service.capacidad,
+        categoria: {
+          id: service.category.id,
+          nombre: service.category.nombre,
+          descripcion: service.category.descripcion,
+        },
+        usuario: {
+          nombre: service.user.nombre,
+          apellido: service.user.apellido,
+        },
+        // Puedes formatear las imágenes y otros campos relacionados de la misma manera
+        images: service.images.map(image => image.url),
+        // ... más campos según sea necesario ...
+      }));
+
+      console.log(services)
+
+      return res.status(200).json({ services: formattedServices });
+    } catch (error) {
+      console.error('Error al filtrar los servicios:', error);
+      return res.status(500).json({ error: 'Error interno del servidor' });
     }
-
-    if (nombre) {
-      filterCriteria.nombre = { [Op.like]: `%${nombre}%` };
-    }
-
-    console.log(filterCriteria)
-
-    const services = await Service.findAll({
-      where: filterCriteria,
-      attributes: { include: ['rating'] },
-      include: [
-        {
-          model: ServiceImage,
-          as: 'images',
-          attributes: ['url']
-        },
-        {
-          model: Category,
-          as: 'category'
-        },
-        {
-          model: User,
-          as: 'user',
-          attributes: ['nombre', 'apellido'] // Asegúrate de que estos campos existan en tu modelo User
-        },
-        // Agrega aquí otras asociaciones según sea necesario
-      ],
-    });
-
-    const formattedServices = services.map(service => ({
-      id: service.id,
-      nombre: service.nombre,
-      descripcion: service.descripcion,
-      precio: service.precio,
-      duracion: service.duracion,
-      direccion: service.direccion,
-      rating: service.rating,
-      disponibilidad: service.disponibilidad,
-      atp: service.atp,
-      capacidad: service.capacidad,
-      categoria: {
-        id: service.category.id,
-        nombre: service.category.nombre,
-        descripcion: service.category.descripcion,
-      },
-      usuario: {
-        nombre: service.user.nombre,
-        apellido: service.user.apellido,
-      },
-      // Puedes formatear las imágenes y otros campos relacionados de la misma manera
-      images: service.images.map(image => image.url),
-      // ... más campos según sea necesario ...
-    }));
-
-    console.log(services)
-
-    return res.status(200).json({ services: formattedServices });
-  } catch (error) {
-    console.error('Error al filtrar los servicios:', error);
-    return res.status(500).json({ error: 'Error interno del servidor' });
-  }
-},
+  },
 
   searchServicesByName: async (req, res) => {
     try {

@@ -16,6 +16,7 @@ import ReservaPage from './pages/service/ReservaPage/ReservaPage';
 import ServiceListView from './pages/service/ServiceListView/ServiceListView';
 import Dashboard from './components/Dashboard/Dashboard';
 import EditServicePage from './pages/service/EditServicePage/EditServicePage';
+import GoogleAuthCallback from './components/GoogleAuthCallback/GoogleAuthCallback';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
             <Route path="/edit-service/:serviceId" element={<EditServicePage />} />
             <Route path="/reserva/:serviceId" element={<ReservaPage />} />
             <Route path="/dashboard/*" element={<Dashboard />} />
+            <Route path="/auth/callback" element={<GoogleAuthCallback />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>

@@ -60,6 +60,28 @@ const UserProfile = () => {
         setFormData({ ...formData, type: event.target.checked ? 'Host' : 'Personal' });
     };
 
+    const handleLinkGoogle = async () => {
+        try {
+            // Realiza una solicitud al backend para iniciar la autenticación con Google
+            const response = await fetch('http://localhost:3008/auth/google/start', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+    
+            const data = await response.json();
+    
+            if (data.url) {
+                window.location.href = data.url; // Redirige al usuario a la URL de autenticación de Google
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+    
+    
+
     const handlePasswordUpdate = async (e) => {
         e.preventDefault();
 
@@ -158,15 +180,6 @@ const UserProfile = () => {
         }
     };
 
-    const handleGoogleAuth = () => {
-        const CLIENT_ID = clientIdCalendar;
-        const REDIRECT_URI = 'http://localhost:3000/oauth2callback';
-        const SCOPE = 'https://www.googleapis.com/auth/calendar';
-      
-        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${encodeURIComponent(CLIENT_ID)}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPE)}&access_type=offline&prompt=consent`;
-      
-        window.location.href = authUrl;
-      };
 
     if (!user || !user.profile) {
         return <LoadingScreen />;
@@ -184,6 +197,11 @@ const UserProfile = () => {
                     <Typography variant="h5" sx={{ mt: 2, marginTop: '0', marginLeft: '10px', color: 'white' }}>
                         {`${user.profile.nombre} ${user.profile.apellido ? user.profile.apellido : ''}`}
                     </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+                        <Button onClick={handleLinkGoogle} variant="contained" color="primary">
+                            Vincular con Google Calendar
+                        </Button>
+                    </Box>
                 </Box>
 
                 <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, margin: '20px 0px' }}>
@@ -237,9 +255,6 @@ const UserProfile = () => {
                                 </Box>
                             </Box>
                             <Button onClick={handleEditInfo} sx={{ margin: '10px' }}>{isEditing ? 'Guardar Cambios' : 'Editar Perfil'}</Button>
-                            <Button onClick={handleGoogleAuth} variant="contained" color="primary">
-                                Conectar con Google Calendar
-                            </Button>
                         </>
                     )}
                 </Box>

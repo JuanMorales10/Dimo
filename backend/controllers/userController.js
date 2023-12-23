@@ -2,6 +2,13 @@ const { User } = require('../database/models');
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
+const { google } = require('googleapis');
+
+// Configuración del cliente OAuth2
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const REDIRECT_URI = process.env.REDIRECT_URI;
+const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
 const userController = {
   login: async (req, res) => {
@@ -312,6 +319,44 @@ const userController = {
 
     // res.render("./users/register");
   },
+  iniciarAuth: (req, res) => {
+    const url = oauth2Client.generateAuthUrl({
+      access_type: 'offline',
+      scope: ['https://www.googleapis.com/auth/calendar']
+    });
+    res.json({ url });
+  },
+  despAuth: async (req, res) => {
+    const { code } = req.query;
+
+    console.log(code)
+
+    try {
+      const { tokens } = await oauth2Client.getToken(code);
+      oauth2Client.setCredentials(tokens);
+
+      console.log(req.session.user)
+
+      // Aquí se obtiene el usuario de la sesión
+      const userEmail = req.session.user.email;
+      const user = await User.findOne({ where: { email: userEmail }});
+
+      if (user) {
+        user.googleAccessToken = tokens.access_token;
+        user.googleRefreshToken = tokens.refresh_token;
+        await user.save();
+      }
+
+      console.log(tokens.access_token)
+      console.log(tokens.expiry_date)
+
+      res.json({ success: true, message: 'Google Calendar vinculado con éxito.' });
+    } catch (error) {
+      console.error('Error al obtener el token de Google:', error);
+      res.status(500).json({ success: false, message: 'Error en la autenticación con Google.' });
+    }
+  },
+
 };
 
 module.exports = userController;

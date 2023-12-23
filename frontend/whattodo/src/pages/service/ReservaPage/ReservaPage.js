@@ -107,7 +107,7 @@ function ReservaPage() {
         position: "top-end",
         icon: "success",
         title: '¡Reserva Creada!',
-        text: 'Tu reserva ha sido creada con éxito.',
+        text: `Tu reserva ha sido creada con éxito. ID del evento en Google Calendar: ${reservaCreada.googleEventId}`,
         showConfirmButton: false,
         timer: 1500,
         width: '300px',
@@ -117,21 +117,21 @@ function ReservaPage() {
         }
       });
 
+      // Ajustar aquí según cómo quieras manejar el evento en el frontend
       const newEvent = {
-        title: `${reservaCreada.nombreReserva} - ${reservaCreada.nombreUsuario}`,
-        start: reservaCreada.start_datetime,
-        end: reservaCreada.end_datetime,
+        title: `${reserva.nombreReserva} - ${reserva.nombreUsuario}`,
+        start: reservaCreada.reservaResponse.start_datetime,
+        end: reservaCreada.reservaResponse.end_datetime,
         extendedProps: {
-          id: reservaCreada.id,
-          cantidadPersonas: reservaCreada.cantidadPersonas,
+          id: reservaCreada.reservaResponse.id,
+          cantidadPersonas: reservaCreada.reservaResponse.cantidadPersonas,
         }
-      }
+      };
       addEvent(newEvent);
 
-      navigate('/dashboard/calendar')
+      navigate('/dashboard/calendar');
 
     } catch (error) {
-
       Swal.fire({
         position: "top-end",
         title: 'Error',
@@ -145,7 +145,6 @@ function ReservaPage() {
           content: 'my-content-class'
         }
       });
-
       setError(error.message);
     }
   };

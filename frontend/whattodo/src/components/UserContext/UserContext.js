@@ -39,28 +39,26 @@ export const UserProvider = ({ children }) => {
 
   const handleGoogleAuth = async (code) => {
     try {
-      const response = await fetch('http://localhost:3008/auth/google/callback', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code }),
-      });
+        const response = await fetch(`http://localhost:3008/auth/google/callback?code=${code}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, 
+            },
+        });
 
-      if (!response.ok) {
-        throw new Error('Error al procesar la autenticación de Google');
-      }
+        if (!response.ok) {
+            throw new Error('Error al procesar la autenticación de Google');
+        }
 
-      const data = await response.json();
-      setGoogleToken(data.token); // Guarda el token en el estado
-      localStorage.setItem('googleToken', data.token); // También podrías guardar en localStorage
-
-      // Otras acciones como actualizar el perfil de usuario, si es necesario
+        const data = await response.json();
+        return data; // Devuelve el objeto de respuesta
     } catch (error) {
-      console.error('Error en la autenticación de Google:', error);
-      throw error; // Re-throw the error to be handled in the component
+        console.error('Error en la autenticación de Google:', error);
+        throw error; // Lanza el error para manejarlo en el componente
     }
-  };
+};
+
+
 
 
   const setCookie = (name, value, days) => {

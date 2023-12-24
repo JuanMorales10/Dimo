@@ -19,7 +19,7 @@ router.get('/service/:id/favorite', authenticateJWT ,favoriteController.isFavori
 router.get('/service/favorite', authenticateJWT ,favoriteController.favorites);
 
 //@Post
-router.post('/createService', serviceImage.array('image'), validateCreateService ,serviceController.postCreateService);
+router.post('/createService', serviceImage.array('image'), authenticateJWT , validateCreateService ,serviceController.postCreateService);
 router.post('/:id/postComment', authenticateJWT ,serviceController.postComment);
 router.post('/filter', serviceController.filterServices); 
 router.post('/service/:id/favorite', authenticateJWT ,favoriteController.addFavorite);

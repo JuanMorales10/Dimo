@@ -227,7 +227,7 @@ function ServiceDescription({ service, user }) {
     return (
         <div className="service-description">
             <div className='des-cont'>
-                <p>{service.descripcion}</p>
+                <p className='descripcion-ser'>{service.descripcion}</p>
                 <p>Precio: <b>${service.precio}</b></p>
                 <p>Capacidad: {service.capacidad} personas máximo</p>
             </div>

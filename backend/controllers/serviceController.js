@@ -98,6 +98,7 @@ const serviceController = {
     }
   },
   postCreateService: async (req, res) => {
+    const userId = req.session.user.userId
     try {
 
       const errors = validationResult(req);
@@ -124,7 +125,7 @@ const serviceController = {
 
 
       const serviceData = {
-        usuario_dni: req.body.usuario_dni,
+        usuario_dni: userId,
         categoria_id: req.body.categoria_id,
         id_region: req.body.id_region,
         nombre: req.body.nombre,
@@ -199,9 +200,9 @@ const serviceController = {
         id_region: req.body.id_region,
         precio: req.body.precio,
         duracion: req.body.duracion || null,
-        atp: req.body.atp === 'true',
+        atp: req.body.atp === true,
         rating: req.body.rating || null,
-        disponibilidad: req.body.disponibilidad === 'true',
+        disponibilidad: true,
         direccion: req.body.direccion,
         operating_hours_start: req.body.operating_hours_start,
         operating_hours_end: req.body.operating_hours_end,

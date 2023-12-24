@@ -126,8 +126,6 @@ function CreateServiceForm() {
     };
     
     
-    console.log(formErrors)
-    
     return (
         <>
             <NavBar />

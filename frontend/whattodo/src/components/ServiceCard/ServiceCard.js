@@ -24,25 +24,25 @@ function ServiceCard({ service, onEdit, onDelete }) {
           <Typography gutterBottom variant="h5" component="div">
             {service.nombre}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{height:'100px', overflow:'overlay'}}>
             {service.descripcion}
           </Typography>
-          <Typography variant="body1" color="text.primary">
-            {service.precio}
+          <Typography variant="body1" color="text.primary" sx={{margin:'10px 0'}}>
+            Precio: {service.precio}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {service.direccion}
+            Direccion: {service.direccion}
           </Typography>
         </CardContent>
       </CardActionArea>
       {hover && (
         <CardActions sx={{ position: 'absolute', top: '10px', right: '10px' }}>
-          <Tooltip title="Edit" arrow>
+          <Tooltip title="Editar" arrow>
             <IconButton onClick={() => onEdit(service.id)}>
               <EditIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Delete" arrow>
+          <Tooltip title="Eliminar" arrow>
             <IconButton onClick={() => onDelete(service.id)}>
               <DeleteIcon />
             </IconButton>

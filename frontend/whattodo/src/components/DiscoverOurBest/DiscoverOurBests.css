@@ -1,6 +1,12 @@
 .discover-our-bests {
-    background-color: #f5f5f5; 
+    background-color: #f5f5f5;
     text-align: center;
+    display: flex;
+    flex-direction: row-reverse;
+    padding: 20px;
+    justify-content: space-around;
+    align-items: center;
+
 }
 
 .discover-our-bests .container {
@@ -20,19 +26,38 @@
 }
 
 
-.carrusel{
-    max-width: 564px;
+/* .carrusel{
     margin-left: 70px;
-    position: relative;
-    bottom: 175px;
-}
+} */
 
 .te-left{
     display: flex;
     flex-direction: column;
+    max-width: 50%;
     align-items: center;
     width: 600px;
-    position: relative;
-    left: 50%;
-    top: 40px;
+}
+
+.te-right{
+    max-width: 50%;
+    align-items: center;
+    width: 600px;
+}
+
+.container-best{
+    display: flex;
+}
+
+@media (max-width:760px) {
+    .discover-our-bests{
+        flex-direction: column;
+    }
+    .te-right{
+        width: 80%;
+        min-width: 400px;
+    }
+    .te-left{
+        width: 80%;
+        min-width: 400px;
+    }
 }

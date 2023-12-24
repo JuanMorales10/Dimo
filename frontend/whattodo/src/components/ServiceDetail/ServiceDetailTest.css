@@ -30,12 +30,13 @@
     left: 25%;
     transform: translate(-50%, -50%);
     background-color: #fff;
-    width: 330px;
+    width: 25%;
     padding: 10px;
     border-radius: 12px;
     height: 110px;
     box-shadow: 0 2px 5px rgb(0 0 0 / 73%);
     background-color: #008cbafa;
+    min-width: 150px;
   }
   
   .service-title-container {
@@ -158,6 +159,7 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: space-evenly;
+    max-width: 60%;
   }
   .prop-detail p {
     margin: 0;
@@ -332,6 +334,13 @@
     background: #f0f0f0;
   }
 
+  .tab-content p.descripcion-ser {
+    color: white;
+    overflow: auto;
+    height: 87px;
+    padding: 5px;
+  }
+
   .tab-content p{
     color: white;
   }
@@ -350,18 +359,57 @@
     border-radius: 50%;
   }
 
+  @media (max-width:1250px) {
+    .img-service-owner{
+      width: 70px;
+      height: 70px;
+    }
+
+    .service-header h1{
+      font-size: 1.5rem;
+    }
+  }
   
-  
+  @media (max-width:1000px) {
+
+    .service-header h1{
+      font-size: 1.2rem;
+    }
+  }
   
   @media (max-width: 768px) {
     .service-detail-container {
       flex-direction: column;
+    }
+
+    .service-header h1{
+      font-size: 1rem;
+    }
+
+    .service-detail-overlay{
+      top: 45%;
+    }
+
+    .descripcion-ser{
+      height: 220px !important;
     }
   
     .service-carousel,
     .service-title-container,
     .service-description-container {
       width: 100%;
+    }
+
+    .css-kqz83o {
+      padding: 10px 20px;
+      height: auto !important;
+  }
+
+    .prop-detail{
+      width: 36vw;
+    }
+    .service-description{
+      flex-direction: column;
     }
   
     .service-title {
@@ -381,6 +429,24 @@
     .carousel-image-container,
     .carousel-image-container img {
       width: 100%; /* En pantallas pequeñas, se ajusta al contenedor en lugar de la ventana */
-      height: auto; /* O puedes establecer una altura más pequeña si es necesario */
+      height: auto;
+      min-height: 570px; /* O puedes establecer una altura más pequeña si es necesario */
     }
+  }
+
+  @media (max-width:660px) {
+    .service-header{
+      margin-left: 0;
+    }
+    .rating{
+      left: 10%;
+    position: relative;
+    }
+  }
+
+  @media (max-width:470px) {
+    .service-detail-overlay{
+     left: 30%;
+    }
+
   }

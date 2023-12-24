@@ -22,7 +22,7 @@ function Modal({ closeModal }) {
     capacidad: '',
     disponibilidad: true,
     rating: '',
-    atp: '',
+    atp: true,
   });
 
   const handleInputChange = (event) => {
@@ -38,14 +38,9 @@ function Modal({ closeModal }) {
     setFormData({ ...formData, categoria_id: category });
   };
 
-  // const validateForm = () => {
-  //   if (formData.precioMin && formData.precioMax && formData.precioMin > formData.precioMax) {
-  //     alert('El precio mínimo no puede ser mayor que el precio máximo.');
-  //     return false;
-  //   }
-  //   return true;
-  // };
-
+  const isCategorySelected = (category) => {
+    return formData.categoria_id === category;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -112,31 +107,51 @@ function Modal({ closeModal }) {
             <h3 className='titulos'>Elije una Categoria</h3>
             <div className="categories-container">
               <div>
-                <button type='button' className="category-button" onClick={() => handleCategorySelect('2')} name='categoria_id'>
+                <button
+                  type='button'
+                  className={`category-button ${isCategorySelected(2) ? 'selected-category' : ''}`}
+                  onClick={() => handleCategorySelect(2)}
+                >
                   <img src={gast} alt="Gastronomy" />
                 </button>
                 Gastronomia
               </div>
               <div>
-                <button type='button' className="category-button" onClick={() => handleCategorySelect('1')} name='categoria_id'>
+                <button
+                  type='button'
+                  className={`category-button ${isCategorySelected(1) ? 'selected-category' : ''}`}
+                  onClick={() => handleCategorySelect(1)}
+                >
                   <img src={vit} alt="Wineries" />
                 </button>
                 Vitivinicola
               </div>
               <div>
-                <button type='button' className="category-button" onClick={() => handleCategorySelect('4')} name='categoria_id'>
+                <button
+                  type='button'
+                  className={`category-button ${isCategorySelected(4) ? 'selected-category' : ''}`}
+                  onClick={() => handleCategorySelect(4)}
+                >
                   <img src={aven} alt="Adventure" />
                 </button>
                 Aventura
               </div>
               <div>
-                <button type='button' className="category-button" onClick={() => handleCategorySelect('3')} name='categoria_id'>
+                <button
+                  type='button'
+                  className={`category-button ${isCategorySelected(3) ? 'selected-category' : ''}`}
+                  onClick={() => handleCategorySelect(3)}
+                >
                   <img src={trans} alt="Transport" />
                 </button>
                 Transporte
               </div>
               <div>
-                <button type='button' className="category-button" onClick={() => handleCategorySelect('5')} name='categoria_id'>
+                <button
+                  type='button'
+                  className={`category-button ${isCategorySelected(5) ? 'selected-category' : ''}`}
+                  onClick={() => handleCategorySelect(5)}
+                >
                   <img src={noche} alt="Nightlife" />
                 </button>
                 Noche
@@ -155,7 +170,7 @@ function Modal({ closeModal }) {
                   type="date"
                   value={formData.fechaInicio}
                   onChange={handleInputChange}
-                  name="fecha"
+                  name="fechaInicio"
                 />
                 <div>
                   <label>Fecha Fin</label>
@@ -163,7 +178,7 @@ function Modal({ closeModal }) {
                     type="date"
                     value={formData.fechaFin}
                     onChange={handleInputChange}
-                    name="fecha"
+                    name="fechaFin"
                   />
                 </div>
               </div>

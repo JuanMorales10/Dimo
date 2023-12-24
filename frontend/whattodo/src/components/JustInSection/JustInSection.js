@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import './JustInSection.css'; 
-import backgroundImage from '../../assets/img/Seri.jpg'; 
+import backgroundImage from '../../assets/img/justInbackk.jpg'; 
 import CardSection from '../CardSection/CardSection';
+import Carousel from 'react-multi-carousel';
 
 const JustInSection = () => {
   const [data, setData] = useState([])
@@ -29,17 +30,45 @@ const JustInSection = () => {
     fetchData();
   }, [])
 
+  const responsive = {
+    desktop: {
+      breakpoint: { max: 3000, min: 1024 },
+      items: 3 // Muestra 2 items en desktop
+    },
+    tablet: {
+      breakpoint: { max: 1024, min: 464 },
+      items: 2 // Muestra 1 item en tablet
+    },
+    mobile: {
+      breakpoint: { max: 464, min: 0 },
+      items: 1 // Muestra 1 item en móvil
+    }
+  };
+
   return (
-    <section className="recien-llegados-seccion fade-in" style={{ backgroundImage: `url(${backgroundImage})` }}>
+    <section 
+    className="recien-llegados-seccion fade-in" 
+    style={{ 
+      backgroundImage: `url(${backgroundImage})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat'
+    }}
+  >
       <div className="container">
         <div className='justIn'>
         <h2>¡Recién Llegados!</h2>
         <p>Explora nuestras experiencias más recientes</p>
         </div>
-         <div className="card-container-sec fade-in">
-          {data.map((service, index) => (
-            <CardSection key={index} {...service} />
-            ))}
+         <div className="card-container-sec">
+         <Carousel 
+          responsive={responsive}
+          infinite={true}
+        >
+          {data.map(service => (
+            <CardSection key={service.id} {...service} />
+          ))}
+        </Carousel>
           </div>
       </div>
     </section>

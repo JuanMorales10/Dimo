@@ -12,7 +12,9 @@ function ReservaPage() {
   const { serviceId } = useParams();
   const { token, user, addEvent } = useContext(UserContext);
   const [error, setError] = useState('');
-  const [service, setService] = useState(null);
+  const [service, setService] = useState(null); 
+
+
 
   useEffect(() => {
     const fetchService = async () => {
@@ -35,7 +37,6 @@ function ReservaPage() {
   }, [serviceId, token]);
 
   const handleSubmit = async (reserva) => {
-    console.log(reserva);
     try {
 
       // Convertir la duración de formato HH:mm:ss a minutos
@@ -148,7 +149,6 @@ function ReservaPage() {
       setError(error.message);
     }
   };
-
 
 
 

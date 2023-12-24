@@ -1,6 +1,6 @@
 import React from 'react';
 import './AboutUs.css'; 
-import imagen from '../../assets/img/nosotros.jpg';
+import imagen from '../../assets/img/justIn.jpg';
 import JustInSection from '../JustInSection/JustInSection';
 import NavBar from '../NavBar/NavBar';
 import Footer from '../Footer/Footer';

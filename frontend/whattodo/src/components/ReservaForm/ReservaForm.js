@@ -4,6 +4,7 @@ import DatePicker from 'react-datepicker';
 import moment from 'moment'
 import 'react-datepicker/dist/react-datepicker.css';
 import './ReservaForm.css';
+import Swal from 'sweetalert2';
 
 function ReservaForm({ service, onSubmit }) {
   console.log(service)
@@ -19,9 +20,39 @@ function ReservaForm({ service, onSubmit }) {
     nombreUsuario: user ? user.profile.nombre : '',
     usuario_dni: user ? user.profile.id : ''
   });
+  const [metodoPago, setMetodoPago] = useState('');
+  
 
+  const handlePayment = async () => {
+    if (!metodoPago) {
+      Swal.fire('Error', 'Por favor, selecciona un método de pago', 'error');
+      return;
+    }
 
-  console.log(reserva.fecha)
+    try {
+      const response = await fetch('/ruta-backend-para-procesar-pago', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...reserva, metodoPago })
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al procesar el pago');
+      }
+
+      const resultadoPago = await response.json();
+      if (resultadoPago.success) {
+        onSubmit(reserva);
+        Swal.fire('Éxito', 'Tu reserva ha sido completada con éxito', 'success');
+      } else {
+        Swal.fire('Error', 'El pago ha fallado', 'error');
+      }
+    } catch (error) {
+      console.error('Error al procesar el pago:', error);
+      Swal.fire('Error', 'Error al procesar el pago: ' + error.message, 'error');
+    }
+  };
+  
 
 
   useEffect(() => {
@@ -39,7 +70,7 @@ function ReservaForm({ service, onSubmit }) {
 
 
   const fetchAvailableSlots = async (selectedDate) => {
-    
+
     const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
     try {
       const response = await fetch(`http://localhost:3008/service/${serviceId}/available-slots?date=${formattedDate}`);
@@ -69,7 +100,8 @@ function ReservaForm({ service, onSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(reserva);
+    const reservaConMetodoPago = { ...reserva, metodoPago };
+    onSubmit(reservaConMetodoPago);
   };
 
   return (
@@ -108,6 +140,25 @@ function ReservaForm({ service, onSubmit }) {
               </option>
             ))}
           </select>
+         <div className="form-group">
+          <label htmlFor="metodoPago">Método de Pago:</label>
+          <select
+            name="metodoPago"
+            value={metodoPago}
+            onChange={(e) => setMetodoPago(e.target.value)}
+            required
+          >
+            <option value="">Selecciona un método de pago</option>
+            <option value="mercadoPago">Mercado Pago</option>
+            <option value="payoneer">Payoneer</option>
+          </select>
+        </div>
+
+        {/* Botón de Pago */}
+        <button type="button" className="pay-now-btn" onClick={handlePayment}>
+          Pagar Ahora
+        </button>
+
           <button type="submit" className="book-now-btn">Reservar Ahora</button>
         </form>
       </div>

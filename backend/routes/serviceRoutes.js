@@ -13,7 +13,7 @@ router.get('/allServices', serviceController.getAllServices);
 router.get('/userServices/:id', serviceController.getUserServices);
 router.get('/popularServices', serviceController.getPopularServices);
 router.get('/availableServices', serviceController.getAvailableServices);
-router.get('/searchServicesByName', serviceController.searchServicesByName);
+router.get('/servicesByCategory', serviceController.servicesByCategory);
 router.get('/:id/available-slots', serviceController.getAvailableSlots);
 router.get('/service/:id/favorite', authenticateJWT ,favoriteController.isFavorite);
 router.get('/service/favorite', authenticateJWT ,favoriteController.favorites);
@@ -23,6 +23,7 @@ router.post('/createService', serviceImage.array('image'), authenticateJWT , val
 router.post('/:id/postComment', authenticateJWT ,serviceController.postComment);
 router.post('/filter', serviceController.filterServices); 
 router.post('/service/:id/favorite', authenticateJWT ,favoriteController.addFavorite);
+router.post('/mercado-pago', serviceController.mercadoPago)
 
 //@Put
 router.put('/updateService/:id', serviceImage.array('image'),authenticateJWT ,validateEditService, serviceController.putUpdateService);

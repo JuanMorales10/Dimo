@@ -2,6 +2,7 @@ const { User, Service, ServiceImage, Category, Comment, Region, Order, Favorite 
 const { Op } = require('sequelize');
 const moment = require('moment-timezone');
 const { validationResult } = require('express-validator');
+const mercadoPago = require('mercadopago')
 
 const serviceController = {
   getAllServices: async (req, res) => {
@@ -379,7 +380,7 @@ const serviceController = {
     }
   },
 
-  searchServicesByName: async (req, res) => {
+  servicesByCategory: async (req, res) => {
     try {
       const { name } = req.query;
       if (!name) {
@@ -447,6 +448,34 @@ const serviceController = {
     } catch (error) {
       console.error('Error getting available slots:', error);
       res.status(500).json({ message: 'Error getting available slots' });
+    }
+  },
+  mercadoPago: async (req, res) => {
+
+    const producto = req.body;
+
+    try {
+      const preference = {
+      items: [{
+                title: producto.nombre,
+                unit_price: producto.precio,
+                currency_id: "USD",
+                quantity: 1,
+              }],
+        back_urls: {
+          success: `http://localhost:3000/reserva/${producto.id}`,
+          failure: `http://localhost:3000/reserva/${producto.id}`,
+        },
+  
+        auto_return: "approved",
+      };
+  
+      const respuesta = await mercadoPago.preferences.create(preference);
+      console.log(respuesta);
+      res.status(200).json(respuesta.response.init_point);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json(error.message);
     }
   }
 

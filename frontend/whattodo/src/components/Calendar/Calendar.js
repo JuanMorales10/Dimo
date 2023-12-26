@@ -13,13 +13,22 @@ function Calendar() {
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   const handleEventClick = ({ event }) => {
-    setSelectedEvent({
-      title: event.title,
-      start: moment(event.start).locale('es').format('LLL'),
-      end: moment(event.end).locale('es').format('LLL'),
-      cantidadPersonas: event.extendedProps.cantidadPersonas,
-    });
+    const startDate = moment(event.start);
+    const endDate = moment(event.end);
+  
+    if (startDate.isValid() && endDate.isValid()) {
+      setSelectedEvent({
+        title: event.title,
+        start: startDate.locale('es').format('LLL'),
+        end: endDate.locale('es').format('LLL'),
+        cantidadPersonas: event.extendedProps.cantidadPersonas,
+      });
+    } else {
+      console.error("Fecha inválida en el evento", event);
+      // Manejo adicional para fechas inválidas
+    }
   }
+  
 
   return (
     <div className='calendar-dash'>

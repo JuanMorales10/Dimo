@@ -13,6 +13,11 @@ const serviceRouter = require('./routes/serviceRoutes')
 const authCookie = require('./middlewares/authenticateUserWithCookie');
 const reservaRoutes = require('./routes/reservasRoutes');
 const googleAuthRoutes = require('./routes/googleAuthRoutes');
+const mercadoPago = require('mercadopago')
+
+mercadoPago.configure({
+  access_token: process.env.ACCESS_TOKEN_MP || "",
+})
 
 
 const corsOptions = {

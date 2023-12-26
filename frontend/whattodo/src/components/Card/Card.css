@@ -75,6 +75,8 @@
     background-color: #ffffff76;
     padding: 1%;
     border-radius: 18px;
+    min-width: 40px;
+
 }
 
 .card-rating {

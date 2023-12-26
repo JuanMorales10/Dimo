@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
 import { UserContext } from '../UserContext/UserContext';
+import { parseISO } from 'date-fns';
 import DatePicker from 'react-datepicker';
 import moment from 'moment'
 import 'react-datepicker/dist/react-datepicker.css';
@@ -7,9 +9,10 @@ import './ReservaForm.css';
 import Swal from 'sweetalert2';
 
 function ReservaForm({ service, onSubmit }) {
-  console.log(service)
-  const serviceId = service.service.id
+  const { serviceId } = useParams();
+  const location = useLocation();
   const { user } = useContext(UserContext);
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [availableSlots, setAvailableSlots] = useState({ dates: [], times: [] });
   const [reserva, setReserva] = useState({
     servicio_id: serviceId,
@@ -18,40 +21,57 @@ function ReservaForm({ service, onSubmit }) {
     cantidadPersonas: 1,
     nombreReserva: service ? service.service.nombre : '',
     nombreUsuario: user ? user.profile.nombre : '',
-    usuario_dni: user ? user.profile.id : ''
+    usuario_dni: user ? user.profile.id : '',
+    precio: service ? service.service.precio  : ''
   });
   const [metodoPago, setMetodoPago] = useState('');
-  
+
 
   const handlePayment = async () => {
-    if (!metodoPago) {
-      Swal.fire('Error', 'Por favor, selecciona un método de pago', 'error');
-      return;
-    }
+    sessionStorage.setItem('reservaActual', JSON.stringify(reserva));
 
+    const servicioFinal = {
+      nombre: reserva.nombreReserva,
+      precio: reserva.precio,
+      id: serviceId
+    };
+  
     try {
-      const response = await fetch('/ruta-backend-para-procesar-pago', {
+      const response = await fetch('http://localhost:3008/service/mercado-pago', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...reserva, metodoPago })
+        body: JSON.stringify(servicioFinal)
       });
-
+  
       if (!response.ok) {
         throw new Error('Error al procesar el pago');
       }
-
+  
       const resultadoPago = await response.json();
-      if (resultadoPago.success) {
-        onSubmit(reserva);
-        Swal.fire('Éxito', 'Tu reserva ha sido completada con éxito', 'success');
+  
+      if (resultadoPago) {
+        window.location.href = resultadoPago;
       } else {
-        Swal.fire('Error', 'El pago ha fallado', 'error');
+        Swal.fire('Error', 'No se pudo obtener la URL de pago', 'error');
       }
     } catch (error) {
       console.error('Error al procesar el pago:', error);
       Swal.fire('Error', 'Error al procesar el pago: ' + error.message, 'error');
     }
   };
+  
+  useEffect(() => {
+    const reservaGuardada = sessionStorage.getItem('reservaActual');
+    if (reservaGuardada) {
+      const reservaParseada = JSON.parse(reservaGuardada);
+      
+      // Convierte la fecha de vuelta a un objeto de fecha
+      reservaParseada.fecha = new Date(reservaParseada.fecha);
+  
+      setReserva(reservaParseada);
+      sessionStorage.removeItem('reservaActual');
+    }
+  }, []);
   
 
 
@@ -67,6 +87,21 @@ function ReservaForm({ service, onSubmit }) {
       }));
     }
   }, [availableSlots.times]);
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const paymentStatus = queryParams.get('collection_status');
+    if (paymentStatus === 'approved') {
+      setPaymentConfirmed(true);
+    }
+  }, [location]);
+
+  useEffect(() => {
+    if (paymentConfirmed) {
+      console.log(reserva)
+      onSubmit(reserva);
+    }
+  }, [paymentConfirmed, reserva, onSubmit]);
 
 
   const fetchAvailableSlots = async (selectedDate) => {
@@ -98,17 +133,12 @@ function ReservaForm({ service, onSubmit }) {
     setReserva({ ...reserva, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const reservaConMetodoPago = { ...reserva, metodoPago };
-    onSubmit(reservaConMetodoPago);
-  };
 
   return (
     <div className='res-page'>
       <div className="reserva-form-container">
         <h2>Reserva tu experiencia</h2>
-        <form onSubmit={handleSubmit} className="reserva-form">
+        <form className="reserva-form">
           {/* Input para la cantidad de personas */}
           <div className="form-group">
             <label htmlFor="cantidadPersonas">Cuántas personas van?</label>
@@ -123,14 +153,14 @@ function ReservaForm({ service, onSubmit }) {
               required
             />
           </div>
-
-          {/* DatePicker y otros inputs... */}
           <label htmlFor="datePicker">Selecciona Fecha:</label>
           <DatePicker
             selected={reserva.fecha}
             onChange={handleDateChange}
             name="fecha"
             inline
+            className="mi-clase-datepicker" 
+            style={{ backgroundColor: 'lightblue' }} 
           />
           <label htmlFor="timePicker">Selecciona una Hora</label>
           <select name="hora" id="timePicker" value={reserva.hora} onChange={handleChange}>
@@ -140,26 +170,10 @@ function ReservaForm({ service, onSubmit }) {
               </option>
             ))}
           </select>
-         <div className="form-group">
-          <label htmlFor="metodoPago">Método de Pago:</label>
-          <select
-            name="metodoPago"
-            value={metodoPago}
-            onChange={(e) => setMetodoPago(e.target.value)}
-            required
-          >
-            <option value="">Selecciona un método de pago</option>
-            <option value="mercadoPago">Mercado Pago</option>
-            <option value="payoneer">Payoneer</option>
-          </select>
-        </div>
+          <button type="button" className="book-now-btn" onClick={handlePayment}>
+            Pagar Ahora
+          </button>
 
-        {/* Botón de Pago */}
-        <button type="button" className="pay-now-btn" onClick={handlePayment}>
-          Pagar Ahora
-        </button>
-
-          <button type="submit" className="book-now-btn">Reservar Ahora</button>
         </form>
       </div>
     </div>
@@ -167,4 +181,3 @@ function ReservaForm({ service, onSubmit }) {
 }
 
 export default ReservaForm;
-

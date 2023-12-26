@@ -62,7 +62,6 @@ const UserProfile = () => {
 
     const handleLinkGoogle = async () => {
         try {
-            // Realiza una solicitud al backend para iniciar la autenticación con Google
             const response = await fetch('http://localhost:3008/auth/google/start', {
                 method: 'GET',
                 headers: {
@@ -73,7 +72,7 @@ const UserProfile = () => {
             const data = await response.json();
     
             if (data.url) {
-                window.location.href = data.url; // Redirige al usuario a la URL de autenticación de Google
+                window.location.href = data.url; 
             }
         } catch (error) {
             console.error('Error:', error);

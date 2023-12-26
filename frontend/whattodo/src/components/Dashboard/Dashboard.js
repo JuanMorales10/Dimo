@@ -26,7 +26,7 @@ function Dashboard() {
             <main style={{ marginLeft: isMobile ? 0 : '240px', backgroundColor:'#f0f0f0' }}>
                 {/* Configuración de las rutas dentro del dashboard */}
                 <Routes>
-                    <Route index element={<ServiceList />} />
+                    <Route path='service-list' element={<ServiceList />} />
                     <Route path="calendar" element={<Calendar />} />
                     <Route path="favorites" element={<Favorites />} />
                     <Route path="profile" element={<UserProfile />} />

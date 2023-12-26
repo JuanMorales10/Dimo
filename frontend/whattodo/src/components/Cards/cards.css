@@ -13,7 +13,7 @@
 
   .card-list h2{
     display: flex;
-    width: 90%;
+    width: 95%;
     margin-left: 3vw;
     font-size: 1.25rem;
     padding: 10px;
@@ -39,7 +39,6 @@
     width: 95%;
     margin: 0 auto;
     position: relative;
-    margin-bottom: 20px;
   }
   .skill-slider .item img {
     width: 50%;

@@ -2,42 +2,74 @@ import React, { useState, useEffect, useRef } from 'react';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import Card from '../Card/Card';
-import './cards.css';
+import '../Cards/cards.css';
 
 function CategoriesList() {
-  const [categories, setCategories] = useState([]);
-  // ...resto de tu código...
-
+  const [dataByCategory, setDataByCategory] = useState({});
+  const [isVisible, setIsVisible] = useState(false);
+  const cardListRef = useRef(null);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Aquí necesitas ajustar esta llamada para obtener los servicios por categoría
-        const response = await fetch("http://localhost:3008/service/servicesByCategory");
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        const servicesResponse = await fetch("http://localhost:3008/service/allServices");
+        if (!servicesResponse.ok) {
+          throw new Error(`HTTP error! status: ${servicesResponse.status}`);
         }
-        const result = await response.json();
-        
-        setCategories(result); // Asumiendo que result es un arreglo de categorías
+        const services = await servicesResponse.json();
+  
+        const groupedByCategory = services.reduce((acc, service) => {
+          // Usa el nombre de la categoría para agrupar, en lugar del ID
+          const categoryName = service.category.nombre;
+          acc[categoryName] = acc[categoryName] || [];
+          acc[categoryName].push(service);
+          return acc;
+        }, {});
+  
+        setDataByCategory(groupedByCategory);
       } catch (error) {
         console.error("Error al realizar la solicitud:", error);
       }
     };
-
+  
     fetchData();
   }, []);
+  
 
-  // ...resto de tu código...
+   const responsive = {
+    superLargeDesktop: {
+      breakpoint: { max: 4000, min: 3000 },
+      items: 8 // Aumenta el número de tarjetas en pantallas grandes
+    },
+    desktop: {
+      breakpoint: { max: 3000, min: 1024 },
+      items: 5 // Aumenta el número de tarjetas en pantallas de escritorio
+    },
+    superLargeTablet: {
+      breakpoint: { max: 1200, min: 1024 },
+      items: 4 // Aumenta el número de tarjetas en pantallas grandes
+    },
+    tablet: {
+      breakpoint: { max: 1024, min: 764 },
+      items: 3 // Aumenta el número de tarjetas en tabletas
+    },
+    supermobile: {
+      breakpoint: { max: 764, min: 464 },
+      items: 2 // Aumenta el número de tarjetas en pantallas grandes
+    },
+    mobile: {
+      breakpoint: { max: 464, min: 0 },
+      items: 1 // Puedes mantener 2 o ajustarlo según el espacio disponible
+    }
+  };
 
   return (
-    <div>
-      {categories.map((category) => (
-        <div className={`card-list ${isVisible ? 'fade-in' : ''}`} ref={cardListRef} key={category.id}>
-          <h2>{category.name}</h2> {/* Nombre de la categoría */}
+    <div className={`card-list ${isVisible ? 'fade-in' : ''}`} ref={cardListRef}>
+      {Object.entries(dataByCategory).map(([categoriaId, services]) => (
+        <div key={categoriaId}>
+          <h2>{`${categoriaId}`}</h2> 
           <Carousel responsive={responsive} infinite={true} className="owl-carousel owl-theme skill-slider">
-            {category.services.map((service) => {
-              return <Card key={service.id} {...service} />;
-            })}
+            {services.map(service => <Card key={service.id} {...service} />)}
           </Carousel>
         </div>
       ))}

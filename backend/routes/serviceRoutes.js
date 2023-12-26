@@ -12,7 +12,6 @@ router.get('/:id/detail',serviceController.getServiceDetails);
 router.get('/allServices', serviceController.getAllServices);
 router.get('/userServices/:id', serviceController.getUserServices);
 router.get('/popularServices', serviceController.getPopularServices);
-router.get('/availableServices', serviceController.getAvailableServices);
 router.get('/servicesByCategory', serviceController.servicesByCategory);
 router.get('/:id/available-slots', serviceController.getAvailableSlots);
 router.get('/service/:id/favorite', authenticateJWT ,favoriteController.isFavorite);

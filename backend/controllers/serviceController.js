@@ -7,16 +7,24 @@ const mercadoPago = require('mercadopago')
 const serviceController = {
   getAllServices: async (req, res) => {
     try {
-
       const services = await Service.findAll({
-        include: [{
-          model: ServiceImage,
-          as: 'images',
-          attributes: ['url']
-        }]
+        include: [
+          {
+            model: ServiceImage,
+            as: 'images',
+            attributes: ['url']
+          },
+          {
+            model: Category, 
+            as: 'category',
+            attributes: ['nombre'] 
+          }
+        ]
       });
+  
       return res.status(200).json(services);
     } catch (error) {
+      console.error('Error al obtener los servicios:', error);
       return res.status(500).json({ error: 'Error al obtener los servicios' });
     }
   },

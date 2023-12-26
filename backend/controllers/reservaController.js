@@ -6,66 +6,66 @@ const { Op } = require('sequelize');
 const { google } = require('googleapis');
 
 const ReservaController = {
-  // createReserva: async (req, res) => {
-  //   try {
-  //     const { usuario_dni, service_id, start_datetime, end_datetime, duracion, nombreReserva, nombreUsuario } = req.body;
+  createReserva: async (req, res) => {
+    try {
+      const { usuario_dni, service_id, start_datetime, end_datetime, duracion, nombreReserva, nombreUsuario } = req.body;
   
-  //     // Validación de los datos de entrada
-  //     const errors = validationResult(req);
-  //     if (!errors.isEmpty()) {
-  //       return res.status(400).json({ errors: errors.array() });
-  //     }
+      // Validación de los datos de entrada
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
   
-  //     // Verificar solapamientos de la reserva
-  //     const overlappingOrder = await Order.findOne({
-  //       where: {
-  //         service_id,
-  //         [Op.or]: [
-  //           { start_datetime: { [Op.lt]: new Date(end_datetime) }, end_datetime: { [Op.gt]: new Date(start_datetime) } },
-  //           { start_datetime: { [Op.gte]: new Date(start_datetime) }, end_datetime: { [Op.lte]: new Date(end_datetime) } }
-  //         ]
-  //       }
-  //     });
+      // Verificar solapamientos de la reserva
+      const overlappingOrder = await Order.findOne({
+        where: {
+          service_id,
+          [Op.or]: [
+            { start_datetime: { [Op.lt]: new Date(end_datetime) }, end_datetime: { [Op.gt]: new Date(start_datetime) } },
+            { start_datetime: { [Op.gte]: new Date(start_datetime) }, end_datetime: { [Op.lte]: new Date(end_datetime) } }
+          ]
+        }
+      });
   
-  //     if (overlappingOrder) {
-  //       return res.status(400).json({ message: "El horario ya está reservado." });
-  //     }
+      if (overlappingOrder) {
+        return res.status(400).json({ message: "El horario ya está reservado." });
+      }
   
-  //     const newOrder = {
-  //       usuario_dni,
-  //       service_id,
-  //       start_datetime: start_datetime,
-  //       end_datetime: end_datetime,
-  //       status: 'pending',
-  //       cantidadPersonas: req.body.cantidadPersonas,
-  //       nombreReserva,
-  //       nombreUsuario
-  //     };
+      const newOrder = {
+        usuario_dni,
+        service_id,
+        start_datetime: start_datetime,
+        end_datetime: end_datetime,
+        status: 'pending',
+        cantidadPersonas: req.body.cantidadPersonas,
+        nombreReserva,
+        nombreUsuario
+      };
 
-  //     console.log(newOrder)
+      console.log(newOrder)
   
-  //     // Crear la reserva
-  //     const reserva = await Order.create(newOrder);
+      // Crear la reserva
+      const reserva = await Order.create(newOrder);
 
-    //  // Convertir las fechas a la hora local
-    // const startDateTimeLocal = moment(reserva.start_datetime).tz('America/Argentina/Buenos_Aires');
-    // const endDateTimeLocal = moment(reserva.end_datetime).tz('America/Argentina/Buenos_Aires');
+     // Convertir las fechas a la hora local
+    const startDateTimeLocal = moment(reserva.start_datetime).tz('America/Argentina/Buenos_Aires');
+    const endDateTimeLocal = moment(reserva.end_datetime).tz('America/Argentina/Buenos_Aires');
 
-    // // Crear un objeto con la información de la reserva para enviar como respuesta
-    // const reservaResponse = {
-    //   id: newOrder.service_id,
-    //   ...reserva.dataValues,
-    //   start_datetime: startDateTimeLocal.format(),
-    //   end_datetime: endDateTimeLocal.format()
-    // };
+    // Crear un objeto con la información de la reserva para enviar como respuesta
+    const reservaResponse = {
+      id: newOrder.service_id,
+      ...reserva.dataValues,
+      start_datetime: startDateTimeLocal.format(),
+      end_datetime: endDateTimeLocal.format()
+    };
 
-  //   console.log(reservaResponse);
-  //   return res.status(201).json(reservaResponse);
-  //   } catch (error) {
-  //     console.error(error);
-  //     return res.status(500).json({ message: "Error al crear la reserva", error });
-  //   }
-  // },
+    console.log(reservaResponse);
+    return res.status(201).json(reservaResponse);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Error al crear la reserva", error });
+    }
+  },
   createReserva : async (req, res) => {
     try {
       const { usuario_dni, service_id, start_datetime, end_datetime, cantidadPersonas, nombreReserva, nombreUsuario } = req.body;

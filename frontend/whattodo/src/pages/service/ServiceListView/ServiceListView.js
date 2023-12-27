@@ -7,7 +7,9 @@ import './ServiceListView.css'; // Asegúrate de tener un CSS adecuado para este
 
 const ServiceListView = () => {
   const location = useLocation();
-  const { services } = location.state || { services: [] };
+  let { services } = location.state || { services: [] };
+  services = services.services
+
 
   return (
     <>

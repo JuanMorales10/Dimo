@@ -214,3 +214,17 @@ input {
     justify-content: center;
     align-items: center;
 }
+
+@media (max-width:1600px) {
+    .modal-content{
+        width: 60%;
+        top: 20px;
+    }
+}
+
+@media (max-width:960px) {
+    .modal-content{
+        width: 70%;
+        top: 20px;
+    }
+}

@@ -6,14 +6,16 @@ import backgroundImage from '../../assets/img/pexels-roberto-nickson-2559941.jpg
 import { Link } from 'react-router-dom';
 import logo from '../../assets/img/logowhat.png'
 import LoadingScreen from '../LoadingScreen/LoadingScreen';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../UserContext/UserContext';
 
 function LoginForm() {
-    const history = useHistory();
+    const navigate = useNavigate();
+    const [loginError, setLoginError] = useState('');
     const [keepSession, setKeepSession] = useState(false);
     const { login } = useContext(UserContext);
     const [loading, setLoading] = useState(true);
+    const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -59,13 +61,29 @@ function LoginForm() {
         setKeepSession(e.target.checked);
     };
 
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     const errorMessages = await login(formData.email, formData.password, keepSession);
+    //     console.log(errorMessages)
+    //     if (errorMessages) {
+    //         const errorsObj = errorMessages.reduce((acc, error) => {
+    //             acc[error.param] = error.msg;
+    //             return acc;
+    //         }, {});
+    //         setFormErrors(errorsObj);
+    //     } else {
+    //         navigate('/');
+    //     }
+    // };
+    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            await login(formData.email, formData.password, keepSession);
-            history.push('/');
-        } catch (error) {
-            console.error('Error al iniciar sesión:', error);
+        const result = await login(formData.email, formData.password, keepSession);
+        if (result && result.errors) {
+            setErrors(result.errors);
+        } else {
+            navigate('/');
         }
     };
 
@@ -93,6 +111,7 @@ function LoginForm() {
                                 />
                             </div>
                         </div>
+                                {errors.email && <div className="error-message">{errors.email}</div>}
                         <div className='formflex'>
                             <FontAwesomeIcon icon={faKey} />
                             <input
@@ -101,23 +120,23 @@ function LoginForm() {
                                 value={formData.password}
                                 onChange={handleChange}
                                 placeholder="Contraseña"
-                                required
                             />
                             <div className="see-password2">
                                 <input type="checkbox" name="" id="see-password" style={{ marginBottom: '12px' }} />
                                 <FontAwesomeIcon icon={faEye} className='seepass' />
                             </div>
                         </div>
+                            {errors.password && <div className="error-message">{errors.password}</div>}
                         <div className='formflex'>
-                        <label htmlFor="keep-session" id='keep'>Mantener sesión activa</label>
-                        <input
-                            type="checkbox"
-                            id="keep-session"
-                            checked={keepSession}
-                            onChange={handleCheckboxChange}
-                        />
+                            <label htmlFor="keep-session" id='keep'>Mantener sesión activa</label>
+                            <input
+                                type="checkbox"
+                                id="keep-session"
+                                checked={keepSession}
+                                onChange={handleCheckboxChange}
+                            />
                         </div>
-
+                        {errors.general && <div className="error-message">{errors.general}</div>}
                         <div className='formflex'>
                             <button type="submit">Log In</button>
                         </div>

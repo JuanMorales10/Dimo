@@ -101,6 +101,19 @@
     .feature {
       flex-basis: calc(50% - 20px); 
     }
+
+    .about-content{
+flex-direction: column;
+    }
+
+    .about-details{
+      max-width: 80%;
+    }
+
+    .about-image{
+      max-width: 80%;
+      margin-bottom: 30px;
+    }
   }
   
   @media (max-width: 480px) {

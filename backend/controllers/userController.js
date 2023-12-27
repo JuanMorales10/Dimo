@@ -1,12 +1,26 @@
 const { User } = require('../database/models');
 const bcrypt = require('bcryptjs');
+const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
+const { google } = require('googleapis');
+
+// Configuración del cliente OAuth2
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const REDIRECT_URI = process.env.REDIRECT_URI;
+const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
 const userController = {
   login: async (req, res) => {
-
-
     try {
+
+      const errors = validationResult(req);
+
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
       const user = await User.findOne({
         where: {
           email: req.body.email,
@@ -14,7 +28,7 @@ const userController = {
       });
 
       if (!user) {
-        return res.status(401).json({ message: "El correo electrónico o la contraseña son incorrectos" });
+        return res.status(401).json({ error: "El correo electrónico o la contraseña son incorrectos" });
       }
 
       const validPw = await bcrypt.compare(req.body.password, user.dataValues.password);
@@ -27,13 +41,12 @@ const userController = {
           { expiresIn: '24h' } // Configura la expiración del token
         );
 
-        console.log(token)
 
         // Enviar el token al cliente
         res.json({ success: true, message: "Login exitoso.", token: token });
       } else {
         // Contraseña no válida
-        return res.status(401).json({ message: "El correo electrónico o la contraseña son incorrectos" });
+        return res.status(401).json({ error: "El correo electrónico o la contraseña son incorrectos" });
       }
     } catch (error) {
       console.log(error);
@@ -59,6 +72,13 @@ const userController = {
   registerUser: async (req, res) => {
     let avatar = 'defaultAvatar.jpg';
     try {
+
+      const errors = validationResult(req);
+
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
 
       if (req.body.password === req.body.password2) {
 
@@ -89,6 +109,12 @@ const userController = {
 
     try {
       let avatar = 'defaultAvatar.jpg';
+
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
 
       if (req.file && req.file.filename) {
         avatar = req.file.filename;
@@ -121,29 +147,40 @@ const userController = {
   ,
   updateProfile: async (req, res) => {
     try {
-      const id = req.body.id;
-      const user = await User.findByPk(id);
+      const userId = req.session.user.userId;
+      const user = await User.findByPk(userId);
 
       if (!user) {
         return res.status(404).json({ message: "Usuario no encontrado" });
       }
 
-    
-      const isPasswordMatch = await bcrypt.compare(req.body.currentPassword, user.password);
-      if (!isPasswordMatch) {
-        return res.status(401).json({ message: "Contraseña incorrecta" });
-      }
+      // Construye el objeto updatedProfile con los campos permitidos
+      const updatedProfile = {
+        nombre: req.body.nombre || user.nombre,
+        apellido: req.body.apellido || user.apellido,
+        email: req.body.email || user.email,
+        telefono: req.body.telefono || user.telefono,
+        direccion: req.body.direccion || user.direccion,
+        type: req.body.type || user.type,
+      };
 
-     
-      const updatedProfile = { ...req.body };
+      // Actualizar avatar si se ha subido uno nuevo
       if (req.file) {
         updatedProfile.avatar = req.file.filename;
-      } else if (!updatedProfile.avatar) {
-        updatedProfile.avatar = user.avatar;
       }
 
-   
-      await User.update(updatedProfile, { where: { id: id } });
+      // Cambio de contraseña
+      if (req.body.currentPassword && req.body.newPassword) {
+        const isMatch = await bcrypt.compare(req.body.currentPassword, user.password);
+        if (!isMatch) {
+          return res.status(400).json({ message: "Contraseña actual incorrecta" });
+        }
+        updatedProfile.password = bcrypt.hashSync(req.body.newPassword, 10);
+      }
+
+      // Actualiza el usuario en la base de datos
+      await user.update(updatedProfile);
+
       res.json({ message: "Perfil actualizado correctamente" });
     } catch (error) {
       console.log(error);
@@ -177,7 +214,7 @@ const userController = {
   },
   getUserServiceDetail: async (req, res) => {
     try {
-      
+
       const userId = req.params.dni;
 
       if (!userId) {
@@ -282,6 +319,44 @@ const userController = {
 
     // res.render("./users/register");
   },
+  iniciarAuth: (req, res) => {
+    const url = oauth2Client.generateAuthUrl({
+      access_type: 'offline',
+      scope: ['https://www.googleapis.com/auth/calendar']
+    });
+    res.json({ url });
+  },
+  despAuth: async (req, res) => {
+    const { code } = req.query;
+
+    console.log(code)
+
+    try {
+      const { tokens } = await oauth2Client.getToken(code);
+      oauth2Client.setCredentials(tokens);
+
+      console.log(req.session.user)
+
+      // Aquí se obtiene el usuario de la sesión
+      const userEmail = req.session.user.email;
+      const user = await User.findOne({ where: { email: userEmail }});
+
+      if (user) {
+        user.googleAccessToken = tokens.access_token;
+        user.googleRefreshToken = tokens.refresh_token;
+        await user.save();
+      }
+
+      console.log(tokens.access_token)
+      console.log(tokens.expiry_date)
+
+      res.json({ success: true, message: 'Google Calendar vinculado con éxito.' });
+    } catch (error) {
+      console.error('Error al obtener el token de Google:', error);
+      res.status(500).json({ success: false, message: 'Error en la autenticación con Google.' });
+    }
+  },
+
 };
 
 module.exports = userController;

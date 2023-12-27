@@ -3,11 +3,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faIdCard, faKey, faImage, faUser } from '@fortawesome/free-solid-svg-icons';
 import logo from '../../assets/img/logowhat.png'
 import './RegistrationForm';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import backgroundImage from '../../assets/img/pexels-roberto-nickson-2559941.jpg'
 import LoadingScreen from '../LoadingScreen/LoadingScreen';
+import Swal from 'sweetalert2';
+
 
 function RegistrationForm() {
+  const navigate = useNavigate();
+  const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,25 +43,44 @@ function RegistrationForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const formData = new FormData(e.target);
-
+  
     try {
       const response = await fetch('http://localhost:3008/user/registerUser', {
         method: 'POST',
         body: formData,
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
-        console.log(data);
-        alert('Usuario creado correctamente');
+        Swal.fire({
+          title: 'Éxito',
+          text: 'Usuario creado correctamente',
+          icon: 'success',
+          confirmButtonText: 'Aceptar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate('/login'); // Redirige al usuario después de aceptar el alerta
+          }
+        });
       } else {
-        alert('Error al crear el usuario');
+        // Manejar errores de validación
+        const errors = data.errors.reduce((acc, error) => {
+          acc[error.path] = error.msg;
+          return acc;
+        }, {});
+        setFormErrors(errors);
       }
     } catch (error) {
       console.error('Error al enviar el formulario:', error);
+      Swal.fire({
+        title: 'Error',
+        text: 'Hubo un problema al enviar el formulario. Intente de nuevo.',
+        icon: 'error',
+        confirmButtonText: 'Aceptar'
+      });
     }
   };
 
@@ -78,27 +101,28 @@ function RegistrationForm() {
                   type="text"
                   name="nombre"
                   placeholder="Nombre"
-                  required
+                  className={formErrors.nombre ? "input-error" : ""}
                 />
               </div>
+              {formErrors.nombre && <div className="error-message">{formErrors.nombre}</div>}
               <div className='formflex'>
                 <FontAwesomeIcon icon={faEnvelope} />
                 <input
                   type="email"
                   name="email"
                   placeholder="Email"
-                  required
                 />
               </div>
+              {formErrors.email && <div className="error-message">{formErrors.email}</div>}
               <div className='formflex'>
                 <FontAwesomeIcon icon={faIdCard} />
                 <input
                   type="text"
                   name="dni"
                   placeholder="DNI"
-                  required
                 />
               </div>
+              {formErrors.dni && <div className="error-message">{formErrors.dni}</div>}
               <div className='formflex'>
                 <FontAwesomeIcon icon={faImage} />
                 <label for="file">Profile Image:</label>
@@ -115,15 +139,15 @@ function RegistrationForm() {
                 type="password"
                 name="password"
                 placeholder="Contraseña"
-                required
               />
               <input
                 type="password"
                 name="confirmPassword"
                 placeholder="Confirme Contraseña"
-                required
               />
             </div>
+            {formErrors.password && <div className="error-message">{formErrors.password}</div>}
+            {formErrors.confirmPassword && <div className="error-message">{formErrors.confirmPassword}</div>}
             <div className='formflex'>
               <button type="submit" className='butan' >Crear Cuenta</button>
             </div>

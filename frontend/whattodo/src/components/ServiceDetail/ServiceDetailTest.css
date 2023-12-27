@@ -3,6 +3,7 @@
     color: #333;
     display: flex;
     flex-direction: column; /* Ajustado para una mejor disposición */
+    background-color: #f0f0f0;
   }
   
   .service-carousel {
@@ -29,12 +30,13 @@
     left: 25%;
     transform: translate(-50%, -50%);
     background-color: #fff;
-    width: 330px;
+    width: 25%;
     padding: 10px;
     border-radius: 12px;
     height: 110px;
     box-shadow: 0 2px 5px rgb(0 0 0 / 73%);
     background-color: #008cbafa;
+    min-width: 150px;
   }
   
   .service-title-container {
@@ -119,14 +121,16 @@
   }
 
   .service-description, .service-detail-overlay, .comment, .service-meta {
-    background: linear-gradient(139deg, #13c8ca, #008cba);
-    /* background-color: #f8f8f8; */
+    background: linear-gradient(169deg, rgb(66, 66, 74), rgb(25, 25, 25));
     background-size: 400% 400%;
-
     -webkit-animation: AnimationName 0s ease infinite;
     -moz-animation: AnimationName 0s ease infinite;
     -o-animation: AnimationName 0s ease infinite;
     animation: AnimationName 0s ease infinite;
+}
+
+.service-meta h3{
+  color: #fff;
 }
 
 @-webkit-keyframes AnimationName {
@@ -155,6 +159,7 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: space-evenly;
+    max-width: 60%;
   }
   .prop-detail p {
     margin: 0;
@@ -173,6 +178,9 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
+  border-radius: 12px;
+  background: linear-gradient(169deg, rgb(66, 66, 74), rgb(25, 25, 25));
+  color: white;
 }
 
 .form-comment label {
@@ -189,7 +197,7 @@
 }
 
 .form-comment button {
-  background-color: #007bff;
+  background-color: #008cba;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -248,6 +256,7 @@
     justify-content: space-evenly;
     background-color: #008cba;
     border-radius: 12px;
+    margin: 10px;
   }
   
   .comment:last-child {
@@ -271,6 +280,7 @@
     margin: 0;
     padding-bottom: 0.5em;
     font-size: 1.7rem;
+    color: #fff;
   }
 
   .img-comment-owner{
@@ -301,7 +311,7 @@
     display: flex;
     justify-content: center;
     padding: 1em;
-    background: #fff; /* o cualquier otro color que desees */
+    background: #f0f0f0;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   }
   
@@ -321,11 +331,18 @@
   
   .tab-content {
     padding: 20px;
-    background: #fff;
+    background: #f0f0f0;
+  }
+
+  .tab-content p.descripcion-ser {
+    color: white;
+    overflow: auto;
+    height: 87px;
+    padding: 5px;
   }
 
   .tab-content p{
-    color: black;
+    color: white;
   }
   
   .tab-pane {
@@ -342,20 +359,57 @@
     border-radius: 50%;
   }
 
-  .service-detail-content{
-    box-shadow: 0 0px 2px rgb(0 0 0 / 73%)
+  @media (max-width:1250px) {
+    .img-service-owner{
+      width: 70px;
+      height: 70px;
+    }
+
+    .service-header h1{
+      font-size: 1.5rem;
+    }
   }
   
+  @media (max-width:1000px) {
+
+    .service-header h1{
+      font-size: 1.2rem;
+    }
+  }
   
   @media (max-width: 768px) {
     .service-detail-container {
       flex-direction: column;
+    }
+
+    .service-header h1{
+      font-size: 1rem;
+    }
+
+    .service-detail-overlay{
+      top: 45%;
+    }
+
+    .descripcion-ser{
+      height: 220px !important;
     }
   
     .service-carousel,
     .service-title-container,
     .service-description-container {
       width: 100%;
+    }
+
+    .css-kqz83o {
+      padding: 10px 20px;
+      height: auto !important;
+  }
+
+    .prop-detail{
+      width: 36vw;
+    }
+    .service-description{
+      flex-direction: column;
     }
   
     .service-title {
@@ -375,6 +429,24 @@
     .carousel-image-container,
     .carousel-image-container img {
       width: 100%; /* En pantallas pequeñas, se ajusta al contenedor en lugar de la ventana */
-      height: auto; /* O puedes establecer una altura más pequeña si es necesario */
+      height: auto;
+      min-height: 570px; /* O puedes establecer una altura más pequeña si es necesario */
     }
+  }
+
+  @media (max-width:660px) {
+    .service-header{
+      margin-left: 0;
+    }
+    .rating{
+      left: 10%;
+    position: relative;
+    }
+  }
+
+  @media (max-width:470px) {
+    .service-detail-overlay{
+     left: 30%;
+    }
+
   }

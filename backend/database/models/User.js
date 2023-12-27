@@ -36,6 +36,14 @@ module.exports = (sequelize, DataTypes) => {
         },
         avatar: {
             type: DataTypes.STRING,
+        },
+        googleAccessToken: {
+            type: DataTypes.STRING,
+            allowNull: true 
+        },
+        googleRefreshToken: {
+            type: DataTypes.STRING,
+            allowNull: true 
         }
     }
     const config = {

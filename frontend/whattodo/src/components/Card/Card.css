@@ -59,6 +59,7 @@
 
 .card-link {
     display: inline-block;
+    text-decoration: none;
 }
 
 .card-img-container {
@@ -74,6 +75,8 @@
     background-color: #ffffff76;
     padding: 1%;
     border-radius: 18px;
+    min-width: 40px;
+
 }
 
 .card-rating {
@@ -101,4 +104,7 @@
     height: auto;
 }
 
-
+button.favorite-button:hover {
+    background-color: transparent;
+    border: 50%;
+}

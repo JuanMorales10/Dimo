@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { UserContext } from '../UserContext/UserContext';
 import NavBar from '../NavBar/NavBar';
 import Footer from '../Footer/Footer';
@@ -10,10 +10,11 @@ import Cards from '../Cards/Cards';
 import './ServiceDetailTest.css'
 import LoadingScreen from '../LoadingScreen/LoadingScreen';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
+import Swal from 'sweetalert2';
 
 function ServiceDetail() {
     const { id } = useParams();
-    const history = useHistory();
+    const navigate = useNavigate();
     const { token } = useContext(UserContext);
     const [service, setService] = useState(null);
     const [error, setError] = useState('');
@@ -63,18 +64,6 @@ function ServiceDetail() {
             setIsLoading(false); // Esto asegura que se actualice el estado de carga independientemente del resultado
         }
     };
-
-    useEffect(() => {
-        fetchService();
-        if (user && user.id) {
-            checkIfUserHasReserved();
-        }
-    }, [id, token, user]);
-
-    if (isLoading || !service || !serviceOwner) {
-        return <LoadingScreen />;
-    }
-
     const checkIfUserHasReserved = async () => {
         try {
             const response = await fetch(`${backendUrl}/reserva/reserva/check?serviceId=${id}`, {
@@ -91,12 +80,27 @@ function ServiceDetail() {
         }
     };
 
+    useEffect(() => {
+        fetchService();
+    }, [id, token]);
+
+    useEffect(() => {
+        if (user ) {
+            checkIfUserHasReserved();
+        }
+    }, [user, id, token]);
+
+    if (isLoading || !service || !serviceOwner) {
+        return <LoadingScreen />;
+    }
+
+
     if (error) {
         return <div>Error: {error}</div>;
     }
 
     const handleReserveClick = () => {
-        history.push(`/reserva/${service.service.id}`);
+        navigate(`/reserva/${service.service.id}`);
     };
 
     const createGoogleMapsLink = (address) => {
@@ -223,7 +227,7 @@ function ServiceDescription({ service, user }) {
     return (
         <div className="service-description">
             <div className='des-cont'>
-                <p>{service.descripcion}</p>
+                <p className='descripcion-ser'>{service.descripcion}</p>
                 <p>Precio: <b>${service.precio}</b></p>
                 <p>Capacidad: {service.capacidad} personas máximo</p>
             </div>
@@ -236,8 +240,8 @@ function ServiceDescription({ service, user }) {
 }
 
 function ServiceComments({ comments, hasUserReserved, token, user, service }) {
+    const navigate = useNavigate();
     const backendUrl = "http://localhost:3008";
-    const [message, setMessage] = useState('');
     const [commentData, setCommentData] = useState({
         comment: '',
         rating: ''
@@ -254,16 +258,13 @@ function ServiceComments({ comments, hasUserReserved, token, user, service }) {
 
     const handleSubmitComment = async (e) => {
         e.preventDefault();
-
-        console.log(commentData)
-
+    
         try {
             const response = await fetch(`${backendUrl}/service/${service.id}/postComment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
-
                 },
                 body: JSON.stringify({
                     servicio_id: service.id,
@@ -272,19 +273,48 @@ function ServiceComments({ comments, hasUserReserved, token, user, service }) {
                     comment: commentData.comment
                 })
             });
-
-            if (response.ok) {
-                const data = await response.json();
-                console.log(data)
-                setMessage('Comentario enviado con éxito.');
-                setCommentData({ rating: '', comment: '' });
-            } else {
-                // Manejar respuestas de error del servidor
-                setMessage('Error al enviar el comentario.');
+    
+            console.log(response);
+    
+            if (!response.ok) {
+                // Si la respuesta no está bien, mostrar un mensaje de error
+                throw new Error('Hubo un problema con la solicitud: ' + response.statusText);
             }
+    
+            const data = await response.json();
+            console.log(data);
+            setCommentData({ rating: '', comment: '' });
+    
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: '¡Comentario Creado!',
+                text: 'Tu comentario ha sido creado con éxito.',
+                showConfirmButton: false,
+                timer: 1500,
+                width: '300px',
+                customClass: {
+                    title: 'my-title-class',
+                    content: 'my-content-class'
+                }
+            });
+    
+            navigate(`/service/${service.id}/detail`);
         } catch (error) {
-            // Manejar errores de conexión, etc.
-            setMessage('Error al conectar con el servidor.');
+            console.error('Error en la solicitud:', error);
+            Swal.fire({
+                position: "top-end",
+                title: 'Error',
+                text: 'Hubo un problema al crear el comentario: ' + error.message,
+                icon: 'error',
+                showConfirmButton: false,
+                timer: 1500,
+                width: '300px',
+                customClass: {
+                    title: 'my-title-class',
+                    content: 'my-content-class'
+                }
+            });
         }
     };
 
@@ -343,7 +373,6 @@ function ServiceComments({ comments, hasUserReserved, token, user, service }) {
                             })}
                         </div>
                         </div>
-                        {message && <p>{message}</p>}
                         <button type="submit">Enviar Comentario</button>
                     </div>
                 </form>

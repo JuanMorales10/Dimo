@@ -5,9 +5,13 @@ import './RegistrationFormHost.css';
 import backgroundImage from '../../assets/img/pexels-roberto-nickson-2559941.jpg'
 import logo from '../../assets/img/logowhat.png'
 import LoadingScreen from '../LoadingScreen/LoadingScreen';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+
 
 function RegistrationForm() {
+  const navigate = useNavigate();
+  const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(true);
  
 
@@ -41,29 +45,48 @@ function RegistrationForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const formData = new FormData(e.target);
-
-    console.log(formData)
-
+  
     try {
       const response = await fetch('http://localhost:3008/user/registerHost', {
         method: 'POST',
-        body: formData, 
+        body: formData,
       });
-
+  
       const data = await response.json();
 
+  
       if (response.ok) {
-        console.log(data);
-        alert('Usuario creado correctamente');
+        Swal.fire({
+          title: 'Éxito',
+          text: 'Usuario creado correctamente',
+          icon: 'success',
+          confirmButtonText: 'Aceptar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate('/login');
+          }
+        });
       } else {
-        alert('Error al crear el usuario');
+        const errors = data.errors.reduce((acc, error) => {
+          acc[error.path] = error.msg;
+          return acc;
+        }, {});
+        setFormErrors(errors);
       }
     } catch (error) {
       console.error('Error al enviar el formulario:', error);
+      Swal.fire({
+        title: 'Error',
+        text: 'Hubo un problema al enviar el formulario. Intente de nuevo.',
+        icon: 'error',
+        confirmButtonText: 'Aceptar'
+      });
     }
   };
+
+
+
   
   if (loading) {
     return <LoadingScreen />;
@@ -82,15 +105,15 @@ function RegistrationForm() {
           type="text"
           name="nombre"
           placeholder="Nombre"
-          required
         />
         <input
           type="text"
           name="apellido"
           placeholder="Apellido"
-          required
         />
         </div>
+        {formErrors.nombre && <div className="error-message">{formErrors.nombre}</div>}
+        {formErrors.apellido && <div className="error-message">{formErrors.apellido}</div>}
         <div className='formcolumn'>
         <div className='formflex'>
         <FontAwesomeIcon icon={faEnvelope} />
@@ -98,18 +121,18 @@ function RegistrationForm() {
           type="email"
           name="email"
           placeholder="Email"
-          required
         />
         </div>
+        {formErrors.email && <div className="error-message">{formErrors.email}</div>}
         <div className='formflex'>
         <FontAwesomeIcon icon={faIdCard} />
         <input
           type="text"
           name="dni"
           placeholder="DNI"
-          required
         />
         </div>
+        {formErrors.dni && <div className="error-message">{formErrors.dni}</div>}
         <div className='formflex'>
         <FontAwesomeIcon icon={faImage} />
          <label for="file">Profile Image:</label>
@@ -125,45 +148,44 @@ function RegistrationForm() {
           type="text"
           name="telefono"
           placeholder="Numero de Telefono"
-          required
         />
         <input
           type="text"
           name="nacionalidad"
           placeholder="Nacionalidad"
-          required
         />
         </div>
+        {formErrors.telefono && <div className="error-message">{formErrors.telefono}</div>}
+        {formErrors.nacionalidad && <div className="error-message">{formErrors.nacionalidad}</div>}
         <div className='formflex'>
         <FontAwesomeIcon icon={faLocationDot} />
         <input
           type="text"
           name="ciudad"
           placeholder="Ciudad"
-          required
         />
         <input
           type="text"
           name="direccion"
           placeholder="Direccion"
-          required
         />
         </div>
+        {formErrors.ciudad && <div className="error-message">{formErrors.ciudad}</div>}
+        {formErrors.direccion && <div className="error-message">{formErrors.direccion}</div>}
         <div className='formflex'> 
         <FontAwesomeIcon icon={faKey} />
         <input
           type="password"
           name="password"
           placeholder="Contraseña"
-          required
         />
         <input
           type="password"
           name="confirmPassword"
           placeholder="Confirme Contraseña"
-          required
         />
         </div>
+        {formErrors.password && <div className="error-message">{formErrors.password}</div>}
         <div className='formflex'>
         <button type="submit">Crear Cuenta</button>
         </div>

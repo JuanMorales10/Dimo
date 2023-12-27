@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMoneyBill, faCalendarDays, faUsers } from '@fortawesome/free-solid-svg-icons';
 import './Modal.css';
@@ -9,8 +9,9 @@ import aven from '../../assets/img/aventura.jpg';
 import noche from '../../assets/img/noche.jpg';
 import trans from '../../assets/img/transporte.jpg';
 
+
 function Modal({ closeModal }) {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nombre: '',
     categoria_id: '',
@@ -21,7 +22,7 @@ function Modal({ closeModal }) {
     capacidad: '',
     disponibilidad: true,
     rating: '',
-    atp: '',
+    atp: true,
   });
 
   const handleInputChange = (event) => {
@@ -37,18 +38,15 @@ function Modal({ closeModal }) {
     setFormData({ ...formData, categoria_id: category });
   };
 
-  // const validateForm = () => {
-  //   if (formData.precioMin && formData.precioMax && formData.precioMin > formData.precioMax) {
-  //     alert('El precio mínimo no puede ser mayor que el precio máximo.');
-  //     return false;
-  //   }
-  //   return true;
-  // };
-
+  const isCategorySelected = (category) => {
+    return formData.categoria_id === category;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     // if (!validateForm()) return;
+
+    console.log(formData)
 
     try {
       const response = await fetch('http://localhost:3008/service/filter', {
@@ -60,8 +58,11 @@ function Modal({ closeModal }) {
       });
 
       const data = await response.json();
+      console.log(data)
 
-      history.push('/search-results', { services: data });
+      console.log(data)
+
+      navigate('/search-results', { state: { services: data } });
     } catch (error) {
       console.error('Error al enviar el formulario:', error);
     }
@@ -106,31 +107,51 @@ function Modal({ closeModal }) {
             <h3 className='titulos'>Elije una Categoria</h3>
             <div className="categories-container">
               <div>
-                <button type='button' className="category-button" onClick={() => handleCategorySelect('2')} name='categoria_id'>
+                <button
+                  type='button'
+                  className={`category-button ${isCategorySelected(2) ? 'selected-category' : ''}`}
+                  onClick={() => handleCategorySelect(2)}
+                >
                   <img src={gast} alt="Gastronomy" />
                 </button>
                 Gastronomia
               </div>
               <div>
-                <button type='button' className="category-button" onClick={() => handleCategorySelect('1')} name='categoria_id'>
+                <button
+                  type='button'
+                  className={`category-button ${isCategorySelected(1) ? 'selected-category' : ''}`}
+                  onClick={() => handleCategorySelect(1)}
+                >
                   <img src={vit} alt="Wineries" />
                 </button>
                 Vitivinicola
               </div>
               <div>
-                <button type='button' className="category-button" onClick={() => handleCategorySelect('4')} name='categoria_id'>
+                <button
+                  type='button'
+                  className={`category-button ${isCategorySelected(4) ? 'selected-category' : ''}`}
+                  onClick={() => handleCategorySelect(4)}
+                >
                   <img src={aven} alt="Adventure" />
                 </button>
                 Aventura
               </div>
               <div>
-                <button type='button' className="category-button" onClick={() => handleCategorySelect('3')} name='categoria_id'>
+                <button
+                  type='button'
+                  className={`category-button ${isCategorySelected(3) ? 'selected-category' : ''}`}
+                  onClick={() => handleCategorySelect(3)}
+                >
                   <img src={trans} alt="Transport" />
                 </button>
                 Transporte
               </div>
               <div>
-                <button type='button' className="category-button" onClick={() => handleCategorySelect('5')} name='categoria_id'>
+                <button
+                  type='button'
+                  className={`category-button ${isCategorySelected(5) ? 'selected-category' : ''}`}
+                  onClick={() => handleCategorySelect(5)}
+                >
                   <img src={noche} alt="Nightlife" />
                 </button>
                 Noche
@@ -149,7 +170,7 @@ function Modal({ closeModal }) {
                   type="date"
                   value={formData.fechaInicio}
                   onChange={handleInputChange}
-                  name="fecha"
+                  name="fechaInicio"
                 />
                 <div>
                   <label>Fecha Fin</label>
@@ -157,7 +178,7 @@ function Modal({ closeModal }) {
                     type="date"
                     value={formData.fechaFin}
                     onChange={handleInputChange}
-                    name="fecha"
+                    name="fechaFin"
                   />
                 </div>
               </div>

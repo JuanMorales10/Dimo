@@ -1,19 +1,27 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import logo from '../../assets/img/logowhat.png';
 import './NavBar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCog, faUser, faCalendarAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { UserContext } from '../UserContext/UserContext';
 
 const NavBar = () => {
   const { user, logout, token } = useContext(UserContext);
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
-    logout().then(() => {
-      history.push('/');
-    });
+    logout();
+
+    if (location.pathname === '/') {
+      // Si ya estás en la página de inicio, recarga la página
+      window.location.reload();
+    } else {
+      // Si no, navega a la página de inicio
+      navigate('/');
+    }
   };
 
   useEffect(() => {
@@ -43,9 +51,6 @@ const NavBar = () => {
             )}
             {user && (
               <div className="container-user">
-                <div className="bottom">
-                  <button onClick={handleLogout} className="logout">Log Out</button>
-                </div>
                 <div class="dropdown top">
                   <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <div>
@@ -54,10 +59,28 @@ const NavBar = () => {
                     </div>
                   </button>
                   <ul className="dropdown-menu">
-                    <li><a className="dropdown-item" href="#">Dashboard</a></li>
-                    <li><a className="dropdown-item" href="#">Perfil</a></li>
-                    <li><a className="dropdown-item" href="#">Reservas</a></li>
+                    <li>
+                      <Link to="/dashboard/service-list" className="dropdown-item">
+                        <FontAwesomeIcon icon={faCog}  className="fa-icon" /> Ajustes 
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/dashboard/profile" className="dropdown-item">
+                        <FontAwesomeIcon icon={faUser} className="fa-icon" /> Perfil
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/dashboard/reservas" className="dropdown-item">
+                        <FontAwesomeIcon icon={faCalendarAlt} className="fa-icon" /> Reservas
+                      </Link>
+                    </li>
+                    <li>
+                      <button onClick={handleLogout} className="logout">
+                        <FontAwesomeIcon icon={faSignOutAlt} className="fa-icon" /> Log Out
+                      </button>
+                    </li>
                   </ul>
+
                 </div>
               </div>
             )}
@@ -76,7 +99,7 @@ const NavBar = () => {
                 <ul >
                   <li className='li-nav'><Link to='/register' className="navbar-action register">Register</Link></li>
                   <li className='li-nav'><Link to='/login' className="navbar-action login">Log In</Link></li>
-                  </ul>
+                </ul>
               </div>
             </div>
           </>
@@ -91,11 +114,11 @@ const NavBar = () => {
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
           </div>
           <div className="offcanvas-body">
-            <ul >
+            <ul>
               <button onClick={handleLogout} className="logout">Log Out</button>
-              <li><a className="dropdown-item" href="#">Dashboard</a></li>
-              <li><a className="dropdown-item" href="#">Perfil</a></li>
-              <li><a className="dropdown-item" href="#">Reservas</a></li>
+              <li><Link to="/dashboard" className="dropdown-item">Dashboard</Link></li>
+              <li><Link to="/dashboard/profile" className="dropdown-item">Perfil</Link></li>
+              <li><Link to="/reservations" className="dropdown-item">Reservas</Link></li>
             </ul>
           </div>
         </div>

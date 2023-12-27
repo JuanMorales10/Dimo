@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 const UserProfile = () => {
     const { token, user, fetchUserProfile } = useContext(UserContext);
     const clientIdCalendar = process.env.CLIENT_ID_CALENDAR;
+    const [isConnectedToGoogleCalendar, setIsConnectedToGoogleCalendar] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [avatarFile, setAvatarFile] = useState(null);
     const [formData, setFormData] = useState({
@@ -27,9 +28,27 @@ const UserProfile = () => {
         confirmPassword: ''
     });
 
+    const checkGoogleCalendarConnection = async () => {
+        try {
+            const response = await fetch('http://localhost:3008/user/checkGoogleCalendar', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const data = await response.json();
+            console.log(data)
+            setIsConnectedToGoogleCalendar(data.isConnected);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+
+
     useEffect(() => {
         if (user && user.profile) {
-            console.log(user.profile)
             setFormData({
                 nombre: user.profile.nombre || '',
                 apellido: user.profile.apellido || '',
@@ -39,8 +58,12 @@ const UserProfile = () => {
                 avatar: user.profile.avatar || '',
                 type: user.profile.type
             });
+            checkGoogleCalendarConnection()
         }
-    }, [user]);
+    }, [user, token]);
+
+    console.log(isConnectedToGoogleCalendar)
+
 
     const handlePasswordChange = (e) => {
         const { name, value } = e.target;
@@ -68,18 +91,18 @@ const UserProfile = () => {
                     'Authorization': `Bearer ${token}`
                 }
             });
-    
+
             const data = await response.json();
-    
+
             if (data.url) {
-                window.location.href = data.url; 
+                window.location.href = data.url;
             }
         } catch (error) {
             console.error('Error:', error);
         }
     };
-    
-    
+
+
 
     const handlePasswordUpdate = async (e) => {
         e.preventDefault();
@@ -184,6 +207,30 @@ const UserProfile = () => {
         return <LoadingScreen />;
     }
 
+    const handleDisconnectGoogleCalendar = async () => {
+        try {
+            const response = await fetch('http://localhost:3008/user/disconnectGoogleCalendar', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                setIsConnectedToGoogleCalendar(false);
+                alert('Desconexión exitosa de Google Calendar');
+            } else {
+                throw new Error('Error al desconectar de Google Calendar');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al desconectar de Google Calendar');
+        }
+    };
+
+
+
     const handleEditInfo = () => {
         setIsEditing(!isEditing);
     };
@@ -196,12 +243,24 @@ const UserProfile = () => {
                     <Typography variant="h5" sx={{ mt: 2, marginTop: '0', marginLeft: '10px', color: 'white' }}>
                         {`${user.profile.nombre} ${user.profile.apellido ? user.profile.apellido : ''}`}
                     </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
-                        <Button onClick={handleLinkGoogle} variant="contained" color="primary">
-                            Vincular con Google Calendar
-                        </Button>
-                    </Box>
+                    {isConnectedToGoogleCalendar ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', flexDirection:'column-reverse', width:'50%'}}>      
+                            <Typography sx={{fontSize:'12px', color:'white'}}>Estás conectado con Google Calendar.</Typography>
+                            <Button onClick={handleDisconnectGoogleCalendar} variant="contained">
+                                Desconectar
+                            </Button>
+                            </Box>
+                        </Box>
+                    ) : (
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+                            <Button onClick={handleLinkGoogle} variant="contained" color="primary">
+                                Vincular con Google Calendar
+                            </Button>
+                        </Box>
+                    )}
                 </Box>
+
 
                 <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, margin: '20px 0px' }}>
                     {isEditing ? (

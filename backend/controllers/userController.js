@@ -200,13 +200,42 @@ const userController = {
     }
 
   },
-  getLogin: (req, res) => {
+  checkGoogleCalendar: async (req, res) => {
+    try {
 
-    // res.render("./users/login");
+      const userId = req.session.user.userId;
+
+      const user = await User.findByPk(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+
+      const isConnected = user.googleAccessToken != null && user.googleRefreshToken != null;
+      res.json({ isConnected });
+    } catch (error) {
+      console.error('Error al verificar la conexión de Google Calendar:', error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
   },
-  getRegisterUser: (req, res) => {
+  disconnectGoogleCalendar: async (req, res) => {
+    try {
+      const userId = req.user.userId;
+      const user = await User.findByPk(userId);
 
-    // res.render("./users/register");
+      if (!user) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+
+      user.googleAccessToken = null;
+      user.googleRefreshToken = null;
+      await user.save();
+
+      res.json({ message: "Desconexión exitosa de Google Calendar" });
+    } catch (error) {
+      console.error('Error al desconectar de Google Calendar:', error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
   },
   getRegisterHost: (req, res) => {
 
@@ -339,7 +368,7 @@ const userController = {
 
       // Aquí se obtiene el usuario de la sesión
       const userEmail = req.session.user.email;
-      const user = await User.findOne({ where: { email: userEmail }});
+      const user = await User.findOne({ where: { email: userEmail } });
 
       if (user) {
         user.googleAccessToken = tokens.access_token;

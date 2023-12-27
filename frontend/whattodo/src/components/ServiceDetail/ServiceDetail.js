@@ -148,7 +148,7 @@ function ServiceDetail() {
                 <TabContainer
                     details={serviceOwner && <ServiceDescription service={service.service} user={serviceOwner} />}
                     comments={serviceOwner && <ServiceComments comments={service.comments} token={token} user={serviceOwner} hasUserReserved={hasUserReserved} service={service.service} />}
-                    reservar={<ServiceMeta service={service.service} handleReserveClick={handleReserveClick} createGoogleMapsLink={createGoogleMapsLink} />}
+                    reservar={<ServiceMeta service={service.service} handleReserveClick={handleReserveClick} createGoogleMapsLink={createGoogleMapsLink}  hasUserReserved={hasUserReserved}/>}
                     //   policies={/* ... contenido para policies ... */}
                 />
                 <div className="service-detail-content">
@@ -190,7 +190,8 @@ function RatingStars({ rating }) {
     );
 }
 
-function ServiceMeta({ service, handleReserveClick, createGoogleMapsLink }) {
+function ServiceMeta({ service, handleReserveClick, createGoogleMapsLink , hasUserReserved}) {
+    console.log(hasUserReserved)
 
     const formatDuration = (duration) => {
         const parts = duration.split(':');
@@ -212,9 +213,11 @@ function ServiceMeta({ service, handleReserveClick, createGoogleMapsLink }) {
                 <p>Duración: {formatDuration(service.duracion)}</p>
                 <p>Horario: De {service.operating_hours_start} a {service.operating_hours_end}</p>
                 <p>Días hábiles: {formatOperatingDays(service.operating_days)}</p>
-                <a href={createGoogleMapsLink(service.direccion)} target="_blank" rel="noopener noreferrer" className="google-maps-link">
-                    Ver Ubicación en Google Maps
-                </a>
+                {hasUserReserved && (
+                    <a href={createGoogleMapsLink(service.direccion)} target="_blank" rel="noopener noreferrer" className="google-maps-link">
+                        Ver Ubicación en Google Maps
+                    </a>
+                )}
             </div>
             <button className="reserve-button" onClick={handleReserveClick}>Reservar</button>
         </>

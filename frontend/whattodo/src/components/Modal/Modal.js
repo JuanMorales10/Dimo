@@ -182,7 +182,7 @@ function Modal({ closeModal }) {
                   />
                 </div>
               </div>
-              <div>
+              <div className='fl-fa'>
                 <FontAwesomeIcon icon={faUsers} />
                 <input
                   type="number"

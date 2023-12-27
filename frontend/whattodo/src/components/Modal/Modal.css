@@ -218,13 +218,31 @@ input {
 @media (max-width:1600px) {
     .modal-content{
         width: 60%;
-        top: 20px;
     }
 }
 
 @media (max-width:960px) {
     .modal-content{
         width: 70%;
-        top: 20px;
+    }
+}
+
+@media (max-width:500px) {
+    .modal-content{
+        width: 100%;
+    }
+    .category-button {
+        width: 82px !important;
+        height: 20px !important;
+    }
+
+    .fl{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .fl-fa{
+        margin-top: 25px;
     }
 }

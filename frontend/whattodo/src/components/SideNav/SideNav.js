@@ -75,7 +75,7 @@ function Sidenav({ mobileOpen, setMobileOpen }) {
             </Box>
             <Divider />
             <List>
-                <ListItem button component={Link} to="/dashboard">
+                <ListItem button component={Link} to="/dashboard/service-list">
                     <ListItemIcon>
                         <SettingsIcon />
                     </ListItemIcon>

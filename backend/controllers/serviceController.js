@@ -491,6 +491,88 @@ const serviceController = {
 
 module.exports = serviceController;
 
+// const calculateAvailableSlots = async (serviceId, selectedDate) => {
+//   try {
+//     const service = await Service.findOne({
+//       where: { id: serviceId },
+//       attributes: ['operating_days', 'operating_hours_start', 'operating_hours_end', 'duracion']
+//     });
+//     if (!service) {
+//       throw new Error('Service not found');
+//     }
+
+
+//     console.log('Service: ', service)
+//     console.log(selectedDate)
+
+//     const operatingDays = service.operating_days.replace(/['"\[\]]+/g, '').split(',');
+//     const dayOfWeekNumber = new Date(selectedDate + 'T00:00:00Z').getDay();
+//     const dayNames = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+//     const dayOfWeekString = dayNames[dayOfWeekNumber];
+
+//     console.log(dayOfWeekString)
+
+//     console.log(operatingDays)
+
+
+//     if (!operatingDays.includes(dayOfWeekString)) {
+//       return []; // No hay slots disponibles si el servicio no opera en ese día
+//     }
+
+//     // Generar todos los slots del día
+//     const operationStart = moment.tz(`${selectedDate} ${service.operating_hours_start}`, 'YYYY-MM-DD HH:mm', 'America/Argentina/Buenos_Aires');
+//     const operationEnd = moment.tz(`${selectedDate} ${service.operating_hours_end}`, 'YYYY-MM-DD HH:mm', 'America/Argentina/Buenos_Aires');
+//     const duration = parseInt(service.duracion.split(':')[0]) * 60 + parseInt(service.duracion.split(':')[1]);
+//     let potentialStart = moment(operationStart);
+
+//     console.log(operationStart)
+//     console.log(operationEnd)
+
+//     let allSlots = [];
+
+//     while (potentialStart.isBefore(operationEnd)) {
+//       allSlots.push(potentialStart.format());
+//       potentialStart.add(duration, 'minutes');
+//     }
+
+//     const reservations = await Order.findAll({
+//       where: {
+//         service_id: serviceId,
+//         start_datetime: { [Op.lte]: operationEnd },
+//         end_datetime: { [Op.gte]: operationStart }
+//       }
+//     });
+
+//     // Asegúrate de que las reservas estén en la zona horaria local de Argentina
+//     const bookedSlots = reservations.map(reservation => ({
+//       start: moment(reservation.start_datetime).tz('America/Argentina/Buenos_Aires'),
+//       end: moment(reservation.end_datetime).tz('America/Argentina/Buenos_Aires')
+//     }));
+
+//     // Imprimir las fechas de las reservas en la zona horaria local
+//     bookedSlots.forEach(bookedSlot => {
+//       console.log("Start (Local Argentina):", bookedSlot.start.format());
+//       console.log("End (Local Argentina):", bookedSlot.end.format());
+//     });
+
+//     // Comparar con la zona horaria local
+//     const availableSlots = allSlots.filter(slot =>
+//       !bookedSlots.some(bookedSlot => {
+//         const slotMoment = moment(slot);
+//         return slotMoment.isSameOrAfter(bookedSlot.start) && slotMoment.isBefore(bookedSlot.end);
+//       })
+//     );
+
+//     console.log('Booked:', bookedSlots.map(slot => ({ start: slot.start.format(), end: slot.end.format() })));
+//     console.log('Available', availableSlots);
+
+//     return availableSlots;
+//   } catch (error) {
+//     console.error('Error calculating available slots:', error);
+//     throw error;
+//   }
+// };
+
 const calculateAvailableSlots = async (serviceId, selectedDate) => {
   try {
     const service = await Service.findOne({
@@ -501,31 +583,26 @@ const calculateAvailableSlots = async (serviceId, selectedDate) => {
       throw new Error('Service not found');
     }
 
-
-    console.log('Service: ', service)
-    console.log(selectedDate)
-
     const operatingDays = service.operating_days.replace(/['"\[\]]+/g, '').split(',');
     const dayOfWeekNumber = new Date(selectedDate + 'T00:00:00Z').getDay();
-    const dayNames = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+    const dayNames = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado","Domingo"];
     const dayOfWeekString = dayNames[dayOfWeekNumber];
-
-    console.log(dayOfWeekString)
-
 
     if (!operatingDays.includes(dayOfWeekString)) {
       return []; // No hay slots disponibles si el servicio no opera en ese día
     }
 
-    // Generar todos los slots del día
+    // Ajuste para las horas de operación
     const operationStart = moment.tz(`${selectedDate} ${service.operating_hours_start}`, 'YYYY-MM-DD HH:mm', 'America/Argentina/Buenos_Aires');
-    const operationEnd = moment.tz(`${selectedDate} ${service.operating_hours_end}`, 'YYYY-MM-DD HH:mm', 'America/Argentina/Buenos_Aires');
+    let operationEnd = moment.tz(`${selectedDate} ${service.operating_hours_end}`, 'YYYY-MM-DD HH:mm', 'America/Argentina/Buenos_Aires');
+
+    // Ajustar la fecha de finalización si el servicio opera durante la noche
+    if (operationEnd.isBefore(operationStart)) {
+      operationEnd.add(1, 'day');
+    }
+
     const duration = parseInt(service.duracion.split(':')[0]) * 60 + parseInt(service.duracion.split(':')[1]);
     let potentialStart = moment(operationStart);
-
-    console.log(operationStart)
-    console.log(operationEnd)
-
     let allSlots = [];
 
     while (potentialStart.isBefore(operationEnd)) {
@@ -541,19 +618,11 @@ const calculateAvailableSlots = async (serviceId, selectedDate) => {
       }
     });
 
-    // Asegúrate de que las reservas estén en la zona horaria local de Argentina
     const bookedSlots = reservations.map(reservation => ({
       start: moment(reservation.start_datetime).tz('America/Argentina/Buenos_Aires'),
       end: moment(reservation.end_datetime).tz('America/Argentina/Buenos_Aires')
     }));
 
-    // Imprimir las fechas de las reservas en la zona horaria local
-    bookedSlots.forEach(bookedSlot => {
-      console.log("Start (Local Argentina):", bookedSlot.start.format());
-      console.log("End (Local Argentina):", bookedSlot.end.format());
-    });
-
-    // Comparar con la zona horaria local
     const availableSlots = allSlots.filter(slot =>
       !bookedSlots.some(bookedSlot => {
         const slotMoment = moment(slot);
@@ -561,15 +630,13 @@ const calculateAvailableSlots = async (serviceId, selectedDate) => {
       })
     );
 
-    console.log('Booked:', bookedSlots.map(slot => ({ start: slot.start.format(), end: slot.end.format() })));
-    console.log('Available', availableSlots);
-
     return availableSlots;
   } catch (error) {
     console.error('Error calculating available slots:', error);
     throw error;
   }
 };
+
 
 function addTime(date, hours, minutes) {
   return new Date(date.getTime() + hours * 60 * 60 * 1000 + minutes * 60 * 1000);

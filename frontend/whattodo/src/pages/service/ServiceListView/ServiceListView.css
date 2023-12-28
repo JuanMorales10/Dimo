@@ -2,7 +2,6 @@
     padding: 20px;
     margin-top: 110px;
     background: #f0f0f0;
-    height: 66vh;
   }
   
   .services-flex {
@@ -30,8 +29,6 @@
   }
 
   .fut{
-    position: absolute;
-    bottom: 0;
     width: 100%;
   }
 
@@ -46,4 +43,14 @@
   
   .card-fade-in {
     animation: fadeIn 1s ease-out;
+  }
+
+  @media (max-width:500px) {
+    .card-fade-in .card-container{
+      margin: 0;
+    }
+
+    .result-title{
+      font-size: 1.5rem;
+    }
   }

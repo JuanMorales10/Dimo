@@ -108,3 +108,10 @@ button.favorite-button:hover {
     background-color: transparent;
     border: 50%;
 }
+
+
+@media (max-width:500px) {
+    .card-container{
+        margin-left: 60px;
+    }
+}

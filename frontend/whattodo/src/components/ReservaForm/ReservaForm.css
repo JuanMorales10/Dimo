@@ -1,6 +1,5 @@
 .res-page{
   width: 100vw;
-  height: 81vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -49,7 +48,7 @@
   }
   
   .book-now-btn:hover {
-    background-color: #6f42c1;
+    background-color: #155267;
   }
 
   .reserva{
@@ -113,4 +112,15 @@
 
   .react-datepicker__day, .react-datepicker__time-name{
     color: #fff;
+  }
+
+  
+  @media (max-width:500px) {
+    .reserva-form{
+      flex-direction: column;
+    }
+
+  .reserva-form-container{
+    margin: 120px 0
+  }
   }

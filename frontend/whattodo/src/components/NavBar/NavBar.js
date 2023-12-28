@@ -115,10 +115,26 @@ const NavBar = () => {
           </div>
           <div className="offcanvas-body">
             <ul>
-              <button onClick={handleLogout} className="logout">Log Out</button>
-              <li><Link to="/dashboard" className="dropdown-item">Dashboard</Link></li>
-              <li><Link to="/dashboard/profile" className="dropdown-item">Perfil</Link></li>
-              <li><Link to="/reservations" className="dropdown-item">Reservas</Link></li>
+              <li>
+                      <Link to="/dashboard/service-list" className="dropdown-item">
+                        <FontAwesomeIcon icon={faCog}  className="fa-icon" /> Ajustes 
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/dashboard/profile" className="dropdown-item">
+                        <FontAwesomeIcon icon={faUser} className="fa-icon" /> Perfil
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/dashboard/reservas" className="dropdown-item">
+                        <FontAwesomeIcon icon={faCalendarAlt} className="fa-icon" /> Reservas
+                      </Link>
+                    </li>
+                    <li>
+                      <button onClick={handleLogout} className="logout">
+                        <FontAwesomeIcon icon={faSignOutAlt} className="fa-icon" /> Log Out
+                      </button>
+                    </li>
             </ul>
           </div>
         </div>

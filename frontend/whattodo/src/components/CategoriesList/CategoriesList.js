@@ -26,7 +26,7 @@ function CategoriesList() {
           return acc;
         }, {});
   
-        setDataByCategory(groupedByCategory.reverse());
+        setDataByCategory(groupedByCategory);
       } catch (error) {
         console.error("Error al realizar la solicitud:", error);
       }

@@ -162,6 +162,139 @@ const ReservaController = {
   //     return res.status(500).json({ message: "Error al crear la reserva o el evento en Google Calendar", error: error.message });
   //   }
   // },
+  // createReserva : async (req, res) => {
+  //   try {
+  //     const { usuario_dni, service_id, start_datetime, end_datetime, cantidadPersonas, nombreReserva, nombreUsuario } = req.body;
+  
+  //     // Validación de los datos de entrada
+  //     const errors = validationResult(req);
+  //     if (!errors.isEmpty()) {
+  //       return res.status(400).json({ errors: errors.array() });
+  //     }
+  
+  //     // Verificar solapamientos de la reserva
+  //     const overlappingOrder = await Order.findOne({
+  //       where: {
+  //         service_id,
+  //         [Op.or]: [
+  //           { start_datetime: { [Op.lt]: new Date(end_datetime) }, end_datetime: { [Op.gt]: new Date(start_datetime) } },
+  //           { start_datetime: { [Op.gte]: new Date(start_datetime) }, end_datetime: { [Op.lte]: new Date(end_datetime) } }
+  //         ]
+  //       }
+  //     });
+  
+  //     if (overlappingOrder) {
+  //       return res.status(400).json({ message: "El horario ya está reservado." });
+  //     }
+  
+  //     const newOrder = {
+  //       usuario_dni,
+  //       service_id,
+  //       start_datetime,
+  //       end_datetime,
+  //       status: 'pending',
+  //       cantidadPersonas,
+  //       nombreReserva,
+  //       nombreUsuario
+  //     };
+  
+  //     const reserva = await Order.create(newOrder);
+  
+  //     // Convertir las fechas a la hora local
+  //     const startDateTimeLocal = moment(start_datetime).tz('America/Argentina/Buenos_Aires');
+  //     const endDateTimeLocal = moment(end_datetime).tz('America/Argentina/Buenos_Aires');
+  
+  //     // Crear un objeto con la información de la reserva para enviar como respuesta
+  //     const reservaResponse = {
+  //       id: newOrder.service_id,
+  //       ...reserva.dataValues,
+  //       start_datetime: startDateTimeLocal.format(),
+  //       end_datetime: endDateTimeLocal.format()
+  //     };
+  
+  //     // Obtener los tokens de Google del usuario que hace la reserva
+  //     const user = await User.findOne({ where: { id: usuario_dni } });
+  //     if (!user || !user.googleAccessToken || !user.googleRefreshToken) {
+  //       throw new Error('No se pudo obtener los tokens de Google del usuario');
+  //     }
+  
+  //     // Configurar el cliente OAuth para el usuario que hace la reserva
+  //     const oauth2ClientUser = new google.auth.OAuth2();
+  //     oauth2ClientUser.setCredentials({
+  //       access_token: user.googleAccessToken,
+  //       refresh_token: user.googleRefreshToken
+  //     });
+  
+  //     // Crear un evento en Google Calendar para el usuario que hace la reserva
+  //     const calendarUser = google.calendar({ version: 'v3', auth: oauth2ClientUser });
+  
+  //     const event = {
+  //       summary: nombreReserva,
+  //       description: `Reserva para ${nombreUsuario}.`,
+  //       start: {
+  //         dateTime: startDateTimeLocal.format(),
+  //         timeZone: 'America/Argentina/Buenos_Aires'
+  //       },
+  //       end: {
+  //         dateTime: endDateTimeLocal.format(),
+  //         timeZone: 'America/Argentina/Buenos_Aires'
+  //       },
+  //       attendees: [{ email: user.email }],
+  //       reminders: {
+  //         useDefault: false,
+  //         overrides: [
+  //           { method: 'email', minutes: 24 * 60 },
+  //           { method: 'popup', minutes: 10 }
+  //         ]
+  //       }
+  //     };
+  
+  //     await calendarUser.events.insert({
+  //       calendarId: 'primary',
+  //       resource: event
+  //     });
+  
+  //     // Obtener los detalles del servicio junto con la información del usuario creador
+  //     const service = await Service.findOne({
+  //       where: { id: service_id },
+  //       include: [{
+  //         model: User,
+  //         as: 'user',
+  //         attributes: ['googleAccessToken', 'googleRefreshToken', 'email']
+  //       }]
+  //     });
+
+  //     console.log(service)
+  
+  //     if (!service) {
+  //       throw new Error('Servicio no encontrado');
+  //     }
+  
+  //     const creator = service.user;
+  //     if (!creator || !creator.googleAccessToken || !creator.googleRefreshToken) {
+  //       throw new Error('No se pudo obtener los tokens de Google del creador del servicio');
+  //     }
+  
+  //     // Configurar el cliente OAuth para el creador del servicio
+  //     const oauth2ClientCreator = new google.auth.OAuth2();
+  //     oauth2ClientCreator.setCredentials({
+  //       access_token: creator.googleAccessToken,
+  //       refresh_token: creator.googleRefreshToken
+  //     });
+  
+  //     // Crear un evento en Google Calendar para el creador del servicio
+  //     const calendarCreator = google.calendar({ version: 'v3', auth: oauth2ClientCreator });
+  //     await calendarCreator.events.insert({
+  //       calendarId: 'primary',
+  //       resource: event
+  //     });
+  
+  //     return res.status(201).json({ reservaResponse, googleEventId: googleEventResponse.data.id });
+  //   } catch (error) {
+  //     console.error('Error en createReserva:', error);
+  //     return res.status(500).json({ message: "Error al crear la reserva o el evento en Google Calendar", error: error.message });
+  //   }
+  // },
   createReserva : async (req, res) => {
     try {
       const { usuario_dni, service_id, start_datetime, end_datetime, cantidadPersonas, nombreReserva, nombreUsuario } = req.body;
@@ -199,44 +332,42 @@ const ReservaController = {
       };
   
       const reserva = await Order.create(newOrder);
+
+          // Convertir las fechas a la hora local
+    const startDateTimeLocal = moment(reserva.start_datetime).tz('America/Argentina/Buenos_Aires');
+    const endDateTimeLocal = moment(reserva.end_datetime).tz('America/Argentina/Buenos_Aires');
+
+    // Crear un objeto con la información de la reserva para enviar como respuesta
+    const reservaResponse = {
+      id: newOrder.service_id,
+      ...reserva.dataValues,
+      start_datetime: startDateTimeLocal.format(),
+      end_datetime: endDateTimeLocal.format()
+    };
   
-      // Convertir las fechas a la hora local
-      const startDateTimeLocal = moment(start_datetime).tz('America/Argentina/Buenos_Aires');
-      const endDateTimeLocal = moment(end_datetime).tz('America/Argentina/Buenos_Aires');
-  
-      // Crear un objeto con la información de la reserva para enviar como respuesta
-      const reservaResponse = {
-        id: newOrder.service_id,
-        ...reserva.dataValues,
-        start_datetime: startDateTimeLocal.format(),
-        end_datetime: endDateTimeLocal.format()
-      };
-  
-      // Obtener los tokens de Google del usuario que hace la reserva
+      // Obtener los tokens de Google del usuario
       const user = await User.findOne({ where: { id: usuario_dni } });
       if (!user || !user.googleAccessToken || !user.googleRefreshToken) {
         throw new Error('No se pudo obtener los tokens de Google del usuario');
       }
   
-      // Configurar el cliente OAuth para el usuario que hace la reserva
-      const oauth2ClientUser = new google.auth.OAuth2();
-      oauth2ClientUser.setCredentials({
+      const oauth2Client = new google.auth.OAuth2();
+      oauth2Client.setCredentials({
         access_token: user.googleAccessToken,
         refresh_token: user.googleRefreshToken
       });
   
-      // Crear un evento en Google Calendar para el usuario que hace la reserva
-      const calendarUser = google.calendar({ version: 'v3', auth: oauth2ClientUser });
-  
+      // Crear un evento en Google Calendar
+      const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
       const event = {
         summary: nombreReserva,
         description: `Reserva para ${nombreUsuario}.`,
         start: {
-          dateTime: startDateTimeLocal.format(),
+          dateTime: start_datetime,
           timeZone: 'America/Argentina/Buenos_Aires'
         },
         end: {
-          dateTime: endDateTimeLocal.format(),
+          dateTime: end_datetime,
           timeZone: 'America/Argentina/Buenos_Aires'
         },
         attendees: [{ email: user.email }],
@@ -249,40 +380,7 @@ const ReservaController = {
         }
       };
   
-      await calendarUser.events.insert({
-        calendarId: 'primary',
-        resource: event
-      });
-  
-      // Obtener los detalles del servicio junto con la información del usuario creador
-      const service = await Service.findOne({
-        where: { id: service_id },
-        include: [{
-          model: User,
-          as: 'user',
-          attributes: ['googleAccessToken', 'googleRefreshToken', 'email']
-        }]
-      });
-  
-      if (!service) {
-        throw new Error('Servicio no encontrado');
-      }
-  
-      const creator = service.user;
-      if (!creator || !creator.googleAccessToken || !creator.googleRefreshToken) {
-        throw new Error('No se pudo obtener los tokens de Google del creador del servicio');
-      }
-  
-      // Configurar el cliente OAuth para el creador del servicio
-      const oauth2ClientCreator = new google.auth.OAuth2();
-      oauth2ClientCreator.setCredentials({
-        access_token: creator.googleAccessToken,
-        refresh_token: creator.googleRefreshToken
-      });
-  
-      // Crear un evento en Google Calendar para el creador del servicio
-      const calendarCreator = google.calendar({ version: 'v3', auth: oauth2ClientCreator });
-      await calendarCreator.events.insert({
+      const googleEventResponse = await calendar.events.insert({
         calendarId: 'primary',
         resource: event
       });

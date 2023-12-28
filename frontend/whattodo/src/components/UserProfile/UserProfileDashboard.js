@@ -216,18 +216,31 @@ const UserProfile = () => {
                     'Content-Type': 'application/json'
                 }
             });
-
+    
             if (response.ok) {
                 setIsConnectedToGoogleCalendar(false);
-                alert('Desconexión exitosa de Google Calendar');
+                Swal.fire({
+                    title: 'Desconexión exitosa',
+                    text: 'Se ha desconectado de Google Calendar correctamente.',
+                    icon: 'success',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Ok'
+                });
             } else {
                 throw new Error('Error al desconectar de Google Calendar');
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('Error al desconectar de Google Calendar');
+            Swal.fire({
+                title: 'Error',
+                text: 'Hubo un problema al desconectar de Google Calendar.',
+                icon: 'error',
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Cerrar'
+            });
         }
     };
+    
 
 
 

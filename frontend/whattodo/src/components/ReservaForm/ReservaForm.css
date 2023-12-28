@@ -1,6 +1,6 @@
 .res-page{
   width: 100vw;
-  height: 100vh;
+  height: 81vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -8,7 +8,7 @@
   background: #f0f0f0;
 }
 .reserva-form-container {
-    max-width: 500px;
+    max-width: 570px;
     margin: 120px auto;
     padding: 1.5rem;
     background: #fff;
@@ -42,7 +42,7 @@
     padding: 0.5rem 1rem;
     width: 100%;
     border: none;
-    background-color: #845ec2;
+    background-color: #008cba;
     color: #fff;
     cursor: pointer;
     border-radius: 4px;
@@ -86,14 +86,31 @@
     background: linear-gradient(195deg, rgb(66, 66, 74), rgb(25, 25, 25));
   }
 
+  .reserva-form{
+    display: flex;
+  }
+
+  .reserva-form .form-group{
+  margin: 0 10px;
+  }
+
+  .react-datepicker__month-container {
+    float: left;
+    border-radius: 5px;
+    background: linear-gradient(195deg, rgb(66, 66, 74), rgb(25, 25, 25));
+    color: white;
+}
+
+
   .react-datepicker__day-name {
     color: white;
   }
 
   .react-datepicker__current-month{
     color: white;
+    text-transform: uppercase;
   }
 
   .react-datepicker__day, .react-datepicker__time-name{
-    color: #000;
+    color: #fff;
   }

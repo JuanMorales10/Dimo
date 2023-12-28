@@ -1,9 +1,11 @@
 import React, { createContext, useState, useEffect } from 'react';
 
 
+
 export const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
+
   const [events, setEvents] = useState([]);
   const [user, setUser] = useState(null);
   const [googleToken, setGoogleToken] = useState(localStorage.getItem('googleToken'));
@@ -46,17 +48,17 @@ export const UserProvider = ({ children }) => {
             },
         });
 
-        if (!response.ok) {
-            throw new Error('Error al procesar la autenticación de Google');
-        }
-
         const data = await response.json();
-        return data; // Devuelve el objeto de respuesta
+
+        // Redireccionar al home
+        window.location.href = '/'; // Asume que '/' es tu ruta de inicio (home)
+        
     } catch (error) {
         console.error('Error en la autenticación de Google:', error);
         throw error; // Lanza el error para manejarlo en el componente
     }
 };
+
 
 
 

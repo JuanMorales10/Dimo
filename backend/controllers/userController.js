@@ -220,7 +220,7 @@ const userController = {
   },
   disconnectGoogleCalendar: async (req, res) => {
     try {
-      const userId = req.user.userId;
+      const userId = req.session.user.userId;
       const user = await User.findByPk(userId);
 
       if (!user) {
@@ -277,7 +277,7 @@ const userController = {
   getUserDetail: async (req, res) => {
     try {
       // Asumiendo que el middleware ya ha verificado el token y adjuntado userId a req
-      const userId = req.user.userId;
+      const userId = req.session.user.userId;
 
       if (!userId) {
         return res.status(401).json({ success: false, message: "Usuario no autenticado." });
@@ -353,6 +353,7 @@ const userController = {
       access_type: 'offline',
       scope: ['https://www.googleapis.com/auth/calendar']
     });
+
     res.json({ url });
   },
   despAuth: async (req, res) => {
@@ -364,11 +365,8 @@ const userController = {
       const { tokens } = await oauth2Client.getToken(code);
       oauth2Client.setCredentials(tokens);
 
-      console.log(req.session.user)
-
-      // Aquí se obtiene el usuario de la sesión
       const userEmail = req.session.user.email;
-      const user = await User.findOne({ where: { email: userEmail } });
+      const user = await User.findOne({ where: { email: userEmail }});
 
       if (user) {
         user.googleAccessToken = tokens.access_token;
@@ -385,7 +383,6 @@ const userController = {
       res.status(500).json({ success: false, message: 'Error en la autenticación con Google.' });
     }
   },
-
 };
 
 module.exports = userController;

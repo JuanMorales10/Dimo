@@ -479,7 +479,6 @@ const serviceController = {
       };
   
       const respuesta = await mercadoPago.preferences.create(preference);
-      console.log(respuesta);
       res.status(200).json(respuesta.response.init_point);
     } catch (error) {
       console.error(error.message);

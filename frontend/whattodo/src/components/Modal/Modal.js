@@ -1,27 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import { es } from 'date-fns/locale';
 import { faMoneyBill, faCalendarDays, faUsers } from '@fortawesome/free-solid-svg-icons';
 import './Modal.css';
-import gast from '../../assets/img/gastonomia.jpg';
-import vit from '../../assets/img/winery.jpg';
-import aven from '../../assets/img/aventura.jpg';
-import noche from '../../assets/img/noche.jpg';
-import trans from '../../assets/img/transporte.jpg';
-
 
 function Modal({ closeModal }) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    nombre: '',
-    categoria_id: '',
-    fechaInicio: '',
-    fechaFin: '',
-    precioMin: '',
-    precioMax: '',
+    fechaRango: [null, null],
     capacidad: '',
     disponibilidad: true,
-    rating: '',
     atp: true,
   });
 
@@ -34,12 +25,9 @@ function Modal({ closeModal }) {
     }
   };
 
-  const handleCategorySelect = (category) => {
-    setFormData({ ...formData, categoria_id: category });
-  };
-
-  const isCategorySelected = (category) => {
-    return formData.categoria_id === category;
+  const handleDateChange = (dates) => {
+    const [start, end] = dates;
+    setFormData({ ...formData, fechaRango: [start, end] });
   };
 
   const handleSubmit = async (e) => {
@@ -77,122 +65,34 @@ function Modal({ closeModal }) {
         </div>
         <form className="modal-body" onSubmit={handleSubmit}>
           <div className='info-cont'>
-            <input
-              type="text"
-              placeholder="Ej: Nombre de la Experiencia"
-              className="search-input"
-              value={formData.nombre}
-              onChange={handleInputChange}
-              name="nombre"
-            />
-            <div className='precio-cont'>
-              <FontAwesomeIcon icon={faMoneyBill} />
-              <input
-                type="number"
-                placeholder="Precio mínimo"
-                value={formData.precioMin}
-                onChange={handleInputChange}
-                name="precioMin"
-              />
-              <input
-                type="number"
-                placeholder="Precio máximo"
-                value={formData.precioMax}
-                onChange={handleInputChange}
-                name="precioMax"
-              />
-            </div>
-          </div>
-          <div className='info-cont'>
-            <h3 className='titulos'>Elije una Categoria</h3>
-            <div className="categories-container">
-              <div>
-                <button
-                  type='button'
-                  className={`category-button ${isCategorySelected(2) ? 'selected-category' : ''}`}
-                  onClick={() => handleCategorySelect(2)}
-                >
-                  <img src={gast} alt="Gastronomy" />
-                </button>
-                Gastronomia
-              </div>
-              <div>
-                <button
-                  type='button'
-                  className={`category-button ${isCategorySelected(1) ? 'selected-category' : ''}`}
-                  onClick={() => handleCategorySelect(1)}
-                >
-                  <img src={vit} alt="Wineries" />
-                </button>
-                Vitivinicola
-              </div>
-              <div>
-                <button
-                  type='button'
-                  className={`category-button ${isCategorySelected(4) ? 'selected-category' : ''}`}
-                  onClick={() => handleCategorySelect(4)}
-                >
-                  <img src={aven} alt="Adventure" />
-                </button>
-                Aventura
-              </div>
-              <div>
-                <button
-                  type='button'
-                  className={`category-button ${isCategorySelected(3) ? 'selected-category' : ''}`}
-                  onClick={() => handleCategorySelect(3)}
-                >
-                  <img src={trans} alt="Transport" />
-                </button>
-                Transporte
-              </div>
-              <div>
-                <button
-                  type='button'
-                  className={`category-button ${isCategorySelected(5) ? 'selected-category' : ''}`}
-                  onClick={() => handleCategorySelect(5)}
-                >
-                  <img src={noche} alt="Nightlife" />
-                </button>
-                Noche
-              </div>
-            </div>
-          </div>
-          <div className='info-cont'>
-            <h5 className='titulos'>Filtrado Por:</h5>
             <div className="filters">
               <div>
-                <div>
+              <div className='flex'>
                   <FontAwesomeIcon icon={faCalendarDays} />
-                </div>
-                <label>Fecha Inicio</label>
-                <input
-                  type="date"
-                  value={formData.fechaInicio}
-                  onChange={handleInputChange}
-                  name="fechaInicio"
-                />
-                <div>
-                  <label>Fecha Fin</label>
-                  <input
-                    type="date"
-                    value={formData.fechaFin}
-                    onChange={handleInputChange}
-                    name="fechaFin"
+                  <label>Duracion del Viaje</label>
+                  <DatePicker
+                    selectsRange={true}
+                    startDate={formData.fechaRango[0]}
+                    endDate={formData.fechaRango[1]}
+                    onChange={handleDateChange}
+                    dateFormat="dd/MM/yyyy"
+                    locale={es}
                   />
                 </div>
               </div>
               <div className='fl-fa'>
+                <div className='flex'>
                 <FontAwesomeIcon icon={faUsers} />
                 <input
                   type="number"
-                  placeholder="Capacidad"
+                  placeholder="Cantidad de personas"
                   value={formData.capacidad}
                   onChange={handleInputChange}
                   name="capacidad"
                 />
+                </div>
                 <div className='fl'>
-                  <label htmlFor="atp">ATP:</label>
+                  <h6 htmlFor="atp"> +18:</h6>
                   <input
                     type="checkbox"
                     id="atp"

@@ -284,6 +284,8 @@ const UserProfile = () => {
                                 <TextField label="Email" variant="outlined" name="email" value={formData.email} onChange={handleInputChange} sx={{ margin: '10px' }} />
                                 <TextField label="Teléfono" variant="outlined" name="telefono" value={formData.telefono} onChange={handleInputChange} sx={{ margin: '10px' }} />
                                 <TextField label="Dirección" variant="outlined" name="direccion" value={formData.direccion} onChange={handleInputChange} sx={{ margin: '10px' }} />
+
+                                <input type="file" name="avatar" onChange={handleFileChange} />
                                 <FormControlLabel
                                     control={
                                         <Switch
@@ -293,10 +295,8 @@ const UserProfile = () => {
                                             color="primary"
                                         />
                                     }
-                                    label="Cambiar a Host"
+                                    label="Cambiar a Administrador"
                                 />
-
-                                <input type="file" name="avatar" onChange={handleFileChange} />
                                 <Button type="submit" sx={{ margin: '10px' }}>Guardar Cambios</Button>
                             </form>
                         </Box>

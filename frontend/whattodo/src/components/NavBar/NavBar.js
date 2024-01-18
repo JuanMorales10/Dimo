@@ -45,7 +45,7 @@ const NavBar = () => {
             <li className="li-nav"><Link to="/nosotros">Nosotros</Link></li>
             {!token && (
               <>
-                <li className='li-nav'><Link to='/register' className="navbar-action register">Register</Link></li>
+                <li className='li-nav'><Link to='/register-normal' className="navbar-action register">Register</Link></li>
                 <li className='li-nav'><Link to='/login' className="navbar-action login">Log In</Link></li>
               </>
             )}
@@ -97,7 +97,7 @@ const NavBar = () => {
               </div>
               <div className="offcanvas-body">
                 <ul >
-                  <li className='li-nav'><Link to='/register' className="navbar-action register">Register</Link></li>
+                  <li className='li-nav'><Link to='/register-normal' className="navbar-action register">Register</Link></li>
                   <li className='li-nav'><Link to='/login' className="navbar-action login">Log In</Link></li>
                 </ul>
               </div>

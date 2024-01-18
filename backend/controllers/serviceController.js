@@ -278,63 +278,47 @@ const serviceController = {
       return res.status(500).json({ error: 'Error al crear el comentario' });
     }
   },
-
-  filterServices: async (req, res) => {
+  filterServices : async (req, res) => {
     try {
       const {
         categoria_id, precioMin, precioMax, disponibilidad, rating, capacidad, atp, nombre
+        // Agrega aquí otros parámetros de filtro si son necesarios
       } = req.body;
-
+  
       let filterCriteria = {};
-
       if (categoria_id) {
         filterCriteria.categoria_id = categoria_id;
       }
-
+  
       if (precioMin || precioMax) {
         filterCriteria.precio = {};
         if (precioMin) filterCriteria.precio[Op.gte] = parseFloat(precioMin);
         if (precioMax) filterCriteria.precio[Op.lte] = parseFloat(precioMax);
       }
-
+  
       if (disponibilidad !== undefined) {
         filterCriteria.disponibilidad = disponibilidad;
       }
-
+  
       if (rating) {
-        const ratingValue = parseInt(rating, 10);
-        if (ratingValue >= 1 && ratingValue <= 5) {
-          filterCriteria.rating = { [Op.eq]: ratingValue };
-        } else {
-          return res.status(400).json({ error: 'El valor del rating es inválido' });
-        }
+        filterCriteria.rating = { [Op.eq]: parseInt(rating, 10) };
       }
-
+  
       if (capacidad) {
-        const capacidadValue = parseInt(capacidad, 10);
-        if (!isNaN(capacidadValue)) {
-          filterCriteria.capacidad = { [Op.gte]: capacidadValue };
-        } else {
-          return res.status(400).json({ error: 'El valor de capacidad es inválido' });
-        }
+        filterCriteria.capacidad = { [Op.gte]: parseInt(capacidad, 10) };
       }
-
+  
       if (atp !== undefined) {
-        if (atp === '') {
-
-        }
         filterCriteria.atp = atp;
       }
-
+  
       if (nombre) {
         filterCriteria.nombre = { [Op.like]: `%${nombre}%` };
       }
-
-      console.log(filterCriteria)
-
-      const services = await Service.findAll({
+  
+      let services = await Service.findAll({
         where: filterCriteria,
-        attributes: { include: ['rating'] },
+        order: [['precio', 'ASC']],
         include: [
           {
             model: ServiceImage,
@@ -343,51 +327,24 @@ const serviceController = {
           },
           {
             model: Category,
-            as: 'category'
+            as: 'category',
           },
           {
             model: User,
             as: 'user',
-            attributes: ['nombre', 'apellido'] // Asegúrate de que estos campos existan en tu modelo User
+            attributes: ['nombre', 'apellido']
           },
-          // Agrega aquí otras asociaciones según sea necesario
+          // ... otras asociaciones si son necesarias ...
         ],
       });
-
-      const formattedServices = services.map(service => ({
-        id: service.id,
-        nombre: service.nombre,
-        descripcion: service.descripcion,
-        precio: service.precio,
-        duracion: service.duracion,
-        direccion: service.direccion,
-        rating: service.rating,
-        disponibilidad: service.disponibilidad,
-        atp: service.atp,
-        capacidad: service.capacidad,
-        categoria: {
-          id: service.category.id,
-          nombre: service.category.nombre,
-          descripcion: service.category.descripcion,
-        },
-        usuario: {
-          nombre: service.user.nombre,
-          apellido: service.user.apellido,
-        },
-        // Puedes formatear las imágenes y otros campos relacionados de la misma manera
-        images: service.images.map(image => image.url),
-        // ... más campos según sea necesario ...
-      }));
-
-      console.log(services)
-
-      return res.status(200).json({ services: formattedServices });
+  
+  
+      return res.status(200).json({ services: services });
     } catch (error) {
       console.error('Error al filtrar los servicios:', error);
       return res.status(500).json({ error: 'Error interno del servidor' });
     }
   },
-
   servicesByCategory: async (req, res) => {
     try {
       const { name } = req.query;

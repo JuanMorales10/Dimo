@@ -67,8 +67,6 @@ const userController = {
       res.json({ success: true, message: 'Sesión cerrada correctamente' });
     });
   },
-
-
   registerUser: async (req, res) => {
     let avatar = 'defaultAvatar.jpg';
     try {
@@ -129,7 +127,7 @@ const userController = {
         telefono: req.body.telefono || null,
         ciudad: req.body.ciudad || null,
         direccion: req.body.direccion || null,
-        type: "Host",
+        type: "Personal",
         avatar: avatar
       });
 

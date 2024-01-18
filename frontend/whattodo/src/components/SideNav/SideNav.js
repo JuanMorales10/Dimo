@@ -93,18 +93,18 @@ function Sidenav({ mobileOpen, setMobileOpen }) {
                     </ListItemIcon>
                     <ListItemText primary="Calendario" />
                 </ListItem>
-                <ListItem button component={Link} to="/dashboard/favorites">
+                {/* <ListItem button component={Link} to="/dashboard/favorites">
                     <ListItemIcon>
                         <FavoriteIcon />
                     </ListItemIcon>
                     <ListItemText primary="Favoritos" />
-                </ListItem>
-                <ListItem button component={Link} to="/dashboard/reservas">
+                </ListItem> */}
+                {/* <ListItem button component={Link} to="/dashboard/reservas">
                     <ListItemIcon>
                         <EventIcon />
                     </ListItemIcon>
                     <ListItemText primary="Mis Reservas" />
-                </ListItem>
+                </ListItem> */}
 
                 <ListItem button onClick={handleLogout}>
                     <ListItemIcon>

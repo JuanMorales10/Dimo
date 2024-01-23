@@ -36,6 +36,8 @@ function ReservaPage() {
     fetchService();
   }, [serviceId, token]);
 
+  console.log(service)
+
   // const handleSubmit = async (reserva) => {
   //   try {
 

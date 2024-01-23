@@ -27,6 +27,13 @@ function ReservaForm({ service, onSubmit }) {
     precio: service ? service.service.precio : ''
   });
   const [metodoPago, setMetodoPago] = useState('');
+  const [total, setTotal] = useState(0);
+
+    useEffect(() => {
+        if (service && service.service.precio && reserva.cantidadPersonas) {
+            setTotal(service.service.precio * reserva.cantidadPersonas);
+        }
+    }, [service, reserva.cantidadPersonas]);
 
 
   const handlePayment = async () => {
@@ -175,6 +182,11 @@ function ReservaForm({ service, onSubmit }) {
                 </option>
               ))}
             </select>
+
+            <div className="total-section">
+                    <label htmlFor="total" >Total a Pagar:</label>
+                    <p id="total" className='sptotal'>${total}</p>
+                </div>
             <button type="button" className="book-now-btn" onClick={handlePayment}>
               Pagar Ahora
             </button>

@@ -151,6 +151,9 @@ function ServiceDetail() {
                             reservar={<ServiceMeta service={service.service} handleReserveClick={handleReserveClick} createGoogleMapsLink={createGoogleMapsLink} hasUserReserved={hasUserReserved} />}
                         //   policies={/* ... contenido para policies ... */}
                         />
+                        <div className='reserve-box'>
+                        <button className="reserve-button" onClick={handleReserveClick}>Reservar</button>
+                        </div>
                         <div className="service-detail-content">
                             <Cards />
                         </div>
@@ -240,8 +243,10 @@ function ServiceMeta({ service, handleReserveClick, createGoogleMapsLink, hasUse
                 <p>Duración: {formatDuration(service.duracion)}</p>
                 <p>Horario: De {service.operating_hours_start} a {service.operating_hours_end}</p>
                 <p>Días hábiles: {formatOperatingDays(service.operating_days)}</p>
+                <p className='info-d'>Ubicacion, telefono y link de referencia, seran visibles una vez hecha la reserva</p>
                 {hasUserReserved && (
                     <>
+                    
                         <a href={createGoogleMapsLink(service.direccion)} target="_blank" rel="noopener noreferrer" className="google-maps-link">
                             Ver Ubicación en Google Maps
                         </a>
@@ -251,7 +256,7 @@ function ServiceMeta({ service, handleReserveClick, createGoogleMapsLink, hasUse
                     </>
                 )}
             </div>
-            <button className="reserve-button" onClick={handleReserveClick}>Reservar</button>
+            
         </>
     );
 

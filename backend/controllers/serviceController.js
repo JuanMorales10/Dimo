@@ -415,33 +415,33 @@ const serviceController = {
       res.status(500).json({ message: 'Error getting available slots' });
     }
   },
-  mercadoPago: async (req, res) => {
+  // mercadoPago: async (req, res) => {
 
-    const producto = req.body;
+  //   const producto = req.body;
 
-    try {
-      const preference = {
-      items: [{
-                title: producto.nombre,
-                unit_price: producto.precio,
-                currency_id: "USD",
-                quantity: 1,
-              }],
-        back_urls: {
-          success: `http://localhost:3000/reserva/${producto.id}`,
-          failure: `http://localhost:3000/reserva/${producto.id}`,
-        },
+  //   try {
+  //     const preference = {
+  //     items: [{
+  //               title: producto.nombre,
+  //               unit_price: producto.precio,
+  //               currency_id: "USD",
+  //               quantity: 1,
+  //             }],
+  //       back_urls: {
+  //         success: `http://localhost:3000/reserva/${producto.id}`,
+  //         failure: `http://localhost:3000/reserva/${producto.id}`,
+  //       },
   
-        auto_return: "approved",
-      };
+  //       auto_return: "approved",
+  //     };
   
-      const respuesta = await mercadoPago.preferences.create(preference);
-      res.status(200).json(respuesta.response.init_point);
-    } catch (error) {
-      console.error(error.message);
-      res.status(500).json(error.message);
-    }
-  }
+  //     const respuesta = await mercadoPago.preferences.create(preference);
+  //     res.status(200).json(respuesta.response.init_point);
+  //   } catch (error) {
+  //     console.error(error.message);
+  //     res.status(500).json(error.message);
+  //   }
+  // }
 
 };
 

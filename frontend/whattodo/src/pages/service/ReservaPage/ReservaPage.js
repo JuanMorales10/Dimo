@@ -207,6 +207,8 @@ function ReservaPage() {
         body: JSON.stringify(reservaData)
       });
 
+    
+
       const reservaCreada = await response.json();
       if (!response.ok) {
         throw new Error(reservaCreada.message || 'Failed to create reservation');

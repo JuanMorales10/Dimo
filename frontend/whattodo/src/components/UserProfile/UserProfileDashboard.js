@@ -92,7 +92,11 @@ const UserProfile = () => {
                 }
             });
 
+            console.log(response)
+
             const data = await response.json();
+
+            console.log(data)
 
             if (data.url) {
                 window.location.href = data.url;

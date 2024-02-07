@@ -5,9 +5,9 @@ const jwt = require('jsonwebtoken');
 const { google } = require('googleapis');
 
 // Configuración del cliente OAuth2
-const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URI = process.env.REDIRECT_URI;
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
 const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
 const userController = {
@@ -67,8 +67,6 @@ const userController = {
       res.json({ success: true, message: 'Sesión cerrada correctamente' });
     });
   },
-
-
   registerUser: async (req, res) => {
     let avatar = 'defaultAvatar.jpg';
     try {
@@ -129,7 +127,7 @@ const userController = {
         telefono: req.body.telefono || null,
         ciudad: req.body.ciudad || null,
         direccion: req.body.direccion || null,
-        type: "Host",
+        type: "Personal",
         avatar: avatar
       });
 
@@ -200,13 +198,42 @@ const userController = {
     }
 
   },
-  getLogin: (req, res) => {
+  checkGoogleCalendar: async (req, res) => {
+    try {
 
-    // res.render("./users/login");
+      const userId = req.session.user.userId;
+
+      const user = await User.findByPk(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+
+      const isConnected = user.googleAccessToken != null && user.googleRefreshToken != null;
+      res.json({ isConnected });
+    } catch (error) {
+      console.error('Error al verificar la conexión de Google Calendar:', error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
   },
-  getRegisterUser: (req, res) => {
+  disconnectGoogleCalendar: async (req, res) => {
+    try {
+      const userId = req.session.user.userId;
+      const user = await User.findByPk(userId);
 
-    // res.render("./users/register");
+      if (!user) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+
+      user.googleAccessToken = null;
+      user.googleRefreshToken = null;
+      await user.save();
+
+      res.json({ message: "Desconexión exitosa de Google Calendar" });
+    } catch (error) {
+      console.error('Error al desconectar de Google Calendar:', error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
   },
   getRegisterHost: (req, res) => {
 
@@ -248,7 +275,7 @@ const userController = {
   getUserDetail: async (req, res) => {
     try {
       // Asumiendo que el middleware ya ha verificado el token y adjuntado userId a req
-      const userId = req.user.userId;
+      const userId = req.session.user.userId;
 
       if (!userId) {
         return res.status(401).json({ success: false, message: "Usuario no autenticado." });
@@ -324,6 +351,7 @@ const userController = {
       access_type: 'offline',
       scope: ['https://www.googleapis.com/auth/calendar']
     });
+
     res.json({ url });
   },
   despAuth: async (req, res) => {
@@ -335,9 +363,6 @@ const userController = {
       const { tokens } = await oauth2Client.getToken(code);
       oauth2Client.setCredentials(tokens);
 
-      console.log(req.session.user)
-
-      // Aquí se obtiene el usuario de la sesión
       const userEmail = req.session.user.email;
       const user = await User.findOne({ where: { email: userEmail }});
 
@@ -356,7 +381,6 @@ const userController = {
       res.status(500).json({ success: false, message: 'Error en la autenticación con Google.' });
     }
   },
-
 };
 
 module.exports = userController;

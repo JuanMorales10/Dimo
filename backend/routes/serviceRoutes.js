@@ -5,6 +5,7 @@ const serviceImage = require('../middlewares/processServiceImage');
 const authenticateJWT = require('../middlewares/authenticateJWT');
 const favoriteController = require('../controllers/favoriteController')
 const {validateCreateService, validateEditService} = require('../middlewares/validations')
+const paymentController = require('../controllers/paymentController')
 
 //@Get
 router.get('/createService', serviceController.getCreateService);
@@ -22,7 +23,10 @@ router.post('/createService', serviceImage.array('image'), authenticateJWT , val
 router.post('/:id/postComment', authenticateJWT ,serviceController.postComment);
 router.post('/filter', serviceController.filterServices); 
 router.post('/service/:id/favorite', authenticateJWT ,favoriteController.addFavorite);
-router.post('/mercado-pago', serviceController.mercadoPago)
+router.post('/mercado-pago', paymentController.mercadoPago)
+router.post('/create-paypal-transaction', paymentController.createPaypalTransaction);
+router.post('/capture-paypal-transaction', paymentController.capturePaypalTransaction);
+
 
 //@Put
 router.put('/updateService/:id', serviceImage.array('image'),authenticateJWT ,validateEditService, serviceController.putUpdateService);

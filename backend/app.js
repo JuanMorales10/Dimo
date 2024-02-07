@@ -5,8 +5,6 @@ const cors = require('cors');
 require('dotenv').config();
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const jwt = require('jsonwebtoken');
-const { google } = require('googleapis')
 const mainRouter = require('./routes/mainRoutes')
 const userRouter = require('./routes/userRoutes')
 const serviceRouter = require('./routes/serviceRoutes')

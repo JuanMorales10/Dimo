@@ -11,6 +11,19 @@
     width: 100vw; /* Establece el carrusel para que ocupe el ancho completo de la ventana */
     overflow: hidden; /* Oculta cualquier desbordamiento causado por el carrusel */
   }
+
+  .info-d{
+    padding: 10px;
+    background-color: rgb(222 220 220);
+    color: black !important;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 73%)
+  }
+
+  .reserve-box{
+    display: flex;
+    justify-content: center;
+  }
   
   .carousel-image-container {
     position: relative;
@@ -97,6 +110,7 @@
     font-size: 1em;
     margin-top: 1em;
     transition: background-color 0.3s ease;
+    width: 270px !important;
   }
   
   .reserve-button:hover {
@@ -339,6 +353,10 @@
     overflow: auto;
     height: 87px;
     padding: 5px;
+  }
+
+  .tab-content p.descripcion-ser::-webkit-scrollbar {
+    display: none;
   }
 
   .tab-content p{

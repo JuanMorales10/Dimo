@@ -85,7 +85,7 @@ function ServiceDetail() {
     }, [id, token]);
 
     useEffect(() => {
-        if (user ) {
+        if (user) {
             checkIfUserHasReserved();
         }
     }, [user, id, token]);
@@ -126,41 +126,44 @@ function ServiceDetail() {
         }
     };
 
-   
+
     return (
         <>
-        {isLoading ? (
-            <LoadingScreen />
-        ) : (
-            <>
-            <NavBar />
-            <div className="service-detail-container">
-                <Carousel responsive={responsive} infinite={true} autoPlay={true} className="service-carousel">
-                    {service.images.map(image => (
-                        <div key={image.image_id} className="carousel-image-container">
-                            <img src={`${backendUrl}/img/service/${image.url}`} alt="Service" />
+            {isLoading ? (
+                <LoadingScreen />
+            ) : (
+                <>
+                    <NavBar />
+                    <div className="service-detail-container">
+                        <Carousel responsive={responsive} infinite={true} autoPlay={true} className="service-carousel">
+                            {service.images.map(image => (
+                                <div key={image.image_id} className="carousel-image-container">
+                                    <img src={`${backendUrl}/img/service/${image.url}`} alt="Service" />
+                                </div>
+                            ))}
+                        </Carousel>
+                        <div className="service-detail-overlay">
+                            <ServiceHeader title={service.service.nombre} rating={service.service.rating} />
                         </div>
-                    ))}
-                </Carousel>
-                <div className="service-detail-overlay">
-                    <ServiceHeader title={service.service.nombre} rating={service.service.rating} />
-                </div>
-                <TabContainer
-                    details={serviceOwner && <ServiceDescription service={service.service} user={serviceOwner} />}
-                    comments={serviceOwner && <ServiceComments comments={service.comments} token={token} user={serviceOwner} hasUserReserved={hasUserReserved} service={service.service} />}
-                    reservar={<ServiceMeta service={service.service} handleReserveClick={handleReserveClick} createGoogleMapsLink={createGoogleMapsLink} />}
-                    //   policies={/* ... contenido para policies ... */}
-                />
-                <div className="service-detail-content">
-                    <Cards />
-                </div>
-            </div>
-            <Footer />
-            </>
+                        <TabContainer
+                            details={serviceOwner && <ServiceDescription service={service.service} user={serviceOwner} />}
+                            comments={serviceOwner && <ServiceComments comments={service.comments} token={token} user={serviceOwner} hasUserReserved={hasUserReserved} service={service.service} />}
+                            reservar={<ServiceMeta service={service.service} handleReserveClick={handleReserveClick} createGoogleMapsLink={createGoogleMapsLink} hasUserReserved={hasUserReserved} />}
+                        //   policies={/* ... contenido para policies ... */}
+                        />
+                        <div className='reserve-box'>
+                        <button className="reserve-button" onClick={handleReserveClick}>Reservar</button>
+                        </div>
+                        <div className="service-detail-content">
+                            <Cards />
+                        </div>
+                    </div>
+                    <Footer />
+                </>
             )}
         </>
     );
-    
+
 }
 
 function ServiceHeader({ title, rating }) {
@@ -190,7 +193,8 @@ function RatingStars({ rating }) {
     );
 }
 
-function ServiceMeta({ service, handleReserveClick, createGoogleMapsLink }) {
+function ServiceMeta({ service, handleReserveClick, createGoogleMapsLink, hasUserReserved }) {
+    console.log(hasUserReserved)
 
     const formatDuration = (duration) => {
         const parts = duration.split(':');
@@ -203,6 +207,33 @@ function ServiceMeta({ service, handleReserveClick, createGoogleMapsLink }) {
         return days.split(',').join(', ');
     };
 
+    const createShareLink = () => {
+        const serviceId = service.id; // o el campo que identifica unívocamente el servicio
+        const baseUrl = window.location.origin; // Obtiene la URL base de la aplicación
+        const serviceUrl = `${baseUrl}/servicios/${serviceId}`; // Construye la URL específica del servicio
+
+        return serviceUrl;
+    };
+
+    const copyToClipboard = () => {
+        const url = createShareLink();
+        navigator.clipboard.writeText(url).then(() => {
+            Swal.fire({
+                title: '¡Listo!',
+                text: 'Enlace copiado al portapapeles',
+                icon: 'success',
+                confirmButtonText: 'Cerrar'
+            });
+        }).catch(err => {
+            console.error('Error al copiar el enlace: ', err);
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo copiar el enlace',
+                icon: 'error',
+                confirmButtonText: 'Cerrar'
+            });
+        });
+    };
 
 
     return (
@@ -212,13 +243,39 @@ function ServiceMeta({ service, handleReserveClick, createGoogleMapsLink }) {
                 <p>Duración: {formatDuration(service.duracion)}</p>
                 <p>Horario: De {service.operating_hours_start} a {service.operating_hours_end}</p>
                 <p>Días hábiles: {formatOperatingDays(service.operating_days)}</p>
-                <a href={createGoogleMapsLink(service.direccion)} target="_blank" rel="noopener noreferrer" className="google-maps-link">
-                    Ver Ubicación en Google Maps
-                </a>
+                <p className='info-d'>Ubicacion, telefono y link de referencia, seran visibles una vez hecha la reserva</p>
+                {hasUserReserved && (
+                    <>
+                    
+                        <a href={createGoogleMapsLink(service.direccion)} target="_blank" rel="noopener noreferrer" className="google-maps-link">
+                            Ver Ubicación en Google Maps
+                        </a>
+                        <button onClick={copyToClipboard} className="reserve-button">
+                            Copiar Enlace para Compartir
+                        </button>
+                    </>
+                )}
             </div>
-            <button className="reserve-button" onClick={handleReserveClick}>Reservar</button>
+            
         </>
     );
+
+    // return (
+    //     <>
+    //         <div className="service-meta">
+    //             <h3>{service.nombre}</h3>
+    //             <p>Duración: {formatDuration(service.duracion)}</p>
+    //             <p>Horario: De {service.operating_hours_start} a {service.operating_hours_end}</p>
+    //             <p>Días hábiles: {formatOperatingDays(service.operating_days)}</p>
+    //             {hasUserReserved && (
+    //                 <a href={createGoogleMapsLink(service.direccion)} target="_blank" rel="noopener noreferrer" className="google-maps-link">
+    //                     Ver Ubicación en Google Maps
+    //                 </a>
+    //             )}
+    //         </div>
+    //         <button className="reserve-button" onClick={handleReserveClick}>Reservar</button>
+    //     </>
+    // );
 }
 
 
@@ -258,7 +315,7 @@ function ServiceComments({ comments, hasUserReserved, token, user, service }) {
 
     const handleSubmitComment = async (e) => {
         e.preventDefault();
-    
+
         try {
             const response = await fetch(`${backendUrl}/service/${service.id}/postComment`, {
                 method: 'POST',
@@ -273,18 +330,18 @@ function ServiceComments({ comments, hasUserReserved, token, user, service }) {
                     comment: commentData.comment
                 })
             });
-    
+
             console.log(response);
-    
+
             if (!response.ok) {
                 // Si la respuesta no está bien, mostrar un mensaje de error
                 throw new Error('Hubo un problema con la solicitud: ' + response.statusText);
             }
-    
+
             const data = await response.json();
             console.log(data);
             setCommentData({ rating: '', comment: '' });
-    
+
             Swal.fire({
                 position: "top-end",
                 icon: "success",
@@ -298,7 +355,7 @@ function ServiceComments({ comments, hasUserReserved, token, user, service }) {
                     content: 'my-content-class'
                 }
             });
-    
+
             navigate(`/service/${service.id}/detail`);
         } catch (error) {
             console.error('Error en la solicitud:', error);
@@ -344,34 +401,34 @@ function ServiceComments({ comments, hasUserReserved, token, user, service }) {
                     <div className="form-comment">
                         <div className='comment-left'>
                             <label htmlFor="comment">Tu Comentario:</label>
-                        <textarea
-                            id="comment"
-                            name="comment"
-                            value={commentData.comment}
-                            onChange={handleInputChange}
-                            required
-                        ></textarea>
+                            <textarea
+                                id="comment"
+                                name="comment"
+                                value={commentData.comment}
+                                onChange={handleInputChange}
+                                required
+                            ></textarea>
                         </div>
                         <div className='rating-right'>
                             <label>Tu Rating:</label>
-                        <div className="rating">
-                            {[...Array(5)].reverse().map((_, index) => {
-                                const ratingValue = 5 - index;
-                                return (
-                                    <React.Fragment key={index}>
-                                        <input
-                                            type="radio"
-                                            id={`star${ratingValue}`}
-                                            name="rating"
-                                            value={ratingValue}
-                                            checked={commentData.rating === `${ratingValue}`}
-                                            onChange={handleInputChange}
-                                        />
-                                        <label htmlFor={`star${ratingValue}`}></label>
-                                    </React.Fragment>
-                                );
-                            })}
-                        </div>
+                            <div className="rating">
+                                {[...Array(5)].reverse().map((_, index) => {
+                                    const ratingValue = 5 - index;
+                                    return (
+                                        <React.Fragment key={index}>
+                                            <input
+                                                type="radio"
+                                                id={`star${ratingValue}`}
+                                                name="rating"
+                                                value={ratingValue}
+                                                checked={commentData.rating === `${ratingValue}`}
+                                                onChange={handleInputChange}
+                                            />
+                                            <label htmlFor={`star${ratingValue}`}></label>
+                                        </React.Fragment>
+                                    );
+                                })}
+                            </div>
                         </div>
                         <button type="submit">Enviar Comentario</button>
                     </div>

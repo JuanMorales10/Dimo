@@ -96,7 +96,7 @@ function RegistrationForm() {
     <div className='cont' >
     <div className="registration-container">
     <Link class="navbar-brand" to="/"><img src={logo} alt="descripción" className='logo' /></Link>
-      <h3>Crea una Cuenta Nueva de Anfitrion</h3>
+      <h3>Crea una Cuenta Nueva</h3>
       <div className="registration-container2">
       <form onSubmit={handleSubmit} className="registrationForm" encType='multipart/form-data'>
         <div className='formflex'>

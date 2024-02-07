@@ -25,11 +25,9 @@ function App() {
         <div className="App">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/register" element={<RegisterOptions />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/create-service" element={<CreateServiceForm />} />
-            <Route path="/register-normal" element={<RegistrationForm />} />
-            <Route path="/register-host" element={<RegistrationFormHost />} />
+            <Route path="/register-normal" element={<RegistrationFormHost />} />
             <Route path='/service/:id/detail' element={<ServiceDetail />} />
             <Route path="/search-results" element={<ServiceListView />} />
             <Route path='/user/profile' element={<UserProfile />} />

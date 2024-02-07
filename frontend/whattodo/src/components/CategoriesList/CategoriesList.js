@@ -65,7 +65,7 @@ function CategoriesList() {
 
   return (
     <div className={`card-list ${isVisible ? 'fade-in' : ''}`} ref={cardListRef}>
-      {Object.entries(dataByCategory).map(([categoriaId, services]) => (
+      {Object.entries(dataByCategory).reverse().map(([categoriaId, services]) => (
         <div key={categoriaId}>
           <h2>{`${categoriaId}`}</h2> 
           <Carousel responsive={responsive} infinite={true} className="owl-carousel owl-theme skill-slider">
@@ -75,6 +75,7 @@ function CategoriesList() {
       ))}
     </div>
   );
+
 }
 
 export default CategoriesList;

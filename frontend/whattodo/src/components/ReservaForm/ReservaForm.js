@@ -2,11 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { UserContext } from '../UserContext/UserContext';
 import { parseISO } from 'date-fns';
-import DatePicker from 'react-datepicker';
 import moment from 'moment'
+import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import es from 'date-fns/locale/es'; 
 import './ReservaForm.css';
 import Swal from 'sweetalert2';
+registerLocale('es', es); 
 
 function ReservaForm({ service, onSubmit }) {
   const { serviceId } = useParams();
@@ -22,9 +24,16 @@ function ReservaForm({ service, onSubmit }) {
     nombreReserva: service ? service.service.nombre : '',
     nombreUsuario: user ? user.profile.nombre : '',
     usuario_dni: user ? user.profile.id : '',
-    precio: service ? service.service.precio  : ''
+    precio: service ? service.service.precio : ''
   });
   const [metodoPago, setMetodoPago] = useState('');
+  const [total, setTotal] = useState(0);
+
+    useEffect(() => {
+        if (service && service.service.precio && reserva.cantidadPersonas) {
+            setTotal(service.service.precio * reserva.cantidadPersonas);
+        }
+    }, [service, reserva.cantidadPersonas]);
 
 
   const handlePayment = async () => {
@@ -35,20 +44,20 @@ function ReservaForm({ service, onSubmit }) {
       precio: reserva.precio,
       id: serviceId
     };
-  
+
     try {
       const response = await fetch('http://localhost:3008/service/mercado-pago', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(servicioFinal)
       });
-  
+
       if (!response.ok) {
         throw new Error('Error al procesar el pago');
       }
-  
+
       const resultadoPago = await response.json();
-  
+
       if (resultadoPago) {
         window.location.href = resultadoPago;
       } else {
@@ -59,20 +68,20 @@ function ReservaForm({ service, onSubmit }) {
       Swal.fire('Error', 'Error al procesar el pago: ' + error.message, 'error');
     }
   };
-  
+
   useEffect(() => {
     const reservaGuardada = sessionStorage.getItem('reservaActual');
     if (reservaGuardada) {
       const reservaParseada = JSON.parse(reservaGuardada);
-      
+
       // Convierte la fecha de vuelta a un objeto de fecha
       reservaParseada.fecha = new Date(reservaParseada.fecha);
-  
+
       setReserva(reservaParseada);
       sessionStorage.removeItem('reservaActual');
     }
   }, []);
-  
+
 
 
   useEffect(() => {
@@ -140,6 +149,19 @@ function ReservaForm({ service, onSubmit }) {
         <h2>Reserva tu experiencia</h2>
         <form className="reserva-form">
           {/* Input para la cantidad de personas */}
+
+          <div className="form-group">
+            <label htmlFor="datePicker">Selecciona Fecha:</label>
+            <DatePicker
+              selected={reserva.fecha}
+              onChange={handleDateChange}
+              name="fecha"
+              inline
+              className="mi-clase-datepicker"
+              style={{ backgroundColor: 'lightblue' }}
+              locale="es" 
+            />
+          </div>
           <div className="form-group">
             <label htmlFor="cantidadPersonas">Cuántas personas van?</label>
             <label htmlFor="cantidadPersonas">Maximo {service.service.capacidad} personas</label>
@@ -152,27 +174,23 @@ function ReservaForm({ service, onSubmit }) {
               max={service.service.capacidad}
               required
             />
+            <label htmlFor="timePicker">Selecciona una Hora</label>
+            <select name="hora" id="timePicker" value={reserva.hora} onChange={handleChange}>
+              {availableSlots.times.map((time, index) => (
+                <option key={index} value={time}>
+                  {time}
+                </option>
+              ))}
+            </select>
+
+            <div className="total-section">
+                    <label htmlFor="total" >Total a Pagar:</label>
+                    <p id="total" className='sptotal'>${total}</p>
+                </div>
+            <button type="button" className="book-now-btn" onClick={handlePayment}>
+              Pagar Ahora
+            </button>
           </div>
-          <label htmlFor="datePicker">Selecciona Fecha:</label>
-          <DatePicker
-            selected={reserva.fecha}
-            onChange={handleDateChange}
-            name="fecha"
-            inline
-            className="mi-clase-datepicker" 
-            style={{ backgroundColor: 'lightblue' }} 
-          />
-          <label htmlFor="timePicker">Selecciona una Hora</label>
-          <select name="hora" id="timePicker" value={reserva.hora} onChange={handleChange}>
-            {availableSlots.times.map((time, index) => (
-              <option key={index} value={time}>
-                {time}
-              </option>
-            ))}
-          </select>
-          <button type="button" className="book-now-btn" onClick={handlePayment}>
-            Pagar Ahora
-          </button>
 
         </form>
       </div>

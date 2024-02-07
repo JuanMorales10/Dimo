@@ -278,63 +278,47 @@ const serviceController = {
       return res.status(500).json({ error: 'Error al crear el comentario' });
     }
   },
-
-  filterServices: async (req, res) => {
+  filterServices : async (req, res) => {
     try {
       const {
         categoria_id, precioMin, precioMax, disponibilidad, rating, capacidad, atp, nombre
+        // Agrega aquí otros parámetros de filtro si son necesarios
       } = req.body;
-
+  
       let filterCriteria = {};
-
       if (categoria_id) {
         filterCriteria.categoria_id = categoria_id;
       }
-
+  
       if (precioMin || precioMax) {
         filterCriteria.precio = {};
         if (precioMin) filterCriteria.precio[Op.gte] = parseFloat(precioMin);
         if (precioMax) filterCriteria.precio[Op.lte] = parseFloat(precioMax);
       }
-
+  
       if (disponibilidad !== undefined) {
         filterCriteria.disponibilidad = disponibilidad;
       }
-
+  
       if (rating) {
-        const ratingValue = parseInt(rating, 10);
-        if (ratingValue >= 1 && ratingValue <= 5) {
-          filterCriteria.rating = { [Op.eq]: ratingValue };
-        } else {
-          return res.status(400).json({ error: 'El valor del rating es inválido' });
-        }
+        filterCriteria.rating = { [Op.eq]: parseInt(rating, 10) };
       }
-
+  
       if (capacidad) {
-        const capacidadValue = parseInt(capacidad, 10);
-        if (!isNaN(capacidadValue)) {
-          filterCriteria.capacidad = { [Op.gte]: capacidadValue };
-        } else {
-          return res.status(400).json({ error: 'El valor de capacidad es inválido' });
-        }
+        filterCriteria.capacidad = { [Op.gte]: parseInt(capacidad, 10) };
       }
-
+  
       if (atp !== undefined) {
-        if (atp === '') {
-
-        }
         filterCriteria.atp = atp;
       }
-
+  
       if (nombre) {
         filterCriteria.nombre = { [Op.like]: `%${nombre}%` };
       }
-
-      console.log(filterCriteria)
-
-      const services = await Service.findAll({
+  
+      let services = await Service.findAll({
         where: filterCriteria,
-        attributes: { include: ['rating'] },
+        order: [['precio', 'ASC']],
         include: [
           {
             model: ServiceImage,
@@ -343,51 +327,24 @@ const serviceController = {
           },
           {
             model: Category,
-            as: 'category'
+            as: 'category',
           },
           {
             model: User,
             as: 'user',
-            attributes: ['nombre', 'apellido'] // Asegúrate de que estos campos existan en tu modelo User
+            attributes: ['nombre', 'apellido']
           },
-          // Agrega aquí otras asociaciones según sea necesario
+          // ... otras asociaciones si son necesarias ...
         ],
       });
-
-      const formattedServices = services.map(service => ({
-        id: service.id,
-        nombre: service.nombre,
-        descripcion: service.descripcion,
-        precio: service.precio,
-        duracion: service.duracion,
-        direccion: service.direccion,
-        rating: service.rating,
-        disponibilidad: service.disponibilidad,
-        atp: service.atp,
-        capacidad: service.capacidad,
-        categoria: {
-          id: service.category.id,
-          nombre: service.category.nombre,
-          descripcion: service.category.descripcion,
-        },
-        usuario: {
-          nombre: service.user.nombre,
-          apellido: service.user.apellido,
-        },
-        // Puedes formatear las imágenes y otros campos relacionados de la misma manera
-        images: service.images.map(image => image.url),
-        // ... más campos según sea necesario ...
-      }));
-
-      console.log(services)
-
-      return res.status(200).json({ services: formattedServices });
+  
+  
+      return res.status(200).json({ services: services });
     } catch (error) {
       console.error('Error al filtrar los servicios:', error);
       return res.status(500).json({ error: 'Error interno del servidor' });
     }
   },
-
   servicesByCategory: async (req, res) => {
     try {
       const { name } = req.query;
@@ -458,38 +415,119 @@ const serviceController = {
       res.status(500).json({ message: 'Error getting available slots' });
     }
   },
-  mercadoPago: async (req, res) => {
+  // mercadoPago: async (req, res) => {
 
-    const producto = req.body;
+  //   const producto = req.body;
 
-    try {
-      const preference = {
-      items: [{
-                title: producto.nombre,
-                unit_price: producto.precio,
-                currency_id: "USD",
-                quantity: 1,
-              }],
-        back_urls: {
-          success: `http://localhost:3000/reserva/${producto.id}`,
-          failure: `http://localhost:3000/reserva/${producto.id}`,
-        },
+  //   try {
+  //     const preference = {
+  //     items: [{
+  //               title: producto.nombre,
+  //               unit_price: producto.precio,
+  //               currency_id: "USD",
+  //               quantity: 1,
+  //             }],
+  //       back_urls: {
+  //         success: `http://localhost:3000/reserva/${producto.id}`,
+  //         failure: `http://localhost:3000/reserva/${producto.id}`,
+  //       },
   
-        auto_return: "approved",
-      };
+  //       auto_return: "approved",
+  //     };
   
-      const respuesta = await mercadoPago.preferences.create(preference);
-      console.log(respuesta);
-      res.status(200).json(respuesta.response.init_point);
-    } catch (error) {
-      console.error(error.message);
-      res.status(500).json(error.message);
-    }
-  }
+  //     const respuesta = await mercadoPago.preferences.create(preference);
+  //     res.status(200).json(respuesta.response.init_point);
+  //   } catch (error) {
+  //     console.error(error.message);
+  //     res.status(500).json(error.message);
+  //   }
+  // }
 
 };
 
 module.exports = serviceController;
+
+// const calculateAvailableSlots = async (serviceId, selectedDate) => {
+//   try {
+//     const service = await Service.findOne({
+//       where: { id: serviceId },
+//       attributes: ['operating_days', 'operating_hours_start', 'operating_hours_end', 'duracion']
+//     });
+//     if (!service) {
+//       throw new Error('Service not found');
+//     }
+
+
+//     console.log('Service: ', service)
+//     console.log(selectedDate)
+
+//     const operatingDays = service.operating_days.replace(/['"\[\]]+/g, '').split(',');
+//     const dayOfWeekNumber = new Date(selectedDate + 'T00:00:00Z').getDay();
+//     const dayNames = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+//     const dayOfWeekString = dayNames[dayOfWeekNumber];
+
+//     console.log(dayOfWeekString)
+
+//     console.log(operatingDays)
+
+
+//     if (!operatingDays.includes(dayOfWeekString)) {
+//       return []; // No hay slots disponibles si el servicio no opera en ese día
+//     }
+
+//     // Generar todos los slots del día
+//     const operationStart = moment.tz(`${selectedDate} ${service.operating_hours_start}`, 'YYYY-MM-DD HH:mm', 'America/Argentina/Buenos_Aires');
+//     const operationEnd = moment.tz(`${selectedDate} ${service.operating_hours_end}`, 'YYYY-MM-DD HH:mm', 'America/Argentina/Buenos_Aires');
+//     const duration = parseInt(service.duracion.split(':')[0]) * 60 + parseInt(service.duracion.split(':')[1]);
+//     let potentialStart = moment(operationStart);
+
+//     console.log(operationStart)
+//     console.log(operationEnd)
+
+//     let allSlots = [];
+
+//     while (potentialStart.isBefore(operationEnd)) {
+//       allSlots.push(potentialStart.format());
+//       potentialStart.add(duration, 'minutes');
+//     }
+
+//     const reservations = await Order.findAll({
+//       where: {
+//         service_id: serviceId,
+//         start_datetime: { [Op.lte]: operationEnd },
+//         end_datetime: { [Op.gte]: operationStart }
+//       }
+//     });
+
+//     // Asegúrate de que las reservas estén en la zona horaria local de Argentina
+//     const bookedSlots = reservations.map(reservation => ({
+//       start: moment(reservation.start_datetime).tz('America/Argentina/Buenos_Aires'),
+//       end: moment(reservation.end_datetime).tz('America/Argentina/Buenos_Aires')
+//     }));
+
+//     // Imprimir las fechas de las reservas en la zona horaria local
+//     bookedSlots.forEach(bookedSlot => {
+//       console.log("Start (Local Argentina):", bookedSlot.start.format());
+//       console.log("End (Local Argentina):", bookedSlot.end.format());
+//     });
+
+//     // Comparar con la zona horaria local
+//     const availableSlots = allSlots.filter(slot =>
+//       !bookedSlots.some(bookedSlot => {
+//         const slotMoment = moment(slot);
+//         return slotMoment.isSameOrAfter(bookedSlot.start) && slotMoment.isBefore(bookedSlot.end);
+//       })
+//     );
+
+//     console.log('Booked:', bookedSlots.map(slot => ({ start: slot.start.format(), end: slot.end.format() })));
+//     console.log('Available', availableSlots);
+
+//     return availableSlots;
+//   } catch (error) {
+//     console.error('Error calculating available slots:', error);
+//     throw error;
+//   }
+// };
 
 const calculateAvailableSlots = async (serviceId, selectedDate) => {
   try {
@@ -501,31 +539,26 @@ const calculateAvailableSlots = async (serviceId, selectedDate) => {
       throw new Error('Service not found');
     }
 
-
-    console.log('Service: ', service)
-    console.log(selectedDate)
-
     const operatingDays = service.operating_days.replace(/['"\[\]]+/g, '').split(',');
     const dayOfWeekNumber = new Date(selectedDate + 'T00:00:00Z').getDay();
-    const dayNames = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+    const dayNames = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado","Domingo"];
     const dayOfWeekString = dayNames[dayOfWeekNumber];
-
-    console.log(dayOfWeekString)
-
 
     if (!operatingDays.includes(dayOfWeekString)) {
       return []; // No hay slots disponibles si el servicio no opera en ese día
     }
 
-    // Generar todos los slots del día
+    // Ajuste para las horas de operación
     const operationStart = moment.tz(`${selectedDate} ${service.operating_hours_start}`, 'YYYY-MM-DD HH:mm', 'America/Argentina/Buenos_Aires');
-    const operationEnd = moment.tz(`${selectedDate} ${service.operating_hours_end}`, 'YYYY-MM-DD HH:mm', 'America/Argentina/Buenos_Aires');
+    let operationEnd = moment.tz(`${selectedDate} ${service.operating_hours_end}`, 'YYYY-MM-DD HH:mm', 'America/Argentina/Buenos_Aires');
+
+    // Ajustar la fecha de finalización si el servicio opera durante la noche
+    if (operationEnd.isBefore(operationStart)) {
+      operationEnd.add(1, 'day');
+    }
+
     const duration = parseInt(service.duracion.split(':')[0]) * 60 + parseInt(service.duracion.split(':')[1]);
     let potentialStart = moment(operationStart);
-
-    console.log(operationStart)
-    console.log(operationEnd)
-
     let allSlots = [];
 
     while (potentialStart.isBefore(operationEnd)) {
@@ -541,19 +574,11 @@ const calculateAvailableSlots = async (serviceId, selectedDate) => {
       }
     });
 
-    // Asegúrate de que las reservas estén en la zona horaria local de Argentina
     const bookedSlots = reservations.map(reservation => ({
       start: moment(reservation.start_datetime).tz('America/Argentina/Buenos_Aires'),
       end: moment(reservation.end_datetime).tz('America/Argentina/Buenos_Aires')
     }));
 
-    // Imprimir las fechas de las reservas en la zona horaria local
-    bookedSlots.forEach(bookedSlot => {
-      console.log("Start (Local Argentina):", bookedSlot.start.format());
-      console.log("End (Local Argentina):", bookedSlot.end.format());
-    });
-
-    // Comparar con la zona horaria local
     const availableSlots = allSlots.filter(slot =>
       !bookedSlots.some(bookedSlot => {
         const slotMoment = moment(slot);
@@ -561,15 +586,13 @@ const calculateAvailableSlots = async (serviceId, selectedDate) => {
       })
     );
 
-    console.log('Booked:', bookedSlots.map(slot => ({ start: slot.start.format(), end: slot.end.format() })));
-    console.log('Available', availableSlots);
-
     return availableSlots;
   } catch (error) {
     console.error('Error calculating available slots:', error);
     throw error;
   }
 };
+
 
 function addTime(date, hours, minutes) {
   return new Date(date.getTime() + hours * 60 * 60 * 1000 + minutes * 60 * 1000);

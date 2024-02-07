@@ -106,6 +106,16 @@ function RegistrationForm() {
               </div>
               {formErrors.nombre && <div className="error-message">{formErrors.nombre}</div>}
               <div className='formflex'>
+                <FontAwesomeIcon icon={faUser} />
+                <input
+                  type="text"
+                  name="apellido"
+                  placeholder="Apellido"
+                  className={formErrors.apellido ? "input-error" : ""}
+                />
+              </div>
+              {formErrors.apellido && <div className="error-message">{formErrors.apellido}</div>}
+              <div className='formflex'>
                 <FontAwesomeIcon icon={faEnvelope} />
                 <input
                   type="email"

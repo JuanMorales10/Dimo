@@ -39,6 +39,8 @@ const EditServicePage = () => {
         operating_days: [],
     });
 
+    console.log(service)
+
     useEffect(() => {
 
         setIsLoading(true)
@@ -103,10 +105,25 @@ const EditServicePage = () => {
     const handleDayChange = (event) => {
         const { value, checked } = event.target;
         setService(prevService => {
-            const newOperatingDays = checked
-                ? [...prevService.operating_days, value]
-                : prevService.operating_days.filter(day => day !== value);
-            return { ...prevService, operating_days: newOperatingDays };
+            // Convertir operating_days a un arreglo si es un string
+            let operatingDaysArray = typeof prevService.operating_days === 'string'
+                ? prevService.operating_days.split(',')
+                : prevService.operating_days;
+    
+            if (checked) {
+                // Agregar el día si no está en el arreglo
+                if (!operatingDaysArray.includes(value)) {
+                    operatingDaysArray.push(value);
+                }
+            } else {
+                // Remover el día si está en el arreglo
+                operatingDaysArray = operatingDaysArray.filter(day => day !== value);
+            }
+    
+            // Convertir el arreglo actualizado a un string para el estado
+            const updatedOperatingDays = operatingDaysArray.join(',');
+    
+            return { ...prevService, operating_days: updatedOperatingDays };
         });
     };
 

@@ -8,7 +8,7 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { UserContext } from '../UserContext/UserContext';
 
 const NavBar = () => {
-  const { user, logout, token } = useContext(UserContext);
+  const { user, logout, token, userRole } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -30,7 +30,7 @@ const NavBar = () => {
       // Actualiza la UI con la información del usuario
     }
   }, [user, token]);
-
+  console.log(userRole)
 
   return (
     <header>
@@ -45,11 +45,11 @@ const NavBar = () => {
             <li className="li-nav"><Link to="/nosotros">Nosotros</Link></li>
             {!token && (
               <>
-                <li className='li-nav'><Link to='/register' className="navbar-action register">Register</Link></li>
+                <li className='li-nav'><Link to='/register-normal' className="navbar-action register">Register</Link></li>
                 <li className='li-nav'><Link to='/login' className="navbar-action login">Log In</Link></li>
               </>
             )}
-            {user && (
+            {/* {user && (
               <div className="container-user">
                 <div class="dropdown top">
                   <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -83,7 +83,53 @@ const NavBar = () => {
 
                 </div>
               </div>
+            )} */}
+            {user && (
+              <div className="container-user">
+                <div className="dropdown top">
+                  <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div>
+                      <img src={`http://localhost:3008/img/avatar/${user.profile.avatar}`} width="35px" height="35px" alt="Avatar" />
+                      <p><Link to="/user/profile">{user.profile.nombre}</Link></p>
+                    </div>
+                  </button>
+                  <ul className="dropdown-menu">
+                    <li>
+                      <Link to="/dashboard/service-list" className="dropdown-item">
+                        <FontAwesomeIcon icon={faCog} className="fa-icon" /> Ajustes
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/dashboard/profile" className="dropdown-item">
+                        <FontAwesomeIcon icon={faUser} className="fa-icon" /> Perfil
+                      </Link>
+                    </li>
+
+                    {/* Condición para mostrar elementos basados en el rol del usuario */}
+                    {userRole === 'Personal' ? (
+                      <li>
+                        <Link to="/dashboard/reservas" className="dropdown-item">
+                          <FontAwesomeIcon icon={faCalendarAlt} className="fa-icon" /> Reservas
+                        </Link>
+                      </li>
+                    ) : (
+                      <li>
+                        <Link to="/dashboard/calendar" className="dropdown-item">
+                          <FontAwesomeIcon icon={faCalendarAlt} className="fa-icon" /> Calendario
+                        </Link>
+                      </li>
+                    )}
+
+                    <li>
+                      <button onClick={handleLogout} className="logout">
+                        <FontAwesomeIcon icon={faSignOutAlt} className="fa-icon" /> Log Out
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             )}
+
           </ul>
         </div>
         {!token && (
@@ -97,7 +143,7 @@ const NavBar = () => {
               </div>
               <div className="offcanvas-body">
                 <ul >
-                  <li className='li-nav'><Link to='/register' className="navbar-action register">Register</Link></li>
+                  <li className='li-nav'><Link to='/register-normal' className="navbar-action register">Register</Link></li>
                   <li className='li-nav'><Link to='/login' className="navbar-action login">Log In</Link></li>
                 </ul>
               </div>
@@ -115,10 +161,26 @@ const NavBar = () => {
           </div>
           <div className="offcanvas-body">
             <ul>
-              <button onClick={handleLogout} className="logout">Log Out</button>
-              <li><Link to="/dashboard" className="dropdown-item">Dashboard</Link></li>
-              <li><Link to="/dashboard/profile" className="dropdown-item">Perfil</Link></li>
-              <li><Link to="/reservations" className="dropdown-item">Reservas</Link></li>
+              <li>
+                <Link to="/dashboard/service-list" className="dropdown-item">
+                  <FontAwesomeIcon icon={faCog} className="fa-icon" /> Ajustes
+                </Link>
+              </li>
+              <li>
+                <Link to="/dashboard/profile" className="dropdown-item">
+                  <FontAwesomeIcon icon={faUser} className="fa-icon" /> Perfil
+                </Link>
+              </li>
+              <li>
+                <Link to="/dashboard/reservas" className="dropdown-item">
+                  <FontAwesomeIcon icon={faCalendarAlt} className="fa-icon" /> Reservas
+                </Link>
+              </li>
+              <li>
+                <button onClick={handleLogout} className="logout">
+                  <FontAwesomeIcon icon={faSignOutAlt} className="fa-icon" /> Log Out
+                </button>
+              </li>
             </ul>
           </div>
         </div>

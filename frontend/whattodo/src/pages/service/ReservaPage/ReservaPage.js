@@ -36,6 +36,8 @@ function ReservaPage() {
     fetchService();
   }, [serviceId, token]);
 
+  console.log(service)
+
   // const handleSubmit = async (reserva) => {
   //   try {
 
@@ -204,6 +206,8 @@ function ReservaPage() {
         },
         body: JSON.stringify(reservaData)
       });
+
+    
 
       const reservaCreada = await response.json();
       if (!response.ok) {

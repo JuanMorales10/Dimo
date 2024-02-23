@@ -47,8 +47,8 @@ const validateCreateService = [
     body('descripcion')
         .notEmpty()
         .withMessage('La descripción del servicio es obligatoria')
-        .isLength({ max: 600 })
-        .withMessage('La descripción no puede superar los 600 caracteres'),
+        .isLength({ max: 5000 })
+        .withMessage('La descripción no puede superar los 5000 caracteres'),
     body('categoria_id').isNumeric().withMessage('La categoría es obligatoria'),
     body('capacidad').isNumeric().withMessage('La capacidad debe ser un número'),
     body('id_region').isNumeric().withMessage('La región es obligatoria'),
@@ -75,8 +75,8 @@ const validateEditService = [
     body('descripcion')
         .notEmpty()
         .withMessage('La descripción del servicio es obligatoria')
-        .isLength({ max: 600 })
-        .withMessage('La descripción no puede superar los 600 caracteres'),
+        .isLength({ max: 5000 })
+        .withMessage('La descripción no puede superar los 5000 caracteres'),
     body('categoria_id').isNumeric().withMessage('La categoría es obligatoria'),
     body('capacidad').isNumeric().withMessage('La capacidad debe ser un número'),
     body('id_region').isNumeric().withMessage('La región es obligatoria'),

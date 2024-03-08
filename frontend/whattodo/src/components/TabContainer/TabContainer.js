@@ -23,7 +23,7 @@ const TabContainer = ({ details, comments, reservar, amenities, policies }) => {
           className={activeTab === 'reservar' ? 'active' : ''}
           onClick={() => setActiveTab('reservar')}
         >
-          Reservar
+          Información
         </button>
         </div>
         <div className="tab-content">
